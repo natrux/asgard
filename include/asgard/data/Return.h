@@ -1,0 +1,20 @@
+#pragma once
+
+
+#include <asgard/data/Data.h>
+
+
+namespace asgard{
+namespace data{
+
+
+class Return : public Data{
+public:
+	size_t message_id;
+	core::ID source_address;
+	core::ID destination_address;
+};
+
+
+}
+}
