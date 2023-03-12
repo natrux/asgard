@@ -120,27 +120,27 @@ public:
 	{}
 
 	int plus(int a, int b){
-		auto ret_ = request_sync<Calculator_plus>(a, b);
+		auto ret_ = request<Calculator_plus>(a, b);
 		if(auto ret = std::dynamic_pointer_cast<const Calculator_plus_return>(ret_)){
 			return ret->result;
 		}
 		throw std::runtime_error("Return of unexpected type");
 	}
 
-	void plus_async(int a, int b){
-		request_async<Calculator_plus>(a, b);
+	void plus_(int a, int b){
+		call<Calculator_plus>(a, b);
 	}
 
 	double divide(int a, int b){
-		auto ret_ = request_sync<Calculator_divide>(a, b);
+		auto ret_ = request<Calculator_divide>(a, b);
 		if(auto ret = std::dynamic_pointer_cast<const Calculator_divide_return>(ret_)){
 			return ret->result;
 		}
 		throw std::runtime_error("Return of unexpected type");
 	}
 
-	void divide_async(int a, int b){
-		request_async<Calculator_divide>(a, b);
+	void divide_(int a, int b){
+		call<Calculator_divide>(a, b);
 	}
 };
 

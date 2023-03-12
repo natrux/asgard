@@ -11,43 +11,43 @@ namespace run{
 void Terminal::read_loop(){
 	TerminalClient terminal(make_pipe_in());
 	while(node_should_run()) {
-		char c = std::getchar();
+		const char c = std::getchar();
 		if(c == EOF){
 			throw std::underflow_error("EOF");
 		}else if(c == 27){
 			// ESC
-			char c2 = getchar();
+			const char c2 = getchar();
 			if(c2 == '['){
-				char c3 = getchar();
+				const char c3 = getchar();
 				if(c3 == 'A'){
-					terminal.read_event_async(terminal_event_e::ARROW_UP);
+					terminal.read_event_(terminal_event_e::ARROW_UP);
 				}else if(c3 == 'B'){
-					terminal.read_event_async(terminal_event_e::ARROW_DOWN);
+					terminal.read_event_(terminal_event_e::ARROW_DOWN);
 				}else if(c3 == 'C'){
-					terminal.read_event_async(terminal_event_e::ARROW_RIGHT);
+					terminal.read_event_(terminal_event_e::ARROW_RIGHT);
 				}else if(c3 == 'D'){
-					terminal.read_event_async(terminal_event_e::ARROW_LEFT);
+					terminal.read_event_(terminal_event_e::ARROW_LEFT);
 				}else if(c3 == 'H'){
-					terminal.read_event_async(terminal_event_e::POS1);
+					terminal.read_event_(terminal_event_e::POS1);
 				}else if(c3 == 'F'){
-					terminal.read_event_async(terminal_event_e::END);
+					terminal.read_event_(terminal_event_e::END);
 				}else if(c3 == '3'){
-					char c4 = getchar();
+					const char c4 = getchar();
 					if(c4 == '~'){
-						terminal.read_event_async(terminal_event_e::DEL);
+						terminal.read_event_(terminal_event_e::DEL);
 					}
 				}
 			}
 		}else if(c == '\r'){
-			terminal.read_event_async(terminal_event_e::CR);
+			terminal.read_event_(terminal_event_e::CR);
 		}else if(c == '\n'){
-			terminal.read_event_async(terminal_event_e::LF);
+			terminal.read_event_(terminal_event_e::LF);
 		}else if(c == 127 || c == 8){
-			terminal.read_event_async(terminal_event_e::BACKSPACE);
+			terminal.read_event_(terminal_event_e::BACKSPACE);
 		}else if(c == '\t'){
-			terminal.read_event_async(terminal_event_e::TAB);
+			terminal.read_event_(terminal_event_e::TAB);
 		}else{
-			terminal.read_char_async(c);
+			terminal.read_char_(c);
 		}
 	}
 }

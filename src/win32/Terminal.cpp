@@ -17,35 +17,35 @@ void Terminal::read_loop(){
 		if(input_record.EventType != KEY_EVENT || !input_record.Event.KeyEvent.bKeyDown){
 			continue;
 		}
-		char c = input_record.Event.KeyEvent.uChar.AsciiChar;
+		const char c = input_record.Event.KeyEvent.uChar.AsciiChar;
 		if(c == 0){
 			// use virtual key code
-			WORD vk = input_record.Event.KeyEvent.wVirtualKeyCode;
+			const WORD vk = input_record.Event.KeyEvent.wVirtualKeyCode;
 			if(vk == VK_UP){
-				terminal.read_event_async(terminal_event_e::ARROW_UP);
+				terminal.read_event_(terminal_event_e::ARROW_UP);
 			}else if(vk == VK_DOWN){
-				terminal.read_event_async(terminal_event_e::ARROW_DOWN);
+				terminal.read_event_(terminal_event_e::ARROW_DOWN);
 			}else if(vk == VK_LEFT){
-				terminal.read_event_async(terminal_event_e::ARROW_LEFT);
+				terminal.read_event_(terminal_event_e::ARROW_LEFT);
 			}else if(vk == VK_RIGHT){
-				terminal.read_event_async(terminal_event_e::ARROW_RIGHT);
+				terminal.read_event_(terminal_event_e::ARROW_RIGHT);
 			}else if(vk == VK_HOME){
-				terminal.read_event_async(terminal_event_e::POS1);
+				terminal.read_event_(terminal_event_e::POS1);
 			}else if(vk == VK_END){
-				terminal.read_event_async(terminal_event_e::END);
+				terminal.read_event_(terminal_event_e::END);
 			}else if(vk == VK_DELETE){
-				terminal.read_event_async(terminal_event_e::DEL);
+				terminal.read_event_(terminal_event_e::DEL);
 			}
 		}else if(c == '\t'){
-			terminal.read_event_async(terminal_event_e::TAB);
+			terminal.read_event_(terminal_event_e::TAB);
 		}else if(c == 127 || c == 8){
-			terminal.read_event_async(terminal_event_e::BACKSPACE);
+			terminal.read_event_(terminal_event_e::BACKSPACE);
 		}else if(c == '\r'){
-			terminal.read_event_async(terminal_event_e::CR);
+			terminal.read_event_(terminal_event_e::CR);
 		}else if(c == '\n'){
-			terminal.read_event_async(terminal_event_e::LF);
+			terminal.read_event_(terminal_event_e::LF);
 		}else{
-			terminal.read_char_async(c);
+			terminal.read_char_(c);
 		}
 	}
 }

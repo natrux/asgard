@@ -15,9 +15,9 @@ public:
 	TerminalClient(pipe::PipeIn &&destination);
 
 	void read_char(const char &c);
-	void read_char_async(const char &c);
+	void read_char_(const char &c);
 	void read_event(const terminal_event_e &event);
-	void read_event_async(const terminal_event_e &event);
+	void read_event_(const terminal_event_e &event);
 };
 
 }

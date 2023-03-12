@@ -28,26 +28,26 @@ TerminalClient::TerminalClient(pipe::PipeIn &&destination_):
 
 
 void TerminalClient::read_char(const char &c){
-	auto ret_ = request_sync<Terminal_read_char>(c);
+	auto ret_ = request<Terminal_read_char>(c);
 	if(auto ret = std::dynamic_pointer_cast<const Terminal_read_char_return>(ret_)){
 	}
 }
 
 
-void TerminalClient::read_char_async(const char &c){
-	request_async<Terminal_read_char>(c);
+void TerminalClient::read_char_(const char &c){
+	call<Terminal_read_char>(c);
 }
 
 
 void TerminalClient::read_event(const terminal_event_e &event){
-	auto ret_ = request_sync<Terminal_read_event>(event);
+	auto ret_ = request<Terminal_read_event>(event);
 	if(auto ret = std::dynamic_pointer_cast<const Terminal_read_event_return>(ret_)){
 	}
 }
 
 
-void TerminalClient::read_event_async(const terminal_event_e &event){
-	request_async<Terminal_read_event>(event);
+void TerminalClient::read_event_(const terminal_event_e &event){
+	call<Terminal_read_event>(event);
 }
 
 

@@ -28,7 +28,7 @@ Client::Client(pipe::PipeIn &&destination_):
 }
 
 
-void Client::request_async(std::shared_ptr<data::Request> req){
+void Client::call(std::shared_ptr<data::Request> req){
 	req->needs_return = false;
 	send_request(req);
 }
@@ -41,7 +41,7 @@ void Client::process(std::shared_ptr<const data::Return> ret){
 }
 
 
-std::shared_ptr<const data::Return> Client::request_sync(std::shared_ptr<data::Request> req){
+std::shared_ptr<const data::Return> Client::request(std::shared_ptr<data::Request> req){
 	current_request = req;
 	current_return = nullptr;
 	send_request(req);

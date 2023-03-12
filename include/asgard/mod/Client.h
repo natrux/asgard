@@ -17,17 +17,17 @@ protected:
 	void process(std::shared_ptr<const data::Return> ret) override;
 
 	template<class R, class... Args>
-	void request_async(Args&&... args){
+	void call(Args&&... args){
 		auto req = std::make_shared<R>(std::forward<Args>(args)...);
-		request_async(req);
+		call(req);
 	}
-	void request_async(std::shared_ptr<data::Request> req);
+	void call(std::shared_ptr<data::Request> req);
 	template<class R, class... Args>
-	std::shared_ptr<const data::Return> request_sync(Args&&... args){
+	std::shared_ptr<const data::Return> request(Args&&... args){
 		auto req = std::make_shared<R>(std::forward<Args>(args)...);
-		return request_sync(req);
+		return request(req);
 	}
-	std::shared_ptr<const data::Return> request_sync(std::shared_ptr<data::Request> req);
+	std::shared_ptr<const data::Return> request(std::shared_ptr<data::Request> req);
 	void send_request(std::shared_ptr<data::Request> req);
 
 private:

@@ -16,9 +16,16 @@ public:
 	}
 
 	ReturnMe(const ReturnMe &other) = delete;
-	ReturnMe(ReturnMe &&other) = default;
+	ReturnMe(ReturnMe &&other){
+		*this = std::move(other);
+	}
+
 	ReturnMe &operator=(const ReturnMe &other) = delete;
-	ReturnMe &operator=(ReturnMe &&other) = default;
+	ReturnMe &operator=(ReturnMe &&other){
+		request = std::move(other.request);
+		done = other.done;
+		other.done = true;
+	}
 
 	template<class ...Args>
 	void retrn(Args&&... args){
