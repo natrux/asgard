@@ -2,7 +2,7 @@
 
 #include <asgard/mod/Messager.h>
 #include <asgard/topic/TopicPtr.h>
-#include <asgard/data/Data.h>
+#include <asgard/data/Value.h>
 
 
 namespace asgard{
@@ -18,7 +18,7 @@ protected:
 	void subscribe(topic::TopicPtr topic);
 	void unsubscribe(topic::TopicPtr topic);
 	void unsubscribe_all();
-	void publish(std::shared_ptr<const data::Data> value, topic::TopicPtr topic) const;
+	void publish(std::shared_ptr<const data::Value> value, topic::TopicPtr topic) const;
 
 private:
 	std::set<topic::TopicPtr, topic::TopicPtr::Compare> subscriptions;

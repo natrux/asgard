@@ -1,7 +1,7 @@
 #pragma once
 
 #include <asgard/pipe/PipeIn.h>
-#include <asgard/data/Data.h>
+#include <asgard/data/Value.h>
 
 #include <set>
 #include <memory>
@@ -14,7 +14,7 @@ namespace topic{
 
 class Topic{
 public:
-	void publish(std::shared_ptr<const data::Data> value);
+	void publish(std::shared_ptr<const data::Value> value);
 	void subscribe(const pipe::PipeIn &pipe_in);
 	void subscribe(pipe::PipeIn &&pipe_in);
 	void unsubscribe(const pipe::PipeIn &pipe_in);

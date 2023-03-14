@@ -5,7 +5,7 @@ namespace asgard{
 namespace topic{
 
 
-void Topic::publish(std::shared_ptr<const data::Data> value){
+void Topic::publish(std::shared_ptr<const data::Value> value){
 	std::lock_guard<std::mutex> lock(mutex);
 	for(auto iter=subscribers.begin(); iter!=subscribers.end(); /* no iter */){
 		bool itered = false;
