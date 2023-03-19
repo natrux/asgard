@@ -12,7 +12,7 @@ namespace run{
 
 
 Terminal::Terminal(const std::string &name_):
-	Super(name_)
+	TerminalModule(name_)
 {
 #ifdef _WIN32
 	console_input_handle = GetStdHandle(STD_INPUT_HANDLE);
@@ -40,26 +40,6 @@ void Terminal::main(){
 }
 
 
-void Terminal::process(std::shared_ptr<const data::Value> value){
-	if(auto log_message = std::dynamic_pointer_cast<const data::LogMessage>(value)){
-		process(log_message);
-	}else{
-		Super::process(value);
-	}
-}
-
-
-void Terminal::process(std::shared_ptr<const data::Request> request){
-	if(auto read_char_r = std::dynamic_pointer_cast<const Terminal_read_char>(request)){
-		read_char_async(read_char_r->character, core::ReturnMe<Terminal_read_char_return>(request));
-	}else if(auto read_event_r = std::dynamic_pointer_cast<const Terminal_read_event>(request)){
-		read_event_async(read_event_r->event, core::ReturnMe<Terminal_read_event_return>(request));
-	}else{
-		Super::process(request);
-	}
-}
-
-
 void Terminal::read_char_sync(const char &character){
 	if(state != terminal_state_e::INPUT){
 		return;
@@ -69,16 +49,6 @@ void Terminal::read_char_sync(const char &character){
 	cursor++;
 
 	write_prompt();
-}
-
-
-void Terminal::read_char_async(const char &character, core::ReturnMe<Terminal_read_char_return> &&return_me){
-	try{
-		read_char_sync(character);
-		return_me.retrn();
-	}catch(const std::exception &err){
-		return_me.err(err);
-	}
 }
 
 
@@ -145,16 +115,6 @@ void Terminal::read_event_sync(const terminal_event_e &event){
 
 	if(state == terminal_state_e::INPUT){
 		write_prompt();
-	}
-}
-
-
-void Terminal::read_event_async(const terminal_event_e &event, core::ReturnMe<Terminal_read_event_return> &&return_me){
-	try{
-		read_event_sync(event);
-		return_me.retrn();
-	}catch(const std::exception &err){
-		return_me.err(err);
 	}
 }
 

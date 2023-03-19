@@ -1,12 +1,6 @@
 #pragma once
 
-#include <asgard/mod/Module.h>
-#include <asgard/topic/TopicPtr.h>
-#include <asgard/core/ReturnMe.h>
-#include <asgard/run/terminal_event_e.hxx>
-#include <asgard/run/Terminal_read_char_return.hxx>
-#include <asgard/run/Terminal_read_event_return.hxx>
-#include <asgard/data/LogMessage.h>
+#include <asgard/run/TerminalModule.hxx>
 
 #include <iostream>
 #ifdef _WIN32
@@ -20,8 +14,7 @@ namespace asgard{
 namespace run{
 
 
-class Terminal : public mod::Module{
-	using Super = mod::Module;
+class Terminal : public TerminalModule{
 public:
 	Terminal(const std::string &name_);
 
@@ -29,13 +22,10 @@ protected:
 	void init() override;
 	void main() override;
 
-	void process(std::shared_ptr<const data::Value> value) override;
-	void process(std::shared_ptr<const data::Request> request) override;
+	void process(std::shared_ptr<const data::LogMessage> value) override;
 
-	void read_char_sync(const char &character);
-	void read_char_async(const char &character, core::ReturnMe<Terminal_read_char_return> &&return_me);
-	void read_event_sync(const terminal_event_e &event);
-	void read_event_async(const terminal_event_e &event, core::ReturnMe<Terminal_read_event_return> &&return_me);
+	void read_char_sync(const char &character) override;
+	void read_event_sync(const terminal_event_e &event) override;
 
 private:
 	enum class terminal_state_e{
@@ -44,7 +34,6 @@ private:
 		DISPLAY,
 	};
 
-	topic::TopicPtr input_log = "asgard.log";
 #ifdef _WIN32
 	DWORD saved_attributes;
 	HANDLE console_input_handle;
@@ -55,11 +44,9 @@ private:
 #endif
 	std::ostream &out_stream = std::cout;
 	terminal_state_e state = terminal_state_e::INACTIVE;
-	const std::string prompt = "> ";
 	std::string line = "";
 	size_t cursor = 0;
 
-	void process(std::shared_ptr<const data::LogMessage> value);
 	terminal_state_e execute(const std::string &command_line);
 	terminal_state_e execute(const std::string &command, const std::vector<std::string> &args);
 

@@ -1,5 +1,5 @@
 #include <asgard/topic/LogPublisher.h>
-#include <asgard/data/LogMessage.h>
+#include <asgard/data/LogMessage.hxx>
 
 
 namespace asgard{

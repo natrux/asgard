@@ -1,6 +1,6 @@
 #pragma once
 
-#include <asgard/data/Exception.h>
+#include <asgard/data/Exception.hxx>
 
 
 namespace asgard{
@@ -50,7 +50,9 @@ public:
 	}
 
 	void err(const std::string &message){
-		err(std::make_shared<data::Exception>(message));
+		auto ex = std::make_shared<data::Exception>();
+		ex->message = message;
+		err(ex);
 	}
 
 	void err(const std::exception &error){

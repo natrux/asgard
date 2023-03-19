@@ -4,8 +4,8 @@
 #include <asgard/pipe/PipeIn.h>
 #include <asgard/data/Data.h>
 #include <asgard/data/Value.h>
-#include <asgard/data/Request.h>
-#include <asgard/data/Return.h>
+#include <asgard/data/Request.hxx>
+#include <asgard/data/Return.hxx>
 
 
 namespace asgard{

@@ -14,4 +14,3 @@ public:
 	double divide(int a, int b);
 	void divide_(int a, int b);
 };
-

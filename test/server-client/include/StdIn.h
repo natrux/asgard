@@ -1,11 +1,9 @@
 #pragma once
 
-
-#include <asgard/mod/Module.h>
-#include <asgard/topic/TopicPtr.h>
+#include <StdInModule.hxx>
 
 
-class StdIn : public asgard::mod::Module{
+class StdIn : public StdInModule{
 public:
 	StdIn(const std::string &name_);
 
@@ -13,9 +11,6 @@ protected:
 	void main() override;
 
 private:
-	typedef Module Super;
-
-	asgard::topic::TopicPtr output_lines = "input.terminal";
 	void read_loop();
 };
 

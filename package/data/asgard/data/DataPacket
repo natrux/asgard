@@ -1,0 +1,3 @@
+Value DataPacket{
+	vector<char> data;
+}

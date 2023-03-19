@@ -1,0 +1,3 @@
+asgard.data.Value TextLine{
+	string line;
+}

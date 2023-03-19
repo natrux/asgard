@@ -1,0 +1,3 @@
+mod.Module Gateway{
+	unsigned int error_pause_time_ms = 1000;
+}

@@ -5,10 +5,8 @@
 #include <asgard/pipe/Pipe.h>
 #include <asgard/time/Timer.h>
 #include <asgard/data/Value.h>
-#include <asgard/data/Request.h>
-#include <asgard/data/Return.h>
-#include <asgard/data/PleaseShutDown.h>
-#include <asgard/data/log_level_e.h>
+#include <asgard/data/PleaseShutDown.hxx>
+#include <asgard/data/log_level_e.hxx>
 #include <asgard/topic/LogPublisher.h>
 #include <asgard/make_unique.h>
 

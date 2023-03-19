@@ -1,26 +1,20 @@
 #include <asgard/com/Server.h>
-#include <asgard/com/Gateway.h>
-#include <asgard/make_unique.h>
-
-#include <functional>
-#include <stdexcept>
-#include <cstring>
-
-#ifndef _WIN32
-#include <sys/socket.h>
-#include <netdb.h>
-#endif
-#include <unistd.h>
 
 
 namespace asgard{
 namespace com{
 
 
-Server::Server(const std::string &name_, std::unique_ptr<net::Endpoint> endpoint):
-	Module(name_),
-	m_endpoint(std::move(endpoint))
+Server::Server(const std::string &name_):
+	ServerModule(name_)
 {
+}
+
+
+Server::Server(const std::string &name_, std::unique_ptr<net::Endpoint> endpoint):
+	ServerModule(name_)
+{
+	init_endpoint(std::move(endpoint));
 }
 
 
@@ -29,12 +23,20 @@ Server::Server(const std::string &name_, const std::string &address):
 {
 }
 
+
+void Server::init(){
+	if(!m_endpoint){
+		throw std::logic_error("No endpoint given");
+	}
+}
+
+
 void Server::main(){
 	m_endpoint->open();
 	m_endpoint->expect();
 	m_accept_thread = std::thread(&Server::accept_loop, this);
 
-	Module::main();
+	Super::main();
 
 	try{
 		m_endpoint->shutdown();
@@ -45,6 +47,14 @@ void Server::main(){
 		m_accept_thread.join();
 	}
 	m_endpoint->close();
+}
+
+
+void Server::init_endpoint(std::unique_ptr<net::Endpoint> endpoint){
+	if(m_endpoint){
+		throw std::logic_error("Endpoint already given");
+	}
+	m_endpoint = std::move(endpoint);
 }
 
 

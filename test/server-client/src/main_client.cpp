@@ -1,20 +1,16 @@
-#include <asgard/com/Gateway.h>
+#include <ShoutGatewayModule.hxx>
+#include <StdIn.h>
 #include <asgard/run/Terminal.h>
 
-#include <StdIn.h>
-#include <TextLine.h>
-
 #include <iostream>
-#include <thread>
-#include <chrono>
 
 
-class ShoutGateway : public asgard::com::Gateway{
-	using Super = asgard::com::Gateway;
+class ShoutGateway : public ShoutGatewayModule{
 public:
 	ShoutGateway(const std::string &name_, std::unique_ptr<asgard::net::Endpoint> endpoint):
-		Gateway(name_, std::move(endpoint))
+		ShoutGatewayModule(name_)
 	{
+		init_endpoint(std::move(endpoint));
 	}
 
 protected:
@@ -22,15 +18,7 @@ protected:
 		subscribe(input_text);
 	}
 
-	void process(std::shared_ptr<const asgard::data::Value> value) override{
-		if(auto text = std::dynamic_pointer_cast<const TextLine>(value)){
-			process(text);
-		}else{
-			Super::process(value);
-		}
-	}
-
-	void process(std::shared_ptr<const TextLine> data){
+	void process(std::shared_ptr<const TextLine> data) override{
 		shout(data->line);
 	}
 
@@ -39,8 +27,6 @@ private:
 		std::string out = message + "\n";
 		output_write(out.c_str(), out.length());
 	}
-
-	asgard::topic::TopicPtr input_text = "input.terminal";
 };
 
 

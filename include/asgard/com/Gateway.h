@@ -1,32 +1,29 @@
 #pragma once
 
-#include <asgard/mod/Module.h>
+#include <asgard/com/GatewayModule.hxx>
 #include <asgard/net/Endpoint.h>
 #include <asgard/io/InputSource.h>
-
-#include <set>
-#include <thread>
-#include <memory>
 
 
 namespace asgard{
 namespace com{
 
 
-class Gateway : public asgard::mod::Module{
-	using Super = asgard::mod::Module;
+class Gateway : public GatewayModule{
 public:
+	Gateway(const std::string &name_);
 	Gateway(const std::string &name_, std::unique_ptr<net::Endpoint> endpoint);
 	Gateway(const std::string &name_, const std::string &address);
 
 protected:
+	void init() override;
 	void main() override;
 
+	void init_endpoint(std::unique_ptr<net::Endpoint> endpoint);
 	void set_output(std::unique_ptr<io::OutputSource> output);
 	void output_write(const char *data, size_t length);
 
 private:
-	unsigned int error_pause_time_ms = 1000;
 	std::unique_ptr<net::Endpoint> m_endpoint;
 	std::mutex mutex_output;
 	std::unique_ptr<io::OutputSource> m_output;

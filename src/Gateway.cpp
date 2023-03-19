@@ -1,28 +1,36 @@
 #include <asgard/com/Gateway.h>
 #include <asgard/io/BufferedInput.h>
-#include <asgard/io/SocketInputSource.h>
-#include <asgard/make_unique.h>
 
-#include <memory>
-#include <functional>
-#include <unistd.h>
-
+#include <thread>
 
 
 namespace asgard{
 namespace com{
 
 
-Gateway::Gateway(const std::string &name_, std::unique_ptr<net::Endpoint> endpoint):
-	Super(name_),
-	m_endpoint(std::move(endpoint))
+Gateway::Gateway(const std::string &name_):
+	GatewayModule(name_)
 {
+}
+
+
+Gateway::Gateway(const std::string &name_, std::unique_ptr<net::Endpoint> endpoint):
+	GatewayModule(name_)
+{
+	init_endpoint(std::move(endpoint));
 }
 
 
 Gateway::Gateway(const std::string &name_, const std::string &address):
 	Gateway(name_, net::Endpoint::from_address(address))
 {
+}
+
+
+void Gateway::init(){
+	if(!m_endpoint){
+		throw std::logic_error("No endpoint given");
+	}
 }
 
 
@@ -45,6 +53,14 @@ void Gateway::main(){
 		read_thread.join();
 	}
 	m_endpoint->close();
+}
+
+
+void Gateway::init_endpoint(std::unique_ptr<net::Endpoint> endpoint){
+	if(m_endpoint){
+		throw std::logic_error("Endpoint already given");
+	}
+	m_endpoint = std::move(endpoint);
 }
 
 

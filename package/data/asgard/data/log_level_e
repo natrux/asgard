@@ -1,0 +1,6 @@
+enum log_level_e{
+	DEBUG
+	INFO
+	WARN
+	ERROR
+}

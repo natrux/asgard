@@ -1,4 +1,4 @@
-module Calculator{
+asgard.mod.Module Calculator{
 	const plus(int a, int b) -> int;
 	const divide(int a, int b) -> double;
 }

@@ -1,0 +1,5 @@
+Return Exception{
+	string message;
+
+	const what() -> string;
+}

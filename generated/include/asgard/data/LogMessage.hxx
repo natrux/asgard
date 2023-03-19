@@ -1,7 +1,7 @@
 #pragma once
 
 #include <asgard/data/Value.h>
-#include <asgard/data/log_level_e.h>
+#include <asgard/data/log_level_e.hxx>
 
 #include <string>
 

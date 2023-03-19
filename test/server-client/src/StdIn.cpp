@@ -1,12 +1,12 @@
 #include <StdIn.h>
-#include <TextLine.h>
+#include <TextLine.hxx>
 
 #include <iostream>
 #include <thread>
 
 
 StdIn::StdIn(const std::string &name_):
-	Super(name_)
+	StdInModule(name_)
 {
 }
 
@@ -23,7 +23,6 @@ void StdIn::main(){
 
 
 void StdIn::read_loop(){
-	std::string current_line = "";
 	while(node_should_run()){
 		std::string next_line;
 		std::getline(std::cin, next_line);

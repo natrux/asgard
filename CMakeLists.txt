@@ -11,7 +11,7 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 		-Wsign-conversion -Wsign-promo -Wstrict-null-sentinel
 		-Wstrict-overflow -Wsuggest-override -Wswitch-default -Wundef
 
-		-Werror
+		#-Werror
 	)
 else()
 	message(WARNING "Unknown compiler - not turning on warnings")
@@ -30,12 +30,17 @@ else()
 	)
 endif()
 
+
+file(GLOB GENERATED_CXX generated/src/*.cxx)
+
 add_library(asgard SHARED
+	${GENERATED_CXX}
 	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
 	src/crc_64_xz.cpp
 	src/BufferedInput.cpp
 	src/Endpoint.cpp
+	src/Exception.cpp
 	src/FileInputSource.cpp
 	src/FileOutputSource.cpp
 	src/Gateway.cpp
@@ -59,12 +64,11 @@ add_library(asgard SHARED
 	src/string.cpp
 	src/LogMessage.cpp
 	src/LogPublisher.cpp
-
-	src/TerminalClient.cxx
 )
 
 target_include_directories(asgard PUBLIC
-	include/
+	include
+	generated/include
 )
 
 target_link_libraries(asgard

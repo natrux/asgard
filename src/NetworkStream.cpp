@@ -5,29 +5,27 @@ namespace asgard{
 namespace com{
 
 
-NetworkStream::NetworkStream(const std::string &name_, std::unique_ptr<net::Endpoint> endpoint):
-	Super(name_, std::move(endpoint))
+NetworkStream::NetworkStream(const std::string &name_):
+	NetworkStreamModule(name_)
 {
 }
 
 
+NetworkStream::NetworkStream(const std::string &name_, std::unique_ptr<net::Endpoint> endpoint):
+	NetworkStreamModule(name_)
+{
+	init_endpoint(std::move(endpoint));
+}
+
+
 NetworkStream::NetworkStream(const std::string &name_, const std::string &address):
-	Super(name_, address)
+	NetworkStream(name_, net::Endpoint::from_address(address))
 {
 }
 
 
 void NetworkStream::init(){
 	subscribe(input_data);
-}
-
-
-void NetworkStream::process(std::shared_ptr<const data::Value> value){
-	if(auto packet = std::dynamic_pointer_cast<const data::DataPacket>(value)){
-		process(packet);
-	}else{
-		Super::process(value);
-	}
 }
 
 

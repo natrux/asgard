@@ -1,0 +1,11 @@
+mod.Module Terminal{
+	topic.TopicPtr input_log = "asgard.log";
+	string prompt = "> ";
+
+	read_char(char character);
+	read_event(terminal_event_e event);
+
+	process(
+		data.LogMessage
+	)
+}

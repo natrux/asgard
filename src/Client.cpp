@@ -1,5 +1,5 @@
 #include <asgard/mod/Client.h>
-#include <asgard/data/Exception.h>
+#include <asgard/data/Exception.hxx>
 
 
 namespace asgard{

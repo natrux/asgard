@@ -1,5 +1,4 @@
 #include <asgard/mod/Module.h>
-#include <asgard/data/LogMessage.h>
 
 #include <thread>
 #ifdef _WIN32

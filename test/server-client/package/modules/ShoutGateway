@@ -1,0 +1,7 @@
+asgard.com.Gateway ShoutGateway{
+	asgard.topic.TopicPtr input_text = "input.terminal";
+
+	process(
+		TextLine
+	)
+}

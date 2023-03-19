@@ -1,20 +1,19 @@
-#include <asgard/com/Server.h>
-#include <asgard/com/Gateway.h>
+#include <EchoGatewayModule.hxx>
+#include <EchoServerModule.hxx>
+
 #include <asgard/make_unique.h>
 #include <asgard/io/BufferedInput.h>
 #include <asgard/run/Terminal.h>
 
-#include <stdexcept>
 #include <iostream>
-#include <chrono>
 
 
-
-class EchoGateway : public asgard::com::Gateway{
+class EchoGateway : public EchoGatewayModule{
 public:
 	EchoGateway(const std::string &name_, std::unique_ptr<asgard::net::Endpoint> endpoint):
-		Gateway(name_, std::move(endpoint))
+		EchoGatewayModule(name_)
 	{
+		init_endpoint(std::move(endpoint));
 	}
 
 private:
@@ -38,15 +37,16 @@ private:
 
 
 
-class EchoServer : public asgard::com::Server{
+class EchoServer : public EchoServerModule{
 public:
 	EchoServer(const std::string &name_, std::unique_ptr<asgard::net::Endpoint> endpoint):
-		Server(name_, std::move(endpoint))
+		EchoServerModule(name_)
 	{
+		init_endpoint(std::move(endpoint));
 	}
 
 	EchoServer(const std::string &name_, const std::string &address):
-		Server(name_, address)
+		EchoServer(name_, asgard::net::Endpoint::from_address(address))
 	{
 	}
 
@@ -73,9 +73,6 @@ int main(int argc, char **argv){
 	asgard::mod::Module::start_module<asgard::run::Terminal>("Terminal");
 	asgard::mod::Module::start_module<EchoServer>("Server", address);
 
-
-	//std::this_thread::sleep_for(std::chrono::seconds(60));
-	//asgard::mod::Module::shutdown_all();
 	asgard::mod::Module::wait_for_shutdown();
 
 	return 0;

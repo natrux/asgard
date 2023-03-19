@@ -1,6 +1,6 @@
 #pragma once
 
-#include <asgard/data/Request.h>
+#include <asgard/data/Request.hxx>
 
 
 class Calculator_plus : public asgard::data::Request{

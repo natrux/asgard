@@ -1,6 +1,6 @@
 #pragma once
 
-#include <asgard/data/Return.h>
+#include <asgard/data/Return.hxx>
 
 
 class Calculator_divide_return : public asgard::data::Return{
