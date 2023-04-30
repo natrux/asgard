@@ -22,8 +22,6 @@ public:
 	std::string str() const;
 
 private:
-	static bool get_random_bit();
-
 	uint64_t value;
 	std::string str_value;
 };

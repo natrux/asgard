@@ -1,9 +1,8 @@
 #include <asgard/core/ID.h>
+#include <asgard/core/random.h>
 #include <crc/crc_64_xz.h>
 
-#include <random>
 #include <sstream>
-#include <mutex>
 
 
 namespace asgard{
@@ -30,14 +29,7 @@ void ID::set(const uint64_t &new_value){
 
 
 void ID::set_random(){
-	uint64_t new_value = 0;
-	const uint64_t one = 1;
-	for(size_t i=0; i<sizeof(new_value)*8; i++){
-		if(get_random_bit()){
-			new_value |= (one << i);
-		}
-	}
-	set(new_value);
+	set(rand64());
 }
 
 
@@ -48,19 +40,6 @@ ID::operator uint64_t() const{
 
 std::string ID::str() const{
 	return str_value;
-}
-
-
-bool ID::get_random_bit(){
-	static std::random_device device;
-	static std::mt19937 generator(device());
-	static std::bernoulli_distribution dist(0.5);
-	static std::mutex mutex_random;
-
-	{
-		std::lock_guard<std::mutex> lock(mutex_random);
-		return dist(generator);
-	}
 }
 
 

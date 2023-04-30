@@ -62,6 +62,7 @@ add_library(asgard SHARED
 	src/Module.cpp
 	src/Pipe.cpp
 	src/PipeIn.cpp
+	src/random.cpp
 	src/Topic.cpp
 	src/TopicPtr.cpp
 	src/NetworkStream.cpp
