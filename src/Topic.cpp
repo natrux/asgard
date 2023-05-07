@@ -1,5 +1,7 @@
 #include <asgard/topic/Topic.h>
 
+#include <stdexcept>
+
 
 namespace asgard{
 namespace topic{
