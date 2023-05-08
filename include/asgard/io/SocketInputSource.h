@@ -20,7 +20,7 @@ class SocketInputSource : public InputSource{
 #endif
 public:
 	SocketInputSource(socket_t socket);
-	size_t read(char *data, size_t length) override;
+	size_t read(void *data, size_t length) override;
 
 private:
 	socket_t m_socket;

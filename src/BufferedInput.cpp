@@ -13,7 +13,8 @@ BufferedInput::BufferedInput(std::unique_ptr<InputSource> source):
 }
 
 
-void BufferedInput::read(char *data, size_t length){
+void BufferedInput::read(void *data_, size_t length){
+	char *data = reinterpret_cast<char *>(data_);
 	size_t available = end - start;
 	if(length <= available){
 		read_from_buffer(data, length);

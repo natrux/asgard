@@ -18,7 +18,7 @@ class SocketOutputSource : public OutputSource{
 #endif
 public:
 	SocketOutputSource(socket_t socket);
-	size_t write(const char *data, size_t length) override;
+	size_t write(const void *data, size_t length) override;
 
 private:
 	socket_t m_socket;

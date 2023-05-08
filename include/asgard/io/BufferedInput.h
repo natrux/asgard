@@ -23,7 +23,7 @@ public:
 	 * To speed up future reading, the function might also read more
 	 * than the requested number of bytes and buffer them internally.
 	 */
-	void read(char *data, size_t length);
+	void read(void *data, size_t length);
 
 	/**
 	 * Reads one byte in the same way that read() does.
@@ -36,7 +36,7 @@ private:
 	char m_buffer[BUFFER_SIZE];
 	size_t start = 0;
 	size_t end = 0;
-	
+
 	void read_from_buffer(char *data, size_t length);
 	size_t fill_buffer();
 	void reset_buffer();

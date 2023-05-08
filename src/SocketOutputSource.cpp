@@ -17,7 +17,7 @@ SocketOutputSource::SocketOutputSource(socket_t socket):
 }
 
 
-size_t SocketOutputSource::write(const char *data, size_t length){
+size_t SocketOutputSource::write(const void *data, size_t length){
 	int flags = 0;
 #ifndef _WIN32
 	flags |= MSG_NOSIGNAL;
