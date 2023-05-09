@@ -13,6 +13,7 @@ public:
 protected:
 	asgard::topic::TopicPtr input_text = "input.terminal";
 
+	using Super::process;
 	void process(std::shared_ptr<const asgard::data::Value> value) override;
 	virtual void process(std::shared_ptr<const TextLine> value) = 0;
 };

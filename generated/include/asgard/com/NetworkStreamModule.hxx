@@ -21,6 +21,7 @@ protected:
 	topic::TopicPtr output_data;
 	size_t read_buffer_size = 1024;
 
+	using Super::process;
 	void process(std::shared_ptr<const data::Value> value) override;
 	virtual void process(std::shared_ptr<const data::DataPacket> vaue) = 0;
 };

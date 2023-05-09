@@ -26,6 +26,7 @@ protected:
 	virtual void read_event_sync(const terminal_event_e &event);
 	virtual void read_event_async(const terminal_event_e &event, core::ReturnMe<Terminal_read_event_return> &&return_me);
 
+	using Super::process;
 	void process(std::shared_ptr<const data::Request> request) override;
 	void process(std::shared_ptr<const data::Value> value) override;
 	virtual void process(std::shared_ptr<const data::LogMessage> value) = 0;
