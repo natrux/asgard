@@ -22,7 +22,7 @@ namespace mod{
 
 
 class Module : public Subscriber{
-	using timer_duration_t = std::chrono::milliseconds;
+	using timer_duration_t = std::chrono::microseconds;
 	using timer_t = time::Timer<timer_duration_t>;
 
 public:
@@ -46,7 +46,7 @@ protected:
 	topic::LogPublisher log(const data::log_level_e &level) const;
 	template<class Rep, class Period>
 	std::shared_ptr<const timer_t> set_timer(const std::chrono::duration<Rep, Period> &period, const std::function<void()> &function, bool periodic=true){
-		auto dur = std::chrono::duration_cast<timer_duration_t>(period);
+		const auto dur = std::chrono::duration_cast<timer_duration_t>(period);
 		if(dur <= timer_duration_t::zero()){
 			throw std::logic_error("Attempt to create a timer with zero period");
 		}
@@ -59,6 +59,7 @@ protected:
 		return set_timer(period, function, false);
 	}
 	void remove_timer(std::shared_ptr<const timer_t> timer);
+	void reset_timer(std::shared_ptr<const timer_t> timer);
 
 	void process(std::shared_ptr<const data::Value> value) override;
 	void process(std::shared_ptr<const data::Request> request) override;

@@ -194,15 +194,21 @@ void Terminal::write_log_message(std::shared_ptr<const data::LogMessage> message
 
 
 void Terminal::write_log_message_ansi(std::shared_ptr<const data::LogMessage> message) const{
+	bool color_changed = false;
 	if(message->level == data::log_level_e::DEBUG){
 		out_stream << "\x1b[32m";
+		color_changed = true;
 	}else if(message->level == data::log_level_e::WARN){
 		out_stream << "\x1b[33m";
+		color_changed = true;
 	}else if(message->level == data::log_level_e::ERROR){
 		out_stream << "\x1b[31m";
+		color_changed = true;
 	}
 	out_stream << message->format();
-	out_stream << "\x1b[39;49m";
+	if(color_changed){
+		out_stream << "\x1b[39;49m";
+	}
 	out_stream << std::endl;
 }
 

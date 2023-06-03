@@ -52,11 +52,8 @@ Module::Module(const std::string &name_):
 
 void Module::start(std::unique_ptr<Module> self_ptr){
 	self = std::move(self_ptr);
+	const std::string thread_name = get_name().substr(0, 15);
 	std::thread thread(&Module::module_thread, this);
-	std::string thread_name = get_name();
-	if(thread_name.length() > 15){
-		thread_name = thread_name.substr(0, 15);
-	}
 	pthread_setname_np(thread.native_handle(), thread_name.c_str());
 	thread.detach();
 }
@@ -67,14 +64,14 @@ void Module::main(){
 		if(!timers.empty() && (*timers.begin())->is_expired()){
 			auto expired_timer = *timers.begin();
 			timers.erase(timers.begin());
+			if(expired_timer->is_periodic()){
+				expired_timer->reset();
+				timers.insert(expired_timer);
+			}
 			try{
 				expired_timer->execute();
 			}catch(const std::exception &err){
 				log(WARN) << err.what();
-			}
-			if(expired_timer->is_periodic()){
-				expired_timer->reset();
-				timers.insert(expired_timer);
 			}
 		}
 
@@ -124,6 +121,18 @@ topic::LogPublisher Module::log(const data::log_level_e &level) const{
 
 void Module::remove_timer(std::shared_ptr<const timer_t> timer){
 	timers.erase(std::const_pointer_cast<timer_t>(timer));
+}
+
+
+void Module::reset_timer(std::shared_ptr<const timer_t> timer){
+	auto find = timers.find(std::const_pointer_cast<timer_t>(timer));
+	if(find == timers.end()){
+		throw std::logic_error("timer not found");
+	}
+	auto mut_timer = *find;
+	timers.erase(find);
+	mut_timer->reset();
+	timers.insert(mut_timer);
 }
 
 
