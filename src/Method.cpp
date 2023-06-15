@@ -10,6 +10,9 @@ namespace codegen{
 std::string Method::to_string() const{
 	std::stringstream  stream;
 
+	if(is_pure_virtual){
+		stream << "virtual ";
+	}
 	if(output.empty()){
 		stream << "void";
 	}else if(output.size() == 1){

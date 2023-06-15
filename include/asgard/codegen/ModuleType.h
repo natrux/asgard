@@ -1,6 +1,6 @@
 #pragma once
 
-#include <asgard/codegen/Type.h>
+#include <asgard/codegen/ClassType.h>
 
 
 namespace asgard{
@@ -11,10 +11,10 @@ class Method;
 class DataType;
 
 
-class ModuleType : public Type{
+class ModuleType : public ClassType{
 public:
 	ModuleType(const std::string &name_, const std::vector<std::string> &name_space_, const std::string &path_package_):
-		Type(name_, name_space_, path_package_)
+		ClassType(name_, name_space_, path_package_)
 	{}
 
 	std::string get_path_declaration() const override;
@@ -29,7 +29,6 @@ public:
 	void generate_method_sources() const;
 
 private:
-	std::set<std::shared_ptr<Method>> methods;
 	std::set<std::shared_ptr<DataType>> processes;
 };
 

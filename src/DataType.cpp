@@ -4,8 +4,6 @@
 #include <asgard/codegen/packages.h>
 
 #include <sstream>
-// test
-#include <iostream>
 
 
 namespace asgard{
@@ -78,32 +76,48 @@ void DataType::generate_header() const{
 
 	stream << "class " << name;
 	if(parent_data){
-		stream << " : public " << parent_data->get_full_name("::");
+		stream << " : public " << parent_data->get_relative_name(name_space, "::");
 	}
 	stream << "{" << std::endl;
 
+	stream << "public:" << std::endl;
 
-	// TODO
+	for(const auto &field : fields){
+		stream << "\t" << field->to_string() << ";" << std::endl;
+	}
+	stream << std::endl;
+	for(const auto &method : methods){
+		stream << "\t" << method->to_string() << ";" << std::endl;
+	}
 
-
-	stream << "}" << std::endl;
+	stream << "};" << std::endl;
 
 	stream << std::endl << std::endl;
 	for(size_t i=0; i<name_space.size(); i++){
 		stream << "}" << std::endl;
 	}
 
-
-	// Test
-	std::cout << stream.str() << std::endl;
-
-	// TODO
 	throw std::logic_error("Not implemented");
 }
 
 
 void DataType::generate_source() const{
-	// TODO
+	// Test
+	std::stringstream stream;
+
+	stream << "#include <" << get_include_path() << ">" << std::endl;
+
+
+	for(const auto &space_name : name_space){
+		stream << "namespace " << space_name << "{" << std::endl;
+	}
+	stream << std::endl << std::endl;
+
+	stream << std::endl << std::endl;
+	for(size_t i=0; i<name_space.size(); i++){
+		stream << "}" << std::endl;
+	}
+
 	throw std::logic_error("Not implemented");
 }
 

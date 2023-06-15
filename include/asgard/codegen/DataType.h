@@ -1,16 +1,16 @@
 #pragma once
 
-#include <asgard/codegen/Type.h>
+#include <asgard/codegen/ClassType.h>
 
 
 namespace asgard{
 namespace codegen{
 
 
-class DataType : public Type{
+class DataType : public ClassType{
 public:
 	DataType(const std::string &name_, const std::vector<std::string> &name_space_, const std::string &path_package_):
-		Type(name_, name_space_, path_package_)
+		ClassType(name_, name_space_, path_package_)
 	{}
 
 	bool has_default_initializer() const;

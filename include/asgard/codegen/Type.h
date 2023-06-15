@@ -12,10 +12,6 @@ namespace asgard{
 namespace codegen{
 
 
-class Declaration;
-class Method;
-
-
 class Type{
 public:
 	Type(const std::string &name_, const std::vector<std::string> &name_space_, const std::string &path_package_):
@@ -26,7 +22,7 @@ public:
 
 	std::string get_name() const;
 	std::string get_full_name(const std::string &separator) const;
-	std::string get_relative_name(const std::vector<std::string> &ns, const std::string &separator) const;
+	std::string get_relative_name(const std::vector<std::string> &other_namespace, const std::string &separator) const;
 	virtual std::string get_path_declaration() const = 0;
 
 	virtual void parse(const Namespace &root_namespace) = 0;
@@ -36,9 +32,6 @@ protected:
 	std::string name;
 	std::vector<std::string> name_space;
 	std::string path_package;
-	std::shared_ptr<Type> parent;
-	std::set<std::unique_ptr<Declaration>> fields;
-	std::set<std::unique_ptr<Method>> methods;
 
 	std::string get_path_namespace(const std::string &separator) const;
 };

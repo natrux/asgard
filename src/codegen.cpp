@@ -1,19 +1,14 @@
 #include <asgard/codegen/Namespace.h>
 #include <asgard/codegen/DataType.h>
 #include <asgard/codegen/ModuleType.h>
-#include <asgard/codegen/Declaration.h>
 #include <asgard/codegen/Method.h>
 #include <asgard/codegen/packages.h>
 #include <asgard/util/ls.h>
 
 #include <string>
 #include <vector>
-#include <map>
-#include <set>
-#include <memory>
 #include <stdexcept>
 #include <iostream>
-#include <sstream>
 
 
 namespace asgard{

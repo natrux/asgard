@@ -18,10 +18,10 @@ std::string Type::get_full_name(const std::string &separator) const{
 }
 
 
-std::string Type::get_relative_name(const std::vector<std::string> &ns, const std::string &separator) const{
+std::string Type::get_relative_name(const std::vector<std::string> &other_namespace, const std::string &separator) const{
 	auto my_iter = name_space.begin();
-	auto their_iter = ns.begin();
-	while(my_iter != name_space.end() && their_iter != ns.end()){
+	auto their_iter = other_namespace.begin();
+	while(my_iter != name_space.end() && their_iter != other_namespace.end()){
 		if(*my_iter != *their_iter){
 			break;
 		}
@@ -30,7 +30,8 @@ std::string Type::get_relative_name(const std::vector<std::string> &ns, const st
 	std::vector<std::string> diff_namespace;
 	diff_namespace.insert(diff_namespace.end(), my_iter, name_space.end());
 
-	return namespace_to_path(diff_namespace, separator) + separator + get_name();
+	const auto ns_to_path = namespace_to_path(diff_namespace, separator);
+	return (ns_to_path.empty() ? "" : ns_to_path + separator) + get_name();
 }
 
 
