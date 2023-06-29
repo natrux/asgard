@@ -1,14 +1,14 @@
 #pragma once
 
 
-#include <asgard/data/Value.h>
+#include <asgard/data/Data.hxx>
 
 
 namespace asgard{
 namespace data{
 
 
-class PleaseShutDown : public Value{
+class PleaseShutDown : public Data{
 };
 
 

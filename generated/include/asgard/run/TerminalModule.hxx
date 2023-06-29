@@ -28,8 +28,9 @@ protected:
 
 	using Super::process;
 	void process(std::shared_ptr<const data::Request> request) override;
-	void process(std::shared_ptr<const data::Value> value) override;
-	virtual void process(std::shared_ptr<const data::LogMessage> value) = 0;
+	void process(std::shared_ptr<const data::Sample> sample) override;
+	virtual void process(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::LogMessage> data);
+	virtual void process(std::shared_ptr<const data::LogMessage> value);
 };
 
 

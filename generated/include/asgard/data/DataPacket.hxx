@@ -1,7 +1,7 @@
 #pragma once
 
 
-#include <asgard/data/Value.h>
+#include <asgard/data/Data.hxx>
 
 #include <vector>
 
@@ -9,9 +9,9 @@
 namespace asgard{
 namespace data{
 
-class DataPacket : public Value{
+class DataPacket : public Data{
 public:
-	std::vector<char> data;
+	std::vector<char> payload;
 };
 
 

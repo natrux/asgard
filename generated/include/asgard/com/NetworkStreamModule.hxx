@@ -2,7 +2,7 @@
 
 #include <asgard/com/Gateway.h>
 #include <asgard/topic/TopicPtr.h>
-#include <asgard/data/Value.h>
+#include <asgard/data/Sample.hxx>
 #include <asgard/data/DataPacket.hxx>
 
 
@@ -22,8 +22,9 @@ protected:
 	size_t read_buffer_size = 1024;
 
 	using Super::process;
-	void process(std::shared_ptr<const data::Value> value) override;
-	virtual void process(std::shared_ptr<const data::DataPacket> vaue) = 0;
+	void process(std::shared_ptr<const data::Sample> sample) override;
+	virtual void process(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::DataPacket> data);
+	virtual void process(std::shared_ptr<const data::DataPacket> vaue);
 };
 
 

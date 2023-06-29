@@ -1,11 +1,11 @@
 #pragma once
 
-#include <asgard/data/Value.h>
+#include <asgard/data/Data.hxx>
 
 #include <string>
 
 
-class TextLine : public asgard::data::Value{
+class TextLine : public asgard::data::Data{
 public:
 	std::string line;
 };

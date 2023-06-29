@@ -43,15 +43,6 @@ void TerminalModule::read_event_async(const terminal_event_e &event, core::Retur
 }
 
 
-void TerminalModule::process(std::shared_ptr<const data::Value> value){
-	if(auto log_message = std::dynamic_pointer_cast<const data::LogMessage>(value)){
-		process(log_message);
-	}else{
-		Super::process(value);
-	}
-}
-
-
 void TerminalModule::process(std::shared_ptr<const data::Request> request){
 	if(auto read_char_r = std::dynamic_pointer_cast<const Terminal_read_char>(request)){
 		read_char_async(read_char_r->character, core::ReturnMe<Terminal_read_char_return>(request));
@@ -61,6 +52,28 @@ void TerminalModule::process(std::shared_ptr<const data::Request> request){
 		Super::process(request);
 	}
 }
+
+
+void TerminalModule::process(std::shared_ptr<const data::Sample> sample){
+	auto data = sample->data;
+	if(auto d = std::dynamic_pointer_cast<const data::LogMessage>(data)){
+		process(sample, d);
+	}else{
+		Super::process(sample);
+	}
+}
+
+
+void TerminalModule::process(std::shared_ptr<const data::Sample> /*sample*/, std::shared_ptr<const data::LogMessage> data){
+	process(data);
+}
+
+
+void TerminalModule::process(std::shared_ptr<const data::LogMessage> /*data*/){
+	throw std::logic_error("Not implemented");
+}
+
+
 
 
 }
