@@ -2,6 +2,7 @@
 
 #include <asgard/core/ID.h>
 #include <asgard/pipe/PipeIn.h>
+#include <asgard/data/Message.hxx>
 #include <asgard/util/UniqueQueue.h>
 
 #include <map>
@@ -20,10 +21,10 @@ public:
 	static void unbind(const core::ID &id, std::shared_ptr<Pipe> pipe);
 	static PipeIn get(const core::ID &id);
 
-	void push(size_t from, std::shared_ptr<const data::Data> value);
+	void push(size_t from, std::shared_ptr<const data::Message> value);
 	template<class Rep, class Period>
-	std::shared_ptr<const data::Data> pop(const std::chrono::duration<Rep, Period> &wait_time);
-	std::shared_ptr<const data::Data> pop();
+	std::shared_ptr<const data::Message> pop(const std::chrono::duration<Rep, Period> &wait_time);
+	std::shared_ptr<const data::Message> pop();
 	size_t add_id();
 	void close();
 	bool is_open() const;
@@ -37,13 +38,13 @@ private:
 	size_t id_counter = 0;
 	size_t max_size;
 	bool opened = true;
-	std::map<size_t, std::queue<std::shared_ptr<const data::Data>>> data;
+	std::map<size_t, std::queue<std::shared_ptr<const data::Message>>> data;
 	util::UniqueQueue<size_t> pending;
 };
 
 
 template<class Rep, class Period>
-std::shared_ptr<const data::Data> Pipe::pop(const std::chrono::duration<Rep, Period> &wait_time){
+std::shared_ptr<const data::Message> Pipe::pop(const std::chrono::duration<Rep, Period> &wait_time){
 	std::unique_lock<std::mutex> lock(mutex);
 
 	unsigned long next = 0;
@@ -69,7 +70,7 @@ std::shared_ptr<const data::Data> Pipe::pop(const std::chrono::duration<Rep, Per
 	}
 
 	auto &queue = found->second;
-	std::shared_ptr<const data::Data> result = queue.front();
+	std::shared_ptr<const data::Message> result = queue.front();
 	queue.pop();
 	if(!queue.empty()){
 		pending.push(next);

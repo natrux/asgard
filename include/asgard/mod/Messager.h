@@ -2,8 +2,8 @@
 
 #include <asgard/pipe/Pipe.h>
 #include <asgard/pipe/PipeIn.h>
-#include <asgard/data/Data.h>
-#include <asgard/data/Value.h>
+#include <asgard/data/Message.hxx>
+#include <asgard/data/Sample.hxx>
 #include <asgard/data/Request.hxx>
 #include <asgard/data/Return.hxx>
 
@@ -29,9 +29,9 @@ protected:
 	void bind_other(std::shared_ptr<const Messager> other) const;
 	void unbind_other(std::shared_ptr<const Messager> other) const;
 
-	std::shared_ptr<const data::Data> get_next();
+	std::shared_ptr<const data::Message> get_next();
 	template<class Rep, class Period>
-	std::shared_ptr<const data::Data> get_next(const std::chrono::duration<Rep, Period> &timeout){
+	std::shared_ptr<const data::Message> get_next(const std::chrono::duration<Rep, Period> &timeout){
 		try{
 			return pipe_in->pop(timeout);
 		}catch(const std::underflow_error &err){
@@ -47,10 +47,11 @@ protected:
 			process(data);
 		}
 	}
-	void process(std::shared_ptr<const data::Data> data);
-	virtual void process(std::shared_ptr<const data::Value> /*value*/){ /* default empty */ }
+	virtual void process(std::shared_ptr<const data::Message> message);
+	virtual void process(std::shared_ptr<const data::RPC> rpc);
 	virtual void process(std::shared_ptr<const data::Request> /*request*/){ /* default empty */ }
 	virtual void process(std::shared_ptr<const data::Return> /*retrn*/){ /* default empty */ }
+	virtual void process(std::shared_ptr<const data::Sample> /*sample*/){ /* default empty */ }
 
 private:
 	const core::ID id;

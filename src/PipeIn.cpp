@@ -35,7 +35,7 @@ PipeIn PipeIn::copy() const{
 }
 
 
-void PipeIn::push(std::shared_ptr<const data::Data> value) const{
+void PipeIn::push(std::shared_ptr<const data::Message> value) const{
 	if(pipe){
 		pipe->push(id, value);
 	}else{

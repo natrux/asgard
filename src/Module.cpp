@@ -89,23 +89,31 @@ void Module::main(){
 }
 
 
-void Module::process(std::shared_ptr<const data::Value> value){
-	if(auto shutdown = std::dynamic_pointer_cast<const data::PleaseShutDown>(value)){
-		process(shutdown);
-	}
-}
-
-
-void Module::process(std::shared_ptr<const data::PleaseShutDown> /* value */){
-	node_exit();
-}
-
-
 void Module::process(std::shared_ptr<const data::Request> /* request */){
 }
 
 
 void Module::process(std::shared_ptr<const data::Return> /* retrn */){
+}
+
+
+void Module::process(std::shared_ptr<const data::Sample> sample){
+	auto data = sample->data;
+	if(auto d = std::dynamic_pointer_cast<const data::PleaseShutDown>(data)){
+		process(sample, d);
+	}else{
+		Messager::process(sample);
+	}
+}
+
+
+void Module::process(std::shared_ptr<const data::Sample> /*sample*/, std::shared_ptr<const data::PleaseShutDown> data){
+	process(data);
+}
+
+
+void Module::process(std::shared_ptr<const data::PleaseShutDown> /* value */){
+	node_exit();
 }
 
 

@@ -37,7 +37,7 @@ void Subscriber::unsubscribe_all(){
 }
 
 
-void Subscriber::publish(std::shared_ptr<const data::Value> value, topic::TopicPtr topic) const{
+void Subscriber::publish(std::shared_ptr<const data::Data> value, topic::TopicPtr topic) const{
 	topic->publish(value);
 }
 

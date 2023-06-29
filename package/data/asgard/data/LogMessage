@@ -1,4 +1,4 @@
-Value LogMessage{
+Data LogMessage{
 	log_level_e level;
 	string unit;
 	string message;

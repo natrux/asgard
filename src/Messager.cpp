@@ -71,7 +71,7 @@ void Messager::unbind_other(std::shared_ptr<const Messager> other) const{
 }
 
 
-std::shared_ptr<const data::Data> Messager::get_next(){
+std::shared_ptr<const data::Message> Messager::get_next(){
 	try{
 		return pipe_in->pop();
 	}catch(const std::underflow_error &err){
@@ -90,12 +90,19 @@ void Messager::process_next(){
 }
 
 
-void Messager::process(std::shared_ptr<const data::Data> data){
-	if(auto value = std::dynamic_pointer_cast<const data::Value>(data)){
-		process(value);
-	}else if(auto request = std::dynamic_pointer_cast<const data::Request>(data)){
+void Messager::process(std::shared_ptr<const data::Message> message){
+	if(auto rpc = std::dynamic_pointer_cast<const data::RPC>(message)){
+		process(rpc);
+	}else if(auto sample = std::dynamic_pointer_cast<const data::Sample>(message)){
+		process(sample);
+	}
+}
+
+
+void Messager::process(std::shared_ptr<const data::RPC> rpc){
+	if(auto request = std::dynamic_pointer_cast<const data::Request>(rpc)){
 		process(request);
-	}else if(auto retrn = std::dynamic_pointer_cast<const data::Return>(data)){
+	}else if(auto retrn = std::dynamic_pointer_cast<const data::Return>(rpc)){
 		process(retrn);
 	}
 }

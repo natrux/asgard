@@ -1,7 +1,7 @@
 #pragma once
 
 #include <asgard/core/ID.h>
-#include <asgard/data/Data.h>
+#include <asgard/data/Message.hxx>
 
 #include <memory>
 
@@ -22,7 +22,7 @@ public:
 
 	bool is_connected() const;
 	PipeIn copy() const;
-	void push(std::shared_ptr<const data::Data> value) const;
+	void push(std::shared_ptr<const data::Message> value) const;
 
 	struct Compare{
 		bool operator()(const PipeIn &a, const PipeIn &b) const;

@@ -58,7 +58,7 @@ PipeIn Pipe::get(const core::ID &id){
 }
 
 
-void Pipe::push(size_t from, std::shared_ptr<const data::Data> value){
+void Pipe::push(size_t from, std::shared_ptr<const data::Message> value){
 	std::lock_guard<std::mutex> lock(mutex);
 	if(!opened){
 		throw std::runtime_error("Pipe closed");
@@ -73,7 +73,7 @@ void Pipe::push(size_t from, std::shared_ptr<const data::Data> value){
 }
 
 
-std::shared_ptr<const data::Data> Pipe::pop(){
+std::shared_ptr<const data::Message> Pipe::pop(){
 	std::unique_lock<std::mutex> lock(mutex);
 
 	unsigned long next = 0;
@@ -92,7 +92,7 @@ std::shared_ptr<const data::Data> Pipe::pop(){
 	}
 
 	auto &queue = found->second;
-	std::shared_ptr<const data::Data> result = queue.front();
+	auto result = queue.front();
 	queue.pop();
 	if(!queue.empty()){
 		pending.push(next);

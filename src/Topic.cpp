@@ -1,4 +1,5 @@
 #include <asgard/topic/Topic.h>
+#include <asgard/data/Sample.hxx>
 
 #include <stdexcept>
 
@@ -7,12 +8,15 @@ namespace asgard{
 namespace topic{
 
 
-void Topic::publish(std::shared_ptr<const data::Value> value){
+void Topic::publish(std::shared_ptr<const data::Data> value){
+	auto sample = std::make_shared<data::Sample>();
+	sample->data = value;
+
 	std::lock_guard<std::mutex> lock(mutex);
 	for(auto iter=subscribers.begin(); iter!=subscribers.end(); /* no iter */){
 		bool itered = false;
 		try{
-			(*iter).push(value);
+			(*iter).push(sample);
 		}catch(const std::overflow_error &err){
 		}catch(const std::runtime_error &err){
 			// pipe closed

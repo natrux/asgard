@@ -4,7 +4,6 @@
 #include <asgard/topic/TopicPtr.h>
 #include <asgard/pipe/Pipe.h>
 #include <asgard/time/Timer.h>
-#include <asgard/data/Value.h>
 #include <asgard/data/PleaseShutDown.hxx>
 #include <asgard/data/log_level_e.hxx>
 #include <asgard/topic/LogPublisher.h>
@@ -61,10 +60,13 @@ protected:
 	void remove_timer(std::shared_ptr<const timer_t> timer);
 	void reset_timer(std::shared_ptr<const timer_t> timer);
 
-	void process(std::shared_ptr<const data::Value> value) override;
 	void process(std::shared_ptr<const data::Request> request) override;
 	void process(std::shared_ptr<const data::Return> retrn) override;
-	void process(std::shared_ptr<const data::PleaseShutDown> value);
+	void process(std::shared_ptr<const data::Sample> sample) override;
+
+	using Messager::process;
+	void process(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::PleaseShutDown> data);
+	void process(std::shared_ptr<const data::PleaseShutDown> data);
 
 private:
 	static std::mutex mutex_started_modules;
