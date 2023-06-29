@@ -15,7 +15,12 @@ std::string ModuleType::get_path_declaration() const{
 }
 
 
-void ModuleType::parse(const Namespace &/*root_namespace*/){
+std::string ModuleType::get_include_path() const{
+	return get_path_namespace("/") + "/" + name + ext_header;
+}
+
+
+void ModuleType::parse(const Namespace &/*root_namespace*/, const std::string &/*source*/){
 	throw std::logic_error("Not implemented");
 }
 

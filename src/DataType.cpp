@@ -2,6 +2,7 @@
 #include <asgard/codegen/Declaration.h>
 #include <asgard/codegen/Method.h>
 #include <asgard/codegen/packages.h>
+#include <asgard/make_unique.h>
 
 #include <sstream>
 
@@ -12,6 +13,11 @@ namespace codegen{
 
 bool DataType::has_default_initializer() const{
 	return (default_initializer != nullptr);
+}
+
+
+void DataType::set_default_initializer(const std::string &init){
+	default_initializer = std::make_unique<std::string>(init);
 }
 
 
@@ -43,7 +49,7 @@ std::string DataType::get_include_path() const{
 }
 
 
-void DataType::parse(const Namespace &/*root_namespace*/){
+void DataType::parse(const Namespace &/*root_namespace*/, const std::string &/*source*/){
 	throw std::logic_error("Not implemented");
 }
 
@@ -61,7 +67,7 @@ void DataType::generate_header() const{
 	stream << "#pragma once" << std::endl;
 	stream << std::endl << std::endl;
 
-	auto parent_data = std::dynamic_pointer_cast<DataType>(parent);
+	auto parent_data = std::dynamic_pointer_cast<ClassType>(parent);
 	if(parent_data){
 		stream << "#include <" << parent_data->get_include_path() << ">" << std::endl;
 	}

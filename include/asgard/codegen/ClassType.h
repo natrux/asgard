@@ -17,6 +17,9 @@ public:
 		Type(name_, name_space_, path_package_)
 	{}
 
+	virtual std::string get_include_path() const = 0;
+	void set_parent(std::shared_ptr<Type> new_parent);
+
 protected:
 	std::shared_ptr<Type> parent;
 	std::set<std::unique_ptr<Declaration>> fields;

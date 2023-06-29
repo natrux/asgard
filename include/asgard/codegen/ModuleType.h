@@ -18,8 +18,9 @@ public:
 	{}
 
 	std::string get_path_declaration() const override;
+	std::string get_include_path() const override;
 
-	void parse(const Namespace &root_namespace) override;
+	void parse(const Namespace &root_namespace, const std::string &source) override;
 	void generate_code() const override;
 	void generate_module_header() const;
 	void generate_module_source() const;

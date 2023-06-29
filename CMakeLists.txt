@@ -98,6 +98,7 @@ endif()
 
 add_executable(codegen
 	${PLATFORM_CODEGEN_SOURCE_FILES}
+	src/ClassType.cpp
 	src/DataType.cpp
 	src/Declaration.cpp
 	src/Method.cpp

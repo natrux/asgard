@@ -14,14 +14,15 @@ public:
 	{}
 
 	bool has_default_initializer() const;
+	void set_default_initializer(const std::string &init);
 	std::string get_default_initializer() const;
 
 	std::string get_path_declaration() const override;
 	std::string get_path_generated_header() const;
 	std::string get_path_generated_source() const;
-	std::string get_include_path() const;
+	std::string get_include_path() const override;
 
-	void parse(const Namespace &root_namespace) override;
+	void parse(const Namespace &root_namespace, const std::string &source) override;
 	void generate_code() const override;
 
 private:

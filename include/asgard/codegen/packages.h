@@ -15,6 +15,8 @@ const std::string dir_generated_header = "generated/include";
 const std::string dir_generated_source = "generated/src";
 
 const std::string ext_declaration = "";
+const std::string ext_header = ".h";
+const std::string ext_source = ".cpp";
 const std::string ext_generated_header = ".hxx";
 const std::string ext_generated_source = ".cxx";
 

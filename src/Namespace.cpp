@@ -14,13 +14,7 @@ void Namespace::insert(std::shared_ptr<Type> type){
 
 
 void Namespace::insert(std::shared_ptr<Type> type, const std::vector<std::string> &name_space){
-	if(name_space.empty()){
-		insert(type);
-	}else{
-		std::vector<std::string> sub_name_space(name_space.size()-1);
-		std::copy(name_space.begin()+1, name_space.end(), sub_name_space.begin());
-		namespaces[name_space.front()].insert(type, sub_name_space);
-	}
+	get(name_space).insert(type);
 }
 
 

@@ -24,14 +24,18 @@ public:
 	std::string get_full_name(const std::string &separator) const;
 	std::string get_relative_name(const std::vector<std::string> &other_namespace, const std::string &separator) const;
 	virtual std::string get_path_declaration() const = 0;
+	bool get_builtin() const;
+	void set_builtin();
 
-	virtual void parse(const Namespace &root_namespace) = 0;
+	void parse(const Namespace &root_namespace);
+	virtual void parse(const Namespace &root_namespace, const std::string &source) = 0;
 	virtual void generate_code() const = 0;
 
 protected:
 	std::string name;
 	std::vector<std::string> name_space;
 	std::string path_package;
+	bool is_builtin = false;
 
 	std::string get_path_namespace(const std::string &separator) const;
 };

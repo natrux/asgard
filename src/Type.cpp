@@ -3,6 +3,9 @@
 #include <asgard/codegen/Method.h>
 #include <asgard/codegen/packages.h>
 
+#include <stdexcept>
+#include <fstream>
+
 
 namespace asgard{
 namespace codegen{
@@ -32,6 +35,34 @@ std::string Type::get_relative_name(const std::vector<std::string> &other_namesp
 
 	const auto ns_to_path = namespace_to_path(diff_namespace, separator);
 	return (ns_to_path.empty() ? "" : ns_to_path + separator) + get_name();
+}
+
+
+bool Type::get_builtin() const{
+	return is_builtin;
+}
+
+
+void Type::set_builtin(){
+	is_builtin = true;
+}
+
+
+void Type::parse(const Namespace &root_namespace){
+	if(is_builtin){
+		throw std::logic_error("Nothing to parse for builtin type");
+	}
+	const std::string path = get_path_declaration();
+
+	std::string source;
+	{
+		std::ifstream stream(path);
+		if(!stream){
+			throw std::runtime_error("Failed to open '" + path + "'");
+		}
+		source = std::string(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
+	}
+	parse(root_namespace, source);
 }
 
 
