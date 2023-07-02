@@ -22,6 +22,10 @@ public:
 
 	ReturnMe &operator=(const ReturnMe &other) = delete;
 	ReturnMe &operator=(ReturnMe &&other){
+		try{
+			drop();
+		}catch(const std::exception &/*err*/){
+		}
 		request = std::move(other.request);
 		done = other.done;
 		other.done = true;
@@ -60,12 +64,10 @@ public:
 	}
 
 	~ReturnMe(){
-		if(!done){
-			try{
-				err("Request dropped");
-			}catch(const std::exception &/*err*/){
-				// no exceptions in destructors
-			}
+		try{
+			drop();
+		}catch(const std::exception &/*err*/){
+			// no exceptions in destructors
 		}
 	}
 
@@ -80,6 +82,12 @@ private:
 
 		pipe::PipeIn destination = pipe::Pipe::get(ret->source_address);
 		destination.push(ret);
+	}
+
+	void drop(){
+		if(!done){
+			err("Request dropped");
+		}
 	}
 };
 

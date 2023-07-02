@@ -70,7 +70,7 @@ void Gateway::set_output(std::unique_ptr<io::OutputSource> output){
 }
 
 
-void Gateway::output_write(const char *data, size_t length){
+void Gateway::output_write(const void *data, size_t length){
 	std::lock_guard<std::mutex> lock(mutex_output);
 	if(!m_output){
 		throw std::overflow_error("output closed");
