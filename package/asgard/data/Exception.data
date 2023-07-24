@@ -1,0 +1,4 @@
+extends(Return)
+
+string message
+const string what()

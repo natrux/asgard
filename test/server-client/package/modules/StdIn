@@ -1,3 +1,0 @@
-asgard.mod.Module StdIn{
-	asgard.topic.TopicPtr output_lines = "input.terminal";
-}

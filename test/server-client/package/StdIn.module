@@ -1,0 +1,3 @@
+extends(asgard.mod.Module)
+
+asgard.topic.TopicPtr output_lines = "input.terminal";

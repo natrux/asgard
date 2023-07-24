@@ -11,7 +11,7 @@ namespace codegen{
 
 
 std::string ModuleType::get_path_declaration() const{
-	return path_package + "/" + dir_package + "/" + dir_modules + "/" + get_path_namespace("/") + "/" + name + ext_declaration;
+	return path_package + "/" + dir_package + "/" + get_path_namespace("/") + "/" + name + ext_declaration_module;
 }
 
 

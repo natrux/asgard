@@ -1,0 +1,4 @@
+extends(asgard.mod.Module)
+
+const int plus(int a, int b)
+const double divide(int a, int b)

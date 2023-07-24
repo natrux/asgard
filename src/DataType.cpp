@@ -30,7 +30,7 @@ std::string DataType::get_default_initializer() const{
 
 
 std::string DataType::get_path_declaration() const{
-	return path_package + "/" + dir_package + "/" + dir_data + "/" + get_path_namespace("/") + "/" + name + ext_declaration;
+	return path_package + "/" + dir_package + "/" + get_path_namespace("/") + "/" + name + ext_declaration_data;
 }
 
 

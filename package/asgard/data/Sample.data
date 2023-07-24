@@ -1,0 +1,3 @@
+extends(Message)
+
+ptr<Data> data

@@ -1,3 +1,0 @@
-Message Sample{
-	ptr<Data> data;
-}

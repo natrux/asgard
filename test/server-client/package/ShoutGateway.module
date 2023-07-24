@@ -1,0 +1,7 @@
+extends(asgard.com.Gateway)
+
+asgard.topic.TopicPtr input_text = "input.terminal";
+
+processes(
+	TextLine
+)

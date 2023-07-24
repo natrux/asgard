@@ -1,6 +1,7 @@
 #pragma once
 
 #include <asgard/mod/Module.h>
+#include <cstdint>
 
 
 namespace asgard{
@@ -14,7 +15,7 @@ public:
 	GatewayModule(const std::string &name_);
 
 protected:
-	unsigned int error_pause_time_ms = 1000;
+	uint32_t error_pause_time_ms = 1000;
 };
 
 

@@ -1,0 +1,3 @@
+extends(asgard.data.Data)
+
+string line;
