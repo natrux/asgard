@@ -19,20 +19,31 @@ public:
 		reset();
 	}
 
-	void reset(){
-		next_time = clock_t::now() + period;
+	void reset(const std::chrono::time_point<clock_t> &now){
+		next_time = now + period;
 	}
 
-	duration_t remaining() const{
-		auto now = clock_t::now();
+	void reset(){
+		reset(clock_t::now());
+	}
+
+	duration_t remaining(const std::chrono::time_point<clock_t> &now) const{
 		if(next_time <= now){
 			return duration_t::zero();
 		}
 		return std::chrono::duration_cast<duration_t>(next_time - now);
 	}
 
+	duration_t remaining() const{
+		return remaining(clock_t::now());
+	}
+
+	bool is_expired(const std::chrono::time_point<clock_t> &now) const{
+		return (next_time <= now);
+	}
+
 	bool is_expired() const{
-		return (next_time <= clock_t::now());
+		return is_expired(clock_t::now());
 	}
 
 	bool is_periodic() const{

@@ -61,11 +61,12 @@ void Module::start(std::unique_ptr<Module> self_ptr){
 
 void Module::main(){
 	while(node_should_run()){
-		if(!timers.empty() && (*timers.begin())->is_expired()){
+		auto now = clock_t::now();
+		if(!timers.empty() && (*timers.begin())->is_expired(now)){
 			auto expired_timer = *timers.begin();
 			timers.erase(timers.begin());
 			if(expired_timer->is_periodic()){
-				expired_timer->reset();
+				expired_timer->reset(now);
 				timers.insert(expired_timer);
 			}
 			try{
@@ -75,11 +76,12 @@ void Module::main(){
 			}
 		}
 
+		now = clock_t::now();
 		try{
 			if(timers.empty()){
 				process_next();
 			}else{
-				auto timeout = (*timers.begin())->remaining();
+				auto timeout = (*timers.begin())->remaining(now);
 				process_next(timeout);
 			}
 		}catch(const std::exception &err){

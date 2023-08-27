@@ -21,8 +21,9 @@ namespace mod{
 
 
 class Module : public Subscriber{
+	using clock_t = std::chrono::steady_clock;
 	using timer_duration_t = std::chrono::microseconds;
-	using timer_t = time::Timer<timer_duration_t>;
+	using timer_t = time::Timer<timer_duration_t, clock_t>;
 
 public:
 	Module(const std::string &name);
