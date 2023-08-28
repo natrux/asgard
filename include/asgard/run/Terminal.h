@@ -24,7 +24,7 @@ protected:
 
 	void process(std::shared_ptr<const data::LogMessage> value) override;
 
-	void read_char_sync(const char &character) override;
+	void read_char_sync(const int8_t &character) override;
 	void read_event_sync(const terminal_event_e &event) override;
 
 private:

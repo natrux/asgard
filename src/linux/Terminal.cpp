@@ -11,14 +11,15 @@ namespace run{
 void Terminal::read_loop(){
 	TerminalClient terminal(make_pipe_in());
 	while(node_should_run()) {
-		const char c = std::getchar();
+		const auto c = std::getchar();
 		if(c == EOF){
-			throw std::underflow_error("EOF");
+			terminal.read_event(terminal_event_e::END_OF_FILE);
+			break;
 		}else if(c == 27){
 			// ESC
-			const char c2 = getchar();
+			const auto c2 = std::getchar();
 			if(c2 == '['){
-				const char c3 = getchar();
+				const auto c3 = std::getchar();
 				if(c3 == 'A'){
 					terminal.read_event_(terminal_event_e::ARROW_UP);
 				}else if(c3 == 'B'){
@@ -32,7 +33,7 @@ void Terminal::read_loop(){
 				}else if(c3 == 'F'){
 					terminal.read_event_(terminal_event_e::END);
 				}else if(c3 == '3'){
-					const char c4 = getchar();
+					const auto c4 = std::getchar();
 					if(c4 == '~'){
 						terminal.read_event_(terminal_event_e::DEL);
 					}

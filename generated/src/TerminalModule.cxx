@@ -13,12 +13,12 @@ TerminalModule::TerminalModule(const std::string &name_):
 }
 
 
-void TerminalModule::read_char_sync(const char &/*character*/){
+void TerminalModule::read_char_sync(const int8_t &/*character*/){
 	throw std::logic_error("Not implemented");
 }
 
 
-void TerminalModule::read_char_async(const char &character, core::ReturnMe<Terminal_read_char_return> &&return_me){
+void TerminalModule::read_char_async(const int8_t &character, core::ReturnMe<Terminal_read_char_return> &&return_me){
 	try{
 		read_char_sync(character);
 		return_me.retrn();

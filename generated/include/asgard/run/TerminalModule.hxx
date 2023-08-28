@@ -21,8 +21,8 @@ protected:
 	topic::TopicPtr input_log = "asgard.log";
 	std::string prompt = "> ";
 
-	virtual void read_char_sync(const char &character);
-	virtual void read_char_async(const char &character, core::ReturnMe<Terminal_read_char_return> &&return_me);
+	virtual void read_char_sync(const int8_t &character);
+	virtual void read_char_async(const int8_t &character, core::ReturnMe<Terminal_read_char_return> &&return_me);
 	virtual void read_event_sync(const terminal_event_e &event);
 	virtual void read_event_async(const terminal_event_e &event, core::ReturnMe<Terminal_read_event_return> &&return_me);
 

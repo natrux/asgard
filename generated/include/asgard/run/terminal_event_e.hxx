@@ -17,6 +17,7 @@ enum class terminal_event_e{
 	POS1,
 	END,
 	TAB,
+	END_OF_FILE,
 };
 
 

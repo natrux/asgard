@@ -5,6 +5,7 @@
 #include <asgard/util/string.h>
 
 #include <thread>
+#include <csignal>
 
 
 namespace asgard{
@@ -29,10 +30,10 @@ void Terminal::init(){
 void Terminal::main(){
 	set_terminal_mode();
 	std::thread read_thread(&Terminal::read_loop, this);
-	read_thread.detach();
 
 	Super::main();
 
+	pthread_kill(read_thread.native_handle(), SIGINT);
 	if(read_thread.joinable()){
 		read_thread.join();
 	}
@@ -40,7 +41,7 @@ void Terminal::main(){
 }
 
 
-void Terminal::read_char_sync(const char &character){
+void Terminal::read_char_sync(const int8_t &character){
 	if(state != terminal_state_e::INPUT){
 		return;
 	}
@@ -53,6 +54,10 @@ void Terminal::read_char_sync(const char &character){
 
 
 void Terminal::read_event_sync(const terminal_event_e &event){
+	if(event == terminal_event_e::END_OF_FILE){
+		log(WARN) << "EOF";
+	}
+
 	if(state == terminal_state_e::INACTIVE){
 		if(event == terminal_event_e::LF || event == terminal_event_e::CR){
 			out_stream << std::endl;
