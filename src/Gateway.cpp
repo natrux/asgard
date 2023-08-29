@@ -1,6 +1,7 @@
 #include <asgard/com/Gateway.h>
 #include <asgard/io/BufferedInput.h>
 
+#include <algorithm>
 #include <thread>
 
 
@@ -142,12 +143,10 @@ void Gateway::keep_reading(std::unique_ptr<io::InputSource> input_source){
 
 
 void Gateway::error_wait() const{
+	const unsigned int micro_time_ms = 10;
 	unsigned int remaining_ms = error_pause_time_ms;
 	while(remaining_ms > 0){
-		unsigned int micro_wait_ms = 10;
-		if(micro_wait_ms > remaining_ms){
-			micro_wait_ms = remaining_ms;
-		}
+		const unsigned int micro_wait_ms = std::min(remaining_ms, micro_time_ms);
 		std::this_thread::sleep_for(std::chrono::milliseconds(micro_wait_ms));
 		remaining_ms -= micro_wait_ms;
 	}

@@ -11,7 +11,8 @@ template<class Ret>
 class ReturnMe{
 public:
 	ReturnMe(std::shared_ptr<const data::Request> to_request):
-		request(to_request)
+		request(to_request),
+		done(false)
 	{
 	}
 
@@ -22,13 +23,16 @@ public:
 
 	ReturnMe &operator=(const ReturnMe &other) = delete;
 	ReturnMe &operator=(ReturnMe &&other){
-		try{
-			drop();
-		}catch(const std::exception &/*err*/){
+		if(&other == this){
+			return *this;
 		}
+
+		drop();
 		request = std::move(other.request);
 		done = other.done;
 		other.done = true;
+
+		return *this;
 	}
 
 	template<class ...Args>
@@ -73,7 +77,7 @@ public:
 
 private:
 	std::shared_ptr<const data::Request> request;
-	bool done = false;
+	bool done = true;
 
 	void send_return(std::shared_ptr<data::Return> ret){
 		ret->message_id = request->message_id;
