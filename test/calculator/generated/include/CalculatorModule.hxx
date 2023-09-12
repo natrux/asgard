@@ -14,6 +14,8 @@ public:
 	CalculatorModule(const std::string &name_);
 
 protected:
+	uint32_t stats_interval_ms = 5000;
+
 	void process(std::shared_ptr<const asgard::data::Request> request) override;
 
 	virtual void plus_async(int a, int b, asgard::core::ReturnMe<Calculator_plus_return> &&return_me) const;

@@ -18,6 +18,7 @@ void Math::main(){
 void Math::calculate_something(){
 	const int a = dist(generator);
 	const int b = dist(generator);
+
 	const int plus = calc.plus(a, b);
 	log(INFO) << a << " + " << b << " = " << plus;
 	const double div = calc.divide(a, b);
