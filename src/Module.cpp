@@ -1,4 +1,5 @@
 #include <asgard/mod/Module.h>
+#include <asgard/data/Exception.hxx>
 
 #include <thread>
 #ifdef _WIN32
@@ -61,31 +62,11 @@ void Module::start(std::unique_ptr<Module> self_ptr){
 
 void Module::main(){
 	while(node_should_run()){
-		auto now = clock_t::now();
-		if(!timers.empty() && (*timers.begin())->is_expired(now)){
-			auto expired_timer = *timers.begin();
-			timers.erase(timers.begin());
-			if(expired_timer->is_periodic()){
-				expired_timer->reset(now);
-				timers.insert(expired_timer);
-			}
-			try{
-				expired_timer->execute();
-			}catch(const std::exception &err){
-				log(WARN) << err.what();
-			}
+		if(main_check_timers()){
+			main_check_pending_requests();
 		}
-
-		now = clock_t::now();
-		try{
-			if(timers.empty()){
-				process_next();
-			}else{
-				auto timeout = (*timers.begin())->remaining(now);
-				process_next(timeout);
-			}
-		}catch(const std::exception &err){
-			log(WARN) << err.what();
+		if(main_check_messages()){
+			main_check_pending_requests();
 		}
 	}
 }
@@ -143,6 +124,93 @@ void Module::reset_timer(std::shared_ptr<const timer_t> timer){
 	timers.erase(find);
 	mut_timer->reset();
 	timers.insert(mut_timer);
+}
+
+
+void Module::add_pending_request(std::shared_ptr<const data::Request> request, std::future<std::shared_ptr<data::Return>> &&future){
+	pending_requests[request] = std::move(future);
+}
+
+
+bool Module::main_check_pending_requests(){
+	bool did_something = false;
+	for(auto iter=pending_requests.begin(); iter!=pending_requests.end(); /* no iter */){
+		const auto &request = iter->first;
+		auto &future = iter->second;
+		const auto status = future.wait_for(timer_duration_t::zero());
+		if(status == std::future_status::ready){
+			std::shared_ptr<data::Return> ret;
+			try{
+				ret = future.get();
+			}catch(const std::future_error &err){
+				auto ex = std::make_shared<data::Exception>();
+				if(err.code() == std::future_errc::broken_promise){
+					ex->message = "Request dropped";
+				}else{
+					ex->message = err.what();
+				}
+				ret = ex;
+			}catch(const std::exception &err){
+				auto ex = std::make_shared<data::Exception>();
+				ex->message = err.what();
+				ret = ex;
+			}
+			ret->message_id = request->message_id;
+			ret->source_address = request->source_address;
+			ret->destination_address = request->destination_address;
+
+			try{
+				pipe::PipeIn destination = pipe::Pipe::get(ret->source_address);
+				destination.push(ret);
+			}catch(const std::exception &err){
+				log(WARN) << err.what();
+			}
+			did_something = true;
+			iter = pending_requests.erase(iter);
+		}else{
+			iter++;
+		}
+	}
+	return did_something;
+}
+
+
+bool Module::main_check_timers(){
+	bool did_something = false;
+	const auto now = clock_t::now();
+	if(!timers.empty() && (*timers.begin())->is_expired(now)){
+		auto expired_timer = *timers.begin();
+		timers.erase(timers.begin());
+		if(expired_timer->is_periodic()){
+			expired_timer->reset(now);
+			timers.insert(expired_timer);
+		}
+		try{
+			expired_timer->execute();
+		}catch(const std::exception &err){
+			log(WARN) << err.what();
+		}
+		did_something = true;
+	}
+	return did_something;
+}
+
+
+bool Module::main_check_messages(){
+	bool did_something = false;
+	const auto now = clock_t::now();
+	try{
+		if(timers.empty()){
+			did_something = process_next();
+		}else{
+			auto timeout = (*timers.begin())->remaining(now);
+			did_something = process_next(timeout);
+		}
+	}catch(const std::exception &err){
+		log(WARN) << err.what();
+		did_something = true;
+	}
+	return did_something;
 }
 
 

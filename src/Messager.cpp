@@ -82,11 +82,13 @@ std::shared_ptr<const data::Message> Messager::get_next(){
 }
 
 
-void Messager::process_next(){
+bool Messager::process_next(){
 	auto data = get_next();
 	if(data){
 		process(data);
+		return true;
 	}
+	return false;
 }
 
 

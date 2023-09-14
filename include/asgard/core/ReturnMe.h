@@ -2,6 +2,8 @@
 
 #include <asgard/data/Exception.hxx>
 
+#include <future>
+
 
 namespace asgard{
 namespace core{
@@ -10,91 +12,41 @@ namespace core{
 template<class Ret>
 class ReturnMe{
 public:
-	ReturnMe(std::shared_ptr<const data::Request> to_request):
-		request(to_request),
-		done(false)
-	{
-	}
-
-	ReturnMe(const ReturnMe &other) = delete;
-	ReturnMe(ReturnMe &&other){
-		*this = std::move(other);
-	}
-
-	ReturnMe &operator=(const ReturnMe &other) = delete;
-	ReturnMe &operator=(ReturnMe &&other){
-		if(&other == this){
-			return *this;
-		}
-
-		drop();
-		request = std::move(other.request);
-		done = other.done;
-		other.done = true;
-
-		return *this;
+	std::future<std::shared_ptr<data::Return>> get_future(){
+		return promise.get_future();
 	}
 
 	template<class ...Args>
 	void retrn(Args&&... args){
-		if(done){
-			throw std::logic_error("Return already sent");
-		}
-		if(request->needs_return){
-			auto ret = std::make_shared<Ret>(std::forward<Args>(args)...);
-			send_return(ret);
-		}
-		done = true;
+		auto ret = std::make_shared<Ret>(std::forward<Args>(args)...);
+		promise.set_value(ret);
 	}
 
-	void err(std::shared_ptr<data::Exception> error){
-		if(done){
-			throw std::logic_error("Return already sent");
-		}
-		done = true;
-		if(request->needs_return){
-			send_return(error);
-		}
+	template<class E>
+	void except(const E &err){
+		except(std::make_exception_ptr(err));
 	}
 
-	void err(const std::string &message){
-		auto ex = std::make_shared<data::Exception>();
-		ex->message = message;
-		err(ex);
+	void except(const std::exception &err){
+		// Special treatment for std::exception because the message gets lost due to slicing
+		error(err.what());
 	}
 
-	void err(const std::exception &error){
-		err(error.what());
+	void except(std::exception_ptr error){
+		promise.set_exception(error);
 	}
 
-	~ReturnMe(){
-		try{
-			drop();
-		}catch(const std::exception &/*err*/){
-			// no exceptions in destructors
-		}
+	void error(const std::string &message){
+		except(std::make_exception_ptr(std::runtime_error(message)));
+	}
+
+	void error(const char *message){
+		error(std::string(message));
 	}
 
 private:
-	std::shared_ptr<const data::Request> request;
-	bool done = true;
-
-	void send_return(std::shared_ptr<data::Return> ret){
-		ret->message_id = request->message_id;
-		ret->source_address = request->source_address;
-		ret->destination_address = request->destination_address;
-
-		pipe::PipeIn destination = pipe::Pipe::get(ret->source_address);
-		destination.push(ret);
-	}
-
-	void drop(){
-		if(!done){
-			err("Request dropped");
-		}
-	}
+	std::promise<std::shared_ptr<data::Return>> promise;
 };
-
 
 
 }

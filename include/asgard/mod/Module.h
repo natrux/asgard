@@ -14,6 +14,7 @@
 #include <condition_variable>
 #include <map>
 #include <set>
+#include <future>
 
 
 namespace asgard{
@@ -60,6 +61,11 @@ protected:
 	}
 	void remove_timer(std::shared_ptr<const timer_t> timer);
 	void reset_timer(std::shared_ptr<const timer_t> timer);
+	void add_pending_request(std::shared_ptr<const data::Request> request, std::future<std::shared_ptr<data::Return>> &&future);
+
+	bool main_check_pending_requests();
+	bool main_check_timers();
+	bool main_check_messages();
 
 	void process(std::shared_ptr<const data::Request> request) override;
 	void process(std::shared_ptr<const data::Return> retrn) override;
@@ -77,6 +83,7 @@ private:
 	std::string name;
 	std::unique_ptr<Module> self;
 	std::set<std::shared_ptr<timer_t>, timer_t::Compare> timers;
+	std::map<std::shared_ptr<const data::Request>, std::future<std::shared_ptr<data::Return>>> pending_requests;
 
 	topic::TopicPtr input_shutdown = "asgard.module.shutdown";
 	topic::TopicPtr output_log = "asgard.log";

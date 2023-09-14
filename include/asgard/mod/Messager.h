@@ -39,13 +39,15 @@ protected:
 		}
 		return nullptr;
 	}
-	void process_next();
+	bool process_next();
 	template<class Rep, class Period>
-	void process_next(const std::chrono::duration<Rep, Period> &timeout){
+	bool process_next(const std::chrono::duration<Rep, Period> &timeout){
 		auto data = get_next(timeout);
 		if(data){
 			process(data);
+			return true;
 		}
+		return false;
 	}
 	virtual void process(std::shared_ptr<const data::Message> message);
 	virtual void process(std::shared_ptr<const data::RPC> rpc);
