@@ -17,7 +17,7 @@ namespace net{
 
 class SocketEndpoint : public Endpoint{
 public:
-	SocketEndpoint();
+	SocketEndpoint() = default;
 	std::string get_name() const override;
 
 	bool is_open() const override;

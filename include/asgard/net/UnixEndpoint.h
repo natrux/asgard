@@ -21,7 +21,7 @@ public:
 
 private:
 	std::string m_path = "";
-	std::unique_ptr<SocketEndpoint> from_socket(int socket, bool connected) const override;
+	std::unique_ptr<SocketEndpoint> from_socket(socket_t socket, bool connected) const override;
 };
 
 

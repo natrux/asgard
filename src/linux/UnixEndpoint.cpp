@@ -56,7 +56,7 @@ void UnixEndpoint::connect(){
 }
 
 
-std::unique_ptr<SocketEndpoint> UnixEndpoint::from_socket(int socket, bool connected_) const{
+std::unique_ptr<SocketEndpoint> UnixEndpoint::from_socket(socket_t socket, bool connected_) const{
 	auto ret = std::make_unique<UnixEndpoint>();
 	ret->set_socket(socket, connected_);
 	return ret;

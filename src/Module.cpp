@@ -203,7 +203,7 @@ bool Module::main_check_messages(){
 		if(timers.empty()){
 			did_something = process_next();
 		}else{
-			auto timeout = (*timers.begin())->remaining(now);
+			const auto timeout = (*timers.begin())->remaining(now);
 			did_something = process_next(timeout);
 		}
 	}catch(const std::exception &err){

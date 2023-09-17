@@ -1,6 +1,7 @@
 #include <asgard/util/ls.h>
 
 #include <string>
+#include <stdexcept>
 #include <windows.h>
 
 
@@ -8,7 +9,7 @@ namespace asgard{
 namespace util{
 
 
-std::string GetLastErrorString(){
+static std::string GetLastErrorString(){
 	const DWORD error = GetLastError();
 	if(error == 0) {
 		return "No error";
@@ -20,12 +21,12 @@ std::string GetLastErrorString(){
 		NULL,
 		error,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-		(LPTSTR)&buffer,
+		reinterpret_cast<LPTSTR>(&buffer),
 		0,
 		NULL
 	);
 	if(size == 0){
-		const DWORD another_errror = GetLastError();
+		const DWORD another_error = GetLastError();
 		return "Code " + std::to_string(error) + " (additionally, FormatMessage() failed with Code " + std::to_string(another_error) + ")";
 	}
 

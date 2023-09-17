@@ -16,10 +16,6 @@ namespace asgard{
 namespace net{
 
 
-SocketEndpoint::SocketEndpoint(){
-}
-
-
 std::string SocketEndpoint::get_name() const{
 	return std::to_string(m_socket);
 }
@@ -109,7 +105,12 @@ void SocketEndpoint::open(int family){
 		// Also open the IPv4 address (dual stack).
 		// This only has an effect for INADDR_ANY, i.e. '::' which then also opens '0.0.0.0' on the same port.
 		int value = 0;
-		if(setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<char*>(&value), sizeof(int)) < 0){
+#ifdef _WIN32
+		const char *optval = reinterpret_cast<const char*>(&value);
+#else
+		const void *optval = &value;
+#endif
+		if(setsockopt(fd, IPPROTO_IPV6, IPV6_V6ONLY, optval, sizeof(value)) < 0){
 			throw std::runtime_error("setsockopt(IPV6_V6ONLY, "+ std::to_string(value) +") failed with: " + std::string(strerror(errno)));
 		}
 	}
@@ -120,7 +121,12 @@ void SocketEndpoint::open(int family){
 void SocketEndpoint::bind(void *addr, socklen_t length) const{
 	if(reuse_address){
 		int value = 1;
-		if(setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char*>(&value), sizeof(int)) < 0) {
+#ifdef _WIN32
+		const char *optval = reinterpret_cast<const char*>(&value);
+#else
+		const void *optval = &value;
+#endif
+		if(setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, optval, sizeof(value)) < 0) {
 			throw std::runtime_error("setsockopt(SO_REUSEADDR, " + std::to_string(value) + ") failed with: " + std::string(strerror(errno)));
 		}
 	}

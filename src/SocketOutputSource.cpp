@@ -19,10 +19,13 @@ SocketOutputSource::SocketOutputSource(socket_t socket):
 
 size_t SocketOutputSource::write(const void *data, size_t length){
 	int flags = 0;
-#ifndef _WIN32
+#ifdef _WIN32
+	const char *data_ = reinterpret_cast<const char *>(data);
+#else
 	flags |= MSG_NOSIGNAL;
+	const void *data_ = data;
 #endif
-	ssize_t result = send(m_socket, data, length, flags);
+	const ssize_t result = send(m_socket, data_, length, flags);
 	if(result == -1){
 		throw std::runtime_error("send() failed with: " + std::string(strerror(errno)));
 	}
