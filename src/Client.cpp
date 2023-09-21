@@ -29,7 +29,6 @@ Client::Client(pipe::PipeIn &&destination_):
 
 
 void Client::call(std::shared_ptr<data::Request> req){
-	req->needs_return = false;
 	send_request(req);
 }
 

@@ -15,7 +15,6 @@ public:
 	size_t message_id;
 	core::ID source_address;
 	core::ID destination_address;
-	bool needs_return = true;
 };
 
 
