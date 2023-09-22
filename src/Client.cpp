@@ -28,31 +28,51 @@ Client::Client(pipe::PipeIn &&destination_):
 }
 
 
-void Client::call(std::shared_ptr<data::Request> req){
+std::future<std::shared_ptr<const data::Return>> Client::call(std::shared_ptr<data::Request> req){
 	send_request(req);
+	return pending_requests[req->message_id].get_future();
 }
 
 
 void Client::process(std::shared_ptr<const data::Return> ret){
-	if(ret->message_id == current_request->message_id){
-		current_return = ret;
+	auto find = pending_requests.find(ret->message_id);
+	if(find != pending_requests.end()){
+		find->second.set_value(ret);
+		pending_requests.erase(find);
+		on_return_received(ret);
 	}
 }
 
 
 std::shared_ptr<const data::Return> Client::request(std::shared_ptr<data::Request> req){
-	current_request = req;
-	current_return = nullptr;
-	send_request(req);
+	auto future = call(req);
 
-	while(node_should_run() && !current_return){
+	bool has_return = false;
+	while(node_should_run() && !has_return){
 		process_next();
-	}
-	if(current_return){
-		if(auto ex = std::dynamic_pointer_cast<const data::Exception>(current_return)){
-			throw std::runtime_error(ex->what());
+		if(future.wait_for(std::chrono::seconds::zero()) == std::future_status::ready){
+			has_return = true;
 		}
-		return current_return;
+	}
+
+	if(has_return){
+		std::shared_ptr<const data::Return> result;
+		try{
+			result = future.get();
+		}catch(const std::future_error &err){
+			auto ex = std::make_shared<data::Exception>();
+			if(err.code() == std::future_errc::broken_promise){
+				ex->message = "Request dropped in client";
+			}else{
+				ex->message = err.what();
+			}
+			ex->message_id = req->message_id;
+			ex->source_address = req->source_address;
+			ex->destination_address = req->destination_address;
+			result = ex;
+		}
+
+		return result;
 	}
 	return nullptr;
 }
@@ -66,6 +86,14 @@ void Client::send_request(std::shared_ptr<data::Request> req){
 		destination = pipe::Pipe::get(dst_address);
 	}
 	destination.push(req);
+}
+
+
+size_t Client::last_request_id() const{
+	if(num_requests == 0){
+		throw std::logic_error("No requests yet");
+	}
+	return num_requests - 1;
 }
 
 

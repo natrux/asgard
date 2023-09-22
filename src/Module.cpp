@@ -145,7 +145,7 @@ bool Module::main_check_pending_requests(){
 			}catch(const std::future_error &err){
 				auto ex = std::make_shared<data::Exception>();
 				if(err.code() == std::future_errc::broken_promise){
-					ex->message = "Request dropped";
+					ex->message = "Request dropped at destination";
 				}else{
 					ex->message = err.what();
 				}
