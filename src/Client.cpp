@@ -67,8 +67,8 @@ std::shared_ptr<const data::Return> Client::request(std::shared_ptr<data::Reques
 				ex->message = err.what();
 			}
 			ex->message_id = req->message_id;
-			ex->source_address = req->source_address;
-			ex->destination_address = req->destination_address;
+			ex->source_address = req->destination_address;
+			ex->destination_address = req->source_address;
 			result = ex;
 		}
 

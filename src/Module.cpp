@@ -156,11 +156,11 @@ bool Module::main_check_pending_requests(){
 				ret = ex;
 			}
 			ret->message_id = request->message_id;
-			ret->source_address = request->source_address;
-			ret->destination_address = request->destination_address;
+			ret->source_address = request->destination_address;
+			ret->destination_address = request->source_address;
 
 			try{
-				pipe::PipeIn destination = pipe::Pipe::get(ret->source_address);
+				pipe::PipeIn destination = pipe::Pipe::get(ret->destination_address);
 				destination.push(ret);
 			}catch(const std::exception &err){
 				log(WARN) << err.what();

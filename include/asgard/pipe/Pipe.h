@@ -19,6 +19,7 @@ public:
 	static std::shared_ptr<Pipe> create(size_t max_size=0);
 	static void bind(const core::ID &id, std::shared_ptr<Pipe> pipe);
 	static void unbind(const core::ID &id, std::shared_ptr<Pipe> pipe);
+	static void rebind(const core::ID &id, std::shared_ptr<Pipe> old_pipe, std::shared_ptr<Pipe> new_pipe);
 	static PipeIn get(const core::ID &id);
 
 	void push(size_t from, std::shared_ptr<const data::Message> value);

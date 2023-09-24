@@ -59,15 +59,25 @@ void Messager::unbind(const core::ID &id_) const{
 }
 
 
-void Messager::bind_other(std::shared_ptr<const Messager> other) const{
-	const core::ID other_id = other->get_id();
-	bind(other_id);
+void Messager::bind_other(std::shared_ptr<Messager> other, const core::ID &other_id){
+	pipe::Pipe::rebind(other_id, other->pipe_in, pipe_in);
+	other_ids[other_id] = other;
 }
 
 
-void Messager::unbind_other(std::shared_ptr<const Messager> other) const{
-	const core::ID other_id = other->get_id();
-	unbind(other_id);
+void Messager::bind_other(std::shared_ptr<Messager> other){
+	bind_other(other, other->get_id());
+}
+
+
+void Messager::unbind_other(std::shared_ptr<const Messager> other, const core::ID &other_id){
+	pipe::Pipe::rebind(other_id, pipe_in, other->pipe_in);
+	other_ids.erase(other_id);
+}
+
+
+void Messager::unbind_other(std::shared_ptr<const Messager> other){
+	unbind_other(other, other->get_id());
 }
 
 
@@ -102,10 +112,19 @@ void Messager::process(std::shared_ptr<const data::Message> message){
 
 
 void Messager::process(std::shared_ptr<const data::RPC> rpc){
-	if(auto request = std::dynamic_pointer_cast<const data::Request>(rpc)){
-		process(request);
-	}else if(auto retrn = std::dynamic_pointer_cast<const data::Return>(rpc)){
-		process(retrn);
+	if(rpc->destination_address == 0 || rpc->destination_address == get_id()){
+		if(auto request = std::dynamic_pointer_cast<const data::Request>(rpc)){
+			process(request);
+		}else if(auto retrn = std::dynamic_pointer_cast<const data::Return>(rpc)){
+			process(retrn);
+		}
+	}else{
+		for(const auto &entry : other_ids){
+			if(rpc->destination_address == entry.first){
+				entry.second->process(rpc);
+				break;
+			}
+		}
 	}
 }
 

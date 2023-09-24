@@ -39,12 +39,24 @@ void Pipe::bind(const core::ID &id, std::shared_ptr<Pipe> pipe){
 void Pipe::unbind(const core::ID &id, std::shared_ptr<Pipe> pipe){
 	std::lock_guard<std::mutex> lock(mutex_pipe_map);
 	auto find = pipe_map.find(id);
+	if(find != pipe_map.end()){
+		if(find->second != pipe){
+			throw std::logic_error("Wrong pipe found at address " + id.str());
+		}
+		pipe_map.erase(find);
+	}
+}
+
+
+void Pipe::rebind(const core::ID &id, std::shared_ptr<Pipe> old_pipe, std::shared_ptr<Pipe> new_pipe){
+	std::lock_guard<std::mutex> lock(mutex_pipe_map);
+	auto find = pipe_map.find(id);
 	if(find == pipe_map.end()){
 		throw std::logic_error("No pipe at address " + id.str());
-	}else if(find->second != pipe){
+	}else if(find->second != old_pipe){
 		throw std::logic_error("Wrong pipe found at address " + id.str());
 	}
-	pipe_map.erase(find);
+	find->second = new_pipe;
 }
 
 

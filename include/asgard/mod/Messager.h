@@ -26,8 +26,10 @@ protected:
 	void bind(const core::ID &id) const;
 	void bind(const std::string &name) const;
 	void unbind(const core::ID &id) const;
-	void bind_other(std::shared_ptr<const Messager> other) const;
-	void unbind_other(std::shared_ptr<const Messager> other) const;
+	void bind_other(std::shared_ptr<Messager> other, const core::ID &other_id);
+	void bind_other(std::shared_ptr<Messager> other);
+	void unbind_other(std::shared_ptr<const Messager> other, const core::ID &other_id);
+	void unbind_other(std::shared_ptr<const Messager> other);
 
 	std::shared_ptr<const data::Message> get_next();
 	template<class Rep, class Period>
@@ -57,6 +59,7 @@ protected:
 
 private:
 	const core::ID id;
+	std::map<core::ID, std::shared_ptr<Messager>> other_ids;
 	std::shared_ptr<pipe::Pipe> pipe_in;
 	mutable std::mutex mutex_should_run;
 	bool should_run = true;
