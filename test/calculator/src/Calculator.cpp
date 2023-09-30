@@ -16,7 +16,19 @@ void Calculator::main(){
 
 int Calculator::plus_sync(int a, int b) const{
 	num_plus++;
-	return a + b;
+	const auto sum = a + b;
+
+	{
+		const auto find = waiting_for_sum.find(sum);
+		if(find != waiting_for_sum.end()){
+			for(auto &r : find->second){
+				r.retrn(a);
+			}
+			find->second.clear();
+		}
+	}
+
+	return sum;
 }
 
 
@@ -27,6 +39,11 @@ double Calculator::divide_sync(int a, int b) const{
 		throw std::logic_error("Division by zero");
 	}
 	return a / static_cast<double>(b);
+}
+
+
+void Calculator::wait_for_sum_async(int sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const{
+	waiting_for_sum[sum].push_back(std::move(return_me));
 }
 
 

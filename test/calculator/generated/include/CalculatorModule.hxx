@@ -2,6 +2,7 @@
 
 #include <Calculator_plus_return.hxx>
 #include <Calculator_divide_return.hxx>
+#include <Calculator_wait_for_sum_return.hxx>
 
 #include <asgard/mod/Module.h>
 #include <asgard/core/ReturnMe.h>
@@ -23,5 +24,8 @@ protected:
 
 	virtual void divide_async(int a, int b, asgard::core::ReturnMe<Calculator_divide_return> &&return_me) const;
 	virtual double divide_sync(int a, int b) const;
+
+	virtual void wait_for_sum_async(int sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const;
+	virtual int wait_for_sum_sync(int sum) const;
 };
 

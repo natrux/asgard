@@ -1,6 +1,7 @@
 #include <CalculatorModule.hxx>
 #include <Calculator_plus.hxx>
 #include <Calculator_divide.hxx>
+#include <Calculator_wait_for_sum.hxx>
 
 
 CalculatorModule::CalculatorModule(const std::string &name_):
@@ -18,6 +19,10 @@ void CalculatorModule::process(std::shared_ptr<const asgard::data::Request> requ
 		asgard::core::ReturnMe<Calculator_divide_return> return_me;
 		add_pending_request(request, return_me.get_future());
 		divide_async(divide_r->a, divide_r->b, std::move(return_me));
+	}else if(auto wait_for_sum_r = std::dynamic_pointer_cast<const Calculator_wait_for_sum>(request)){
+		asgard::core::ReturnMe<Calculator_wait_for_sum_return> return_me;
+		add_pending_request(request, return_me.get_future());
+		wait_for_sum_async(wait_for_sum_r->sum, std::move(return_me));
 	}else{
 		Super::process(request);
 	}
@@ -50,6 +55,21 @@ void CalculatorModule::divide_async(int a, int b, asgard::core::ReturnMe<Calcula
 
 
 double CalculatorModule::divide_sync(int /*a*/, int /*b*/) const{
+	throw std::logic_error("Not implemented");
+}
+
+
+void CalculatorModule::wait_for_sum_async(int sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const{
+	try{
+		const int result = wait_for_sum_sync(sum);
+		return_me.retrn(result);
+	}catch(...){
+		return_me.except(std::current_exception());
+	}
+}
+
+
+int CalculatorModule::wait_for_sum_sync(int /*sum*/) const{
 	throw std::logic_error("Not implemented");
 }
 

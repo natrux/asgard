@@ -4,3 +4,4 @@ u32 stats_interval_ms = 5000;
 
 const int plus(int a, int b)
 const double divide(int a, int b)
+const int wait_for_sum(int sum)
