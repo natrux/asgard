@@ -60,15 +60,13 @@ std::shared_ptr<const data::Return> Client::request(std::shared_ptr<data::Reques
 		try{
 			result = future.get();
 		}catch(const std::future_error &err){
-			auto ex = std::make_shared<data::Exception>();
+			std::string message;
 			if(err.code() == std::future_errc::broken_promise){
-				ex->message = "Request dropped in client";
+				message = "Request dropped in client";
 			}else{
-				ex->message = err.what();
+				message = err.what();
 			}
-			ex->message_id = req->message_id;
-			ex->source_address = req->destination_address;
-			ex->destination_address = req->source_address;
+			auto ex = data::Exception::from_request(req, message);
 			result = ex;
 		}
 

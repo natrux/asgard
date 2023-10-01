@@ -6,6 +6,7 @@
 #include <Calculator_wait_for_sum.hxx>
 #include <Calculator_wait_for_sum_return.hxx>
 #include <asgard/data/Exception.hxx>
+#include <asgard/core/exception.h>
 
 
 CalculatorClient::CalculatorClient(const asgard::core::ID &destination_):
@@ -31,7 +32,7 @@ int CalculatorClient::plus(int a, int b){
 	if(auto ret = std::dynamic_pointer_cast<const Calculator_plus_return>(ret_)){
 		return ret->result;
 	}else if(auto ex = std::dynamic_pointer_cast<const asgard::data::Exception>(ret_)){
-		throw std::runtime_error(ex->what());
+		throw asgard::core::exception(ex);
 	}
 	throw std::runtime_error("Return of unexpected type");
 }
@@ -48,7 +49,7 @@ double CalculatorClient::divide(int a, int b){
 	if(auto ret = std::dynamic_pointer_cast<const Calculator_divide_return>(ret_)){
 		return ret->result;
 	}else if(auto ex = std::dynamic_pointer_cast<const asgard::data::Exception>(ret_)){
-		throw std::runtime_error(ex->what());
+		throw asgard::core::exception(ex);
 	}
 	throw std::runtime_error("Return of unexpected type");
 }
@@ -65,7 +66,7 @@ int CalculatorClient::wait_for_sum(int sum){
 	if(auto ret = std::dynamic_pointer_cast<const Calculator_wait_for_sum_return>(ret_)){
 		return ret->result;
 	}else if(auto ex = std::dynamic_pointer_cast<const asgard::data::Exception>(ret_)){
-		throw std::runtime_error(ex->what());
+		throw asgard::core::exception(ex);
 	}
 	throw std::runtime_error("Return of unexpected type");
 }
@@ -79,7 +80,7 @@ std::future<int> CalculatorClient::wait_for_sum_(int sum){
 
 void CalculatorClient::on_return_received(std::shared_ptr<const asgard::data::Return> ret){
 	Super::on_return_received(ret);
-	return_dispatch_helper<Calculator_plus_return, int>(ret, pending_requests_plus);
-	return_dispatch_helper<Calculator_divide_return, double>(ret, pending_requests_divide);
-	return_dispatch_helper<Calculator_wait_for_sum_return, int>(ret, pending_requests_wait_for_sum);
+	return_dispatch_helper<Calculator_plus_return>(ret, pending_requests_plus);
+	return_dispatch_helper<Calculator_divide_return>(ret, pending_requests_divide);
+	return_dispatch_helper<Calculator_wait_for_sum_return>(ret, pending_requests_wait_for_sum);
 }

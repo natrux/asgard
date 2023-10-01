@@ -51,6 +51,7 @@ add_library(asgard SHARED
 	${GENERATED_CXX}
 	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
+	src/exception.cpp
 	src/BufferedInput.cpp
 	src/Endpoint.cpp
 	src/Exception.cpp
@@ -70,6 +71,7 @@ add_library(asgard SHARED
 	src/Module.cpp
 	src/Pipe.cpp
 	src/PipeIn.cpp
+	src/RPC.cpp
 	src/random.cpp
 	src/Topic.cpp
 	src/TopicPtr.cpp

@@ -1,5 +1,6 @@
 #include <asgard/mod/Module.h>
 #include <asgard/data/Exception.hxx>
+#include <asgard/core/exception.h>
 
 #include <thread>
 #ifdef _WIN32
@@ -127,7 +128,7 @@ void Module::reset_timer(std::shared_ptr<const timer_t> timer){
 }
 
 
-void Module::add_pending_request(std::shared_ptr<const data::Request> request, std::future<std::shared_ptr<data::Return>> &&future){
+void Module::add_pending_request(std::shared_ptr<const data::Request> request, std::future<std::shared_ptr<const data::Return>> &&future){
 	pending_requests[request] = std::move(future);
 }
 
@@ -139,25 +140,18 @@ bool Module::main_check_pending_requests(){
 		auto &future = iter->second;
 		const auto status = future.wait_for(timer_duration_t::zero());
 		if(status == std::future_status::ready){
-			std::shared_ptr<data::Return> ret;
+			std::shared_ptr<const data::Return> ret;
 			try{
 				ret = future.get();
 			}catch(const std::future_error &err){
-				auto ex = std::make_shared<data::Exception>();
 				if(err.code() == std::future_errc::broken_promise){
-					ex->message = "Request dropped at destination";
+					ret = data::Exception::from_request(request, "Request dropped at destination");
 				}else{
-					ex->message = err.what();
+					ret = data::Exception::from_request(request, err.what());
 				}
-				ret = ex;
-			}catch(const std::exception &err){
-				auto ex = std::make_shared<data::Exception>();
-				ex->message = err.what();
-				ret = ex;
+			}catch(const core::exception &err){
+				ret = err.get_exception();
 			}
-			ret->message_id = request->message_id;
-			ret->source_address = request->destination_address;
-			ret->destination_address = request->source_address;
 
 			try{
 				pipe::PipeIn destination = pipe::Pipe::get(ret->destination_address);

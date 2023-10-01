@@ -4,6 +4,7 @@
 #include <asgard/run/Terminal_read_event.hxx>
 #include <asgard/run/Terminal_read_event_return.hxx>
 #include <asgard/data/Exception.hxx>
+#include <asgard/core/exception.h>
 
 
 namespace asgard{
@@ -32,7 +33,7 @@ void TerminalClient::read_char(const char &c){
 	auto ret_ = request<Terminal_read_char>(c);
 	if(auto ret = std::dynamic_pointer_cast<const Terminal_read_char_return>(ret_)){
 	}else if(auto ex = std::dynamic_pointer_cast<const data::Exception>(ret_)){
-		throw std::runtime_error(ex->what());
+		throw core::exception(ex);
 	}
 	throw std::runtime_error("Return of unexpected type");
 }
@@ -48,7 +49,7 @@ void TerminalClient::read_event(const terminal_event_e &event){
 	auto ret_ = request<Terminal_read_event>(event);
 	if(auto ret = std::dynamic_pointer_cast<const Terminal_read_event_return>(ret_)){
 	}else if(auto ex = std::dynamic_pointer_cast<const data::Exception>(ret_)){
-		throw std::runtime_error(ex->what());
+		throw core::exception(ex);
 	}
 	throw std::runtime_error("Return of unexpected type");
 }
@@ -62,8 +63,8 @@ std::future<void> TerminalClient::read_event_(const terminal_event_e &event){
 
 void TerminalClient::on_return_received(std::shared_ptr<const data::Return> ret){
 	Super::on_return_received(ret);
-	return_dispatch_helper<Terminal_read_char_return, void>(ret, pending_requests_read_char);
-	return_dispatch_helper<Terminal_read_event_return, void>(ret, pending_requests_read_event);
+	return_dispatch_helper<Terminal_read_char_return>(ret, pending_requests_read_char);
+	return_dispatch_helper<Terminal_read_event_return>(ret, pending_requests_read_event);
 }
 
 

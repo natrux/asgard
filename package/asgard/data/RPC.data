@@ -3,3 +3,5 @@ extends(Message)
 size_t message_id
 core.ID source_address
 core.ID destination_address
+
+reverse_to(RCP *other)

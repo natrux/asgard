@@ -2,6 +2,7 @@
 
 #include <asgard/mod/Messager.h>
 #include <asgard/data/Exception.hxx>
+#include <asgard/core/exception.h>
 
 #include <future>
 
@@ -47,13 +48,13 @@ protected:
 	}
 
 	template<class Return, class Ret>
-	void return_dispatch_helper(std::shared_ptr<const asgard::data::Return> ret, std::map<size_t, std::promise<Ret>> &pending){
+	void return_dispatch_helper(std::shared_ptr<const data::Return> ret, std::map<size_t, std::promise<Ret>> &pending){
 		const auto find = pending.find(ret->message_id);
 		if(find != pending.end()){
-			if(auto ret_ = std::dynamic_pointer_cast<const Return>(ret)){
+			if(auto ex = std::dynamic_pointer_cast<const data::Exception>(ret)){
+				find->second.set_exception(std::make_exception_ptr(core::exception(ex)));
+			}else if(auto ret_ = std::dynamic_pointer_cast<const Return>(ret)){
 				fulfill_promise(find->second, ret_);
-			}else if(auto ex = std::dynamic_pointer_cast<const data::Exception>(ret)){
-				find->second.set_exception(std::make_exception_ptr(std::runtime_error(ex->what())));
 			}
 			pending.erase(find);
 		}
