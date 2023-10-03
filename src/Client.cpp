@@ -10,7 +10,7 @@ Client::Client(const core::ID &destination_):
 	Messager(),
 	dst_address(destination_)
 {
-	bind(get_id());
+	bind();
 }
 
 
@@ -24,7 +24,7 @@ Client::Client(pipe::PipeIn &&destination_):
 	destination(std::move(destination_))
 {
 	dst_address.set(0);
-	bind(get_id());
+	bind();
 }
 
 

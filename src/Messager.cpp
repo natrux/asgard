@@ -44,6 +44,11 @@ pipe::PipeIn Messager::make_pipe_in() const{
 }
 
 
+void Messager::bind() const{
+	bind(get_id());
+}
+
+
 void Messager::bind(const core::ID &id_) const{
 	pipe::Pipe::bind(id_, pipe_in);
 }
@@ -51,6 +56,11 @@ void Messager::bind(const core::ID &id_) const{
 
 void Messager::bind(const std::string &name) const{
 	bind(core::ID(name));
+}
+
+
+void Messager::unbind() const{
+	unbind(get_id());
 }
 
 

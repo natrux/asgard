@@ -45,7 +45,7 @@ void PipeIn::push(std::shared_ptr<const data::Message> value) const{
 
 
 bool PipeIn::Compare::operator()(const PipeIn &a, const PipeIn &b) const{
-	return std::less<const std::shared_ptr<Pipe> &>{}(a.pipe, b.pipe);
+	return is_less(a.pipe, b.pipe);
 }
 
 

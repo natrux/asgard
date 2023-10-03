@@ -63,9 +63,9 @@ protected:
 	void reset_timer(std::shared_ptr<const timer_t> timer);
 	void add_pending_request(std::shared_ptr<const data::Request> request, std::future<std::shared_ptr<const data::Return>> &&future);
 
-	bool main_check_pending_requests();
-	bool main_check_timers();
-	bool main_check_messages();
+	bool answer_pending_requests();
+	bool execute_timers();
+	bool receive_messages();
 
 	void process(std::shared_ptr<const data::Request> request) override;
 	void process(std::shared_ptr<const data::Return> retrn) override;

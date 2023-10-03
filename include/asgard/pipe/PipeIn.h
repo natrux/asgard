@@ -25,6 +25,7 @@ public:
 	void push(std::shared_ptr<const data::Message> value) const;
 
 	struct Compare{
+		std::less<const std::shared_ptr<Pipe> &> is_less;
 		bool operator()(const PipeIn &a, const PipeIn &b) const;
 	};
 private:

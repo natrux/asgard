@@ -46,7 +46,7 @@ void Module::wait_for_shutdown(){
 
 
 Module::Module(const std::string &name_):
-	Subscriber(name_),
+	Subscriber(core::ID(name_)),
 	name(name_)
 {
 }
@@ -63,11 +63,11 @@ void Module::start(std::unique_ptr<Module> self_ptr){
 
 void Module::main(){
 	while(node_should_run()){
-		if(main_check_timers()){
-			main_check_pending_requests();
+		if(execute_timers()){
+			answer_pending_requests();
 		}
-		if(main_check_messages()){
-			main_check_pending_requests();
+		if(receive_messages()){
+			answer_pending_requests();
 		}
 	}
 }
@@ -133,7 +133,7 @@ void Module::add_pending_request(std::shared_ptr<const data::Request> request, s
 }
 
 
-bool Module::main_check_pending_requests(){
+bool Module::answer_pending_requests(){
 	bool did_something = false;
 	for(auto iter=pending_requests.begin(); iter!=pending_requests.end(); /* no iter */){
 		const auto &request = iter->first;
@@ -169,7 +169,7 @@ bool Module::main_check_pending_requests(){
 }
 
 
-bool Module::main_check_timers(){
+bool Module::execute_timers(){
 	bool did_something = false;
 	const auto now = clock_t::now();
 	if(!timers.empty() && (*timers.begin())->is_expired(now)){
@@ -190,7 +190,7 @@ bool Module::main_check_timers(){
 }
 
 
-bool Module::main_check_messages(){
+bool Module::receive_messages(){
 	bool did_something = false;
 	const auto now = clock_t::now();
 	try{

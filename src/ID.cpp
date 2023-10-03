@@ -23,8 +23,8 @@ void ID::set(const uint64_t &new_value){
 	value = new_value;
 
 	std::stringstream stream;
-	stream << std::hex << value;
-	str_value = "0x" + stream.str();
+	stream << "0x" << std::hex << value << std::dec;
+	str_value = stream.str();
 }
 
 

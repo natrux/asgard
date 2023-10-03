@@ -8,7 +8,7 @@ Calculator::Calculator(const std::string &name_):
 
 
 void Calculator::main(){
-	bind(get_id());
+	bind();
 	set_timer(std::chrono::milliseconds(stats_interval_ms), std::bind(&Calculator::print_stats, this));
 	Super::main();
 }
@@ -24,7 +24,7 @@ int Calculator::plus_sync(int a, int b) const{
 			for(auto &r : find->second){
 				r.retrn(a);
 			}
-			find->second.clear();
+			waiting_for_sum.erase(find);
 		}
 	}
 

@@ -23,8 +23,10 @@ protected:
 	bool node_should_run() const;
 	void node_exit();
 	pipe::PipeIn make_pipe_in() const;
+	void bind() const;
 	void bind(const core::ID &id) const;
 	void bind(const std::string &name) const;
+	void unbind() const;
 	void unbind(const core::ID &id) const;
 	void bind_other(std::shared_ptr<Messager> other, const core::ID &other_id);
 	void bind_other(std::shared_ptr<Messager> other);

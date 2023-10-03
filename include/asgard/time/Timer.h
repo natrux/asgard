@@ -28,7 +28,7 @@ public:
 	}
 
 	duration_t remaining(const std::chrono::time_point<clock_t> &now) const{
-		if(next_time <= now){
+		if(is_expired(now)){
 			return duration_t::zero();
 		}
 		return std::chrono::duration_cast<duration_t>(next_time - now);
@@ -51,7 +51,9 @@ public:
 	}
 
 	void execute() const{
-		function();
+		if(function){
+			function();
+		}
 	}
 
 	struct Compare{
