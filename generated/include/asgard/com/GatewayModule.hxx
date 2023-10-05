@@ -1,6 +1,7 @@
 #pragma once
 
 #include <asgard/mod/Module.h>
+#include <asgard/time/time.h>
 #include <cstdint>
 
 
@@ -15,7 +16,7 @@ public:
 	GatewayModule(const std::string &name_);
 
 protected:
-	uint32_t error_pause_time_ms = 1000;
+	time::duration error_pause_time = std::chrono::seconds(1);
 };
 
 

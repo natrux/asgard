@@ -1,4 +1,5 @@
 #include <asgard/mod/Client.h>
+#include <asgard/time/time.h>
 #include <asgard/data/Exception.hxx>
 
 
@@ -50,7 +51,7 @@ std::shared_ptr<const data::Return> Client::request(std::shared_ptr<data::Reques
 	bool has_return = false;
 	while(node_should_run() && !has_return){
 		process_next();
-		if(future.wait_for(std::chrono::seconds::zero()) == std::future_status::ready){
+		if(future.wait_for(time::duration::zero()) == std::future_status::ready){
 			has_return = true;
 		}
 	}

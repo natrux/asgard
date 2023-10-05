@@ -9,7 +9,7 @@ Calculator::Calculator(const std::string &name_):
 
 void Calculator::main(){
 	bind();
-	set_timer(std::chrono::milliseconds(stats_interval_ms), std::bind(&Calculator::print_stats, this));
+	set_timer(stats_interval, std::bind(&Calculator::print_stats, this));
 	Super::main();
 }
 

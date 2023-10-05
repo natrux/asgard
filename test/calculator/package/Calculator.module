@@ -1,6 +1,6 @@
 extends(asgard.mod.Module)
 
-u32 stats_interval_ms = 5000;
+asgard.time.duration stats_interval = 5s
 
 const int plus(int a, int b)
 const double divide(int a, int b)

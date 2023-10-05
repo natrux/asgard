@@ -111,6 +111,16 @@ topic::LogPublisher Module::log(const data::log_level_e &level) const{
 }
 
 
+std::shared_ptr<const Module::timer_t> Module::set_timer(const time::duration &period, const std::function<void()> &function, bool periodic){
+	if(period <= time::duration::zero()){
+		throw std::logic_error("Attempt to create a timer with zero period");
+	}
+	auto tim = std::make_shared<timer_t>(period, function, periodic);
+	timers.insert(tim);
+	return tim;
+}
+
+
 void Module::remove_timer(std::shared_ptr<const timer_t> timer){
 	timers.erase(std::const_pointer_cast<timer_t>(timer));
 }
@@ -138,7 +148,7 @@ bool Module::answer_pending_requests(){
 	for(auto iter=pending_requests.begin(); iter!=pending_requests.end(); /* no iter */){
 		const auto &request = iter->first;
 		auto &future = iter->second;
-		const auto status = future.wait_for(timer_duration_t::zero());
+		const auto status = future.wait_for(time::duration::zero());
 		if(status == std::future_status::ready){
 			std::shared_ptr<const data::Return> ret;
 			try{
@@ -171,7 +181,7 @@ bool Module::answer_pending_requests(){
 
 bool Module::execute_timers(){
 	bool did_something = false;
-	const auto now = clock_t::now();
+	const auto now = time::clock::now();
 	if(!timers.empty() && (*timers.begin())->is_expired(now)){
 		auto expired_timer = *timers.begin();
 		timers.erase(timers.begin());
@@ -192,7 +202,7 @@ bool Module::execute_timers(){
 
 bool Module::receive_messages(){
 	bool did_something = false;
-	const auto now = clock_t::now();
+	const auto now = time::clock::now();
 	try{
 		if(timers.empty()){
 			did_something = process_next();

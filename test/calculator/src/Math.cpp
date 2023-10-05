@@ -1,4 +1,5 @@
 #include <Math.h>
+#include <asgard/time/time.h>
 
 
 Math::Math(const std::string &name_):
@@ -22,7 +23,7 @@ void Math::calculate_something(){
 	if(!wait_for_zero.valid()){
 		wait_for_zero = calc_async->wait_for_sum_(0);
 	}
-	if(wait_for_zero.wait_for(std::chrono::seconds::zero()) == std::future_status::ready){
+	if(wait_for_zero.wait_for(asgard::time::duration::zero()) == std::future_status::ready){
 		try{
 			const auto result = wait_for_zero.get();
 			log(INFO) << "Oh look, " << result << " + " << (-result) << " = 0";

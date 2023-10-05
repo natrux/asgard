@@ -143,12 +143,12 @@ void Gateway::keep_reading(std::unique_ptr<io::InputSource> input_source){
 
 
 void Gateway::error_wait() const{
-	const unsigned int micro_time_ms = 10;
-	unsigned int remaining_ms = error_pause_time_ms;
-	while(remaining_ms > 0){
-		const unsigned int micro_wait_ms = std::min(remaining_ms, micro_time_ms);
-		std::this_thread::sleep_for(std::chrono::milliseconds(micro_wait_ms));
-		remaining_ms -= micro_wait_ms;
+	const time::duration micro_time = std::chrono::milliseconds(10);
+	time::duration remaining = error_pause_time;
+	while(remaining > time::duration::zero()){
+		const auto micro_wait = std::min(remaining, micro_time);
+		std::this_thread::sleep_for(micro_wait);
+		remaining -= micro_wait;
 	}
 }
 

@@ -5,6 +5,7 @@
 #include <Calculator_wait_for_sum_return.hxx>
 
 #include <asgard/mod/Module.h>
+#include <asgard/time/time.h>
 #include <asgard/core/ReturnMe.h>
 
 
@@ -15,7 +16,7 @@ public:
 	CalculatorModule(const std::string &name_);
 
 protected:
-	uint32_t stats_interval_ms = 5000;
+	asgard::time::duration stats_interval = std::chrono::seconds(5);
 
 	void process(std::shared_ptr<const asgard::data::Request> request) override;
 

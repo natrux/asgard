@@ -4,6 +4,7 @@
 #include <asgard/topic/TopicPtr.h>
 #include <asgard/pipe/Pipe.h>
 #include <asgard/time/Timer.h>
+#include <asgard/time/time.h>
 #include <asgard/data/PleaseShutDown.hxx>
 #include <asgard/data/log_level_e.hxx>
 #include <asgard/topic/LogPublisher.h>
@@ -22,9 +23,7 @@ namespace mod{
 
 
 class Module : public Subscriber{
-	using clock_t = std::chrono::steady_clock;
-	using timer_duration_t = std::chrono::microseconds;
-	using timer_t = time::Timer<timer_duration_t, clock_t>;
+	using timer_t = time::Timer<time::duration, time::clock>;
 
 public:
 	Module(const std::string &name);
@@ -45,15 +44,10 @@ protected:
 
 	std::string get_name() const;
 	topic::LogPublisher log(const data::log_level_e &level) const;
+	std::shared_ptr<const timer_t> set_timer(const time::duration &period, const std::function<void()> &function, bool periodic=true);
 	template<class Rep, class Period>
 	std::shared_ptr<const timer_t> set_timer(const std::chrono::duration<Rep, Period> &period, const std::function<void()> &function, bool periodic=true){
-		const auto dur = std::chrono::duration_cast<timer_duration_t>(period);
-		if(dur <= timer_duration_t::zero()){
-			throw std::logic_error("Attempt to create a timer with zero period");
-		}
-		auto tim = std::make_shared<timer_t>(dur, function, periodic);
-		timers.insert(tim);
-		return tim;
+		return set_timer(std::chrono::duration_cast<time::duration>(period), function, periodic);
 	}
 	template<class Rep, class Period>
 	std::shared_ptr<const timer_t> set_timeout(const std::chrono::duration<Rep, Period> &period, const std::function<void()> &function){
