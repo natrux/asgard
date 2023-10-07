@@ -19,11 +19,13 @@ protected:
 	void init() override;
 	void main() override;
 
+	void init_endpoint(const std::string &address);
 	void init_endpoint(std::unique_ptr<net::Endpoint> endpoint);
 	void set_output(std::unique_ptr<io::OutputSource> output);
 	void output_write(const void *data, size_t length);
 
 private:
+	std::string m_address;
 	std::unique_ptr<net::Endpoint> m_endpoint;
 	std::mutex mutex_output;
 	std::unique_ptr<io::OutputSource> m_output;

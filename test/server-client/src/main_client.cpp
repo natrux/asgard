@@ -7,6 +7,12 @@
 
 class ShoutGateway : public ShoutGatewayModule{
 public:
+	ShoutGateway(const std::string &name_, const std::string &address):
+		ShoutGatewayModule(name_)
+	{
+		init_endpoint(address);
+	}
+
 	ShoutGateway(const std::string &name_, std::unique_ptr<asgard::net::Endpoint> endpoint):
 		ShoutGatewayModule(name_)
 	{
@@ -16,6 +22,7 @@ public:
 protected:
 	void init() override{
 		subscribe(input_text);
+		Super::init();
 	}
 
 	void process(std::shared_ptr<const TextLine> data) override{
@@ -36,13 +43,11 @@ int main(int argc, char **argv){
 		std::cerr << "Usage: " << argv[0] << " endpoint" << std::endl;
 		return 1;
 	}
-
-
-	std::unique_ptr<asgard::net::Endpoint> endpoint = asgard::net::Endpoint::from_address(argv[1]);
+	const std::string address = argv[1];
 
 	asgard::mod::Module::start_module<StdIn>("StdIn");
-	asgard::mod::Module::start_module<ShoutGateway>("Gateway", std::move(endpoint));
 	//asgard::mod::Module::start_module<asgard::run::Terminal>("Terminal");
+	asgard::mod::Module::start_module<ShoutGateway>("Gateway", address);
 
 	asgard::mod::Module::wait_for_shutdown();
 

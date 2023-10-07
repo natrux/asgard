@@ -45,9 +45,10 @@ public:
 		init_endpoint(std::move(endpoint));
 	}
 
-	EchoServer(const std::string &name_, const std::string &address):
-		EchoServer(name_, asgard::net::Endpoint::from_address(address))
+	EchoServer(const std::string &name_, const std::string &address_):
+		EchoServerModule(name_)
 	{
+		init_endpoint(address_);
 	}
 
 private:

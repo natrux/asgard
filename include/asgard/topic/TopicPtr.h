@@ -22,6 +22,7 @@ public:
 	std::shared_ptr<Topic> operator->();
 
 	struct Compare{
+		std::less<const std::shared_ptr<Topic> &> is_less;
 		bool operator()(const TopicPtr &a, const TopicPtr &b) const;
 	};
 

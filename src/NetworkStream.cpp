@@ -26,6 +26,7 @@ NetworkStream::NetworkStream(const std::string &name_, const std::string &addres
 
 void NetworkStream::init(){
 	subscribe(input_data);
+	Super::init();
 }
 
 

@@ -23,24 +23,31 @@ Gateway::Gateway(const std::string &name_, std::unique_ptr<net::Endpoint> endpoi
 
 
 Gateway::Gateway(const std::string &name_, const std::string &address):
-	Gateway(name_, net::Endpoint::from_address(address))
+	GatewayModule(name_)
 {
+	init_endpoint(address);
 }
 
 
 void Gateway::init(){
 	if(!m_endpoint){
+		try{
+			m_endpoint = net::Endpoint::from_address(m_address);
+		}catch(const std::exception &err){
+			throw std::runtime_error("Creating endpoint from address failed with: " + std::string(err.what()));
+		}
+	}
+	if(!m_endpoint){
 		throw std::logic_error("No endpoint given");
 	}
+	Super::init();
 }
 
 
 void Gateway::main(){
 	std::thread read_thread(&Gateway::read_loop, this);
 
-
 	Super::main();
-
 
 	if(m_endpoint->is_connected()){
 		try{
@@ -57,8 +64,16 @@ void Gateway::main(){
 }
 
 
+void Gateway::init_endpoint(const std::string &address){
+	if(m_endpoint || !m_address.empty()){
+		throw std::logic_error("Endpoint already given");
+	}
+	m_address = address;
+}
+
+
 void Gateway::init_endpoint(std::unique_ptr<net::Endpoint> endpoint){
-	if(m_endpoint){
+	if(m_endpoint || !m_address.empty()){
 		throw std::logic_error("Endpoint already given");
 	}
 	m_endpoint = std::move(endpoint);
@@ -145,7 +160,7 @@ void Gateway::keep_reading(std::unique_ptr<io::InputSource> input_source){
 void Gateway::error_wait() const{
 	const time::duration micro_time = std::chrono::milliseconds(10);
 	time::duration remaining = error_pause_time;
-	while(remaining > time::duration::zero()){
+	while(node_should_run() && remaining > time::duration::zero()){
 		const auto micro_wait = std::min(remaining, micro_time);
 		std::this_thread::sleep_for(micro_wait);
 		remaining -= micro_wait;

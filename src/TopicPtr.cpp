@@ -43,7 +43,7 @@ std::shared_ptr<Topic> TopicPtr::operator->(){
 
 
 bool TopicPtr::Compare::operator()(const TopicPtr &a, const TopicPtr &b) const{
-	return std::less<std::shared_ptr<Topic>>{}(a.topic, b.topic);
+	return is_less(a.topic, b.topic);
 }
 
 

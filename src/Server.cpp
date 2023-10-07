@@ -19,22 +19,31 @@ Server::Server(const std::string &name_, std::unique_ptr<net::Endpoint> endpoint
 
 
 Server::Server(const std::string &name_, const std::string &address):
-	Server(name_, net::Endpoint::from_address(address))
+	ServerModule(name_)
 {
+	init_endpoint(address);
 }
 
 
 void Server::init(){
 	if(!m_endpoint){
+		try{
+			m_endpoint = net::Endpoint::from_address(m_address);
+		}catch(const std::exception &err){
+			throw std::runtime_error("Creating endpoint from address failed with: " + std::string(err.what()));
+		}
+	}
+	if(!m_endpoint){
 		throw std::logic_error("No endpoint given");
 	}
+	Super::init();
 }
 
 
 void Server::main(){
 	m_endpoint->open();
 	m_endpoint->expect();
-	m_accept_thread = std::thread(&Server::accept_loop, this);
+	std::thread accept_thread(&Server::accept_loop, this);
 
 	Super::main();
 
@@ -43,15 +52,23 @@ void Server::main(){
 	}catch(const std::exception &err){
 		log(WARN) << err.what();
 	}
-	if(m_accept_thread.joinable()){
-		m_accept_thread.join();
+	if(accept_thread.joinable()){
+		accept_thread.join();
 	}
 	m_endpoint->close();
 }
 
 
+void Server::init_endpoint(const std::string &address){
+	if(m_endpoint || !m_address.empty()){
+		throw std::logic_error("Endpoint already given");
+	}
+	m_address = address;
+}
+
+
 void Server::init_endpoint(std::unique_ptr<net::Endpoint> endpoint){
-	if(m_endpoint){
+	if(m_endpoint || !m_address.empty()){
 		throw std::logic_error("Endpoint already given");
 	}
 	m_endpoint = std::move(endpoint);

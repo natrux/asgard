@@ -24,6 +24,7 @@ Terminal::Terminal(const std::string &name_):
 
 void Terminal::init(){
 	subscribe(input_log);
+	Super::init();
 }
 
 

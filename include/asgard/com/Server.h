@@ -20,11 +20,12 @@ protected:
 	void init() override;
 	void main() override;
 
+	void init_endpoint(const std::string &address);
 	void init_endpoint(std::unique_ptr<net::Endpoint> endpoint);
 
 private:
+	std::string m_address;
 	std::unique_ptr<net::Endpoint> m_endpoint;
-	std::thread m_accept_thread;
 	void accept_loop();
 	virtual void spawn_gateway(std::unique_ptr<net::Endpoint> endpoint) = 0;
 };
