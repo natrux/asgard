@@ -80,14 +80,18 @@ void Server::accept_loop(){
 		std::unique_ptr<net::Endpoint> connection;
 		try{
 			connection = m_endpoint->accept();
-		}catch(const std::runtime_error &err){
+		}catch(const std::exception &err){
 			if(node_should_run()){
 				// otherwise the exception is caused by shutdown() which is expected
 				log(WARN) << err.what();
 			}
 		}
 		if(connection){
-			spawn_gateway(std::move(connection));
+			try{
+				spawn_gateway(std::move(connection));
+			}catch(const std::exception &err){
+				log(WARN) << err.what();
+			}
 		}
 	}
 }

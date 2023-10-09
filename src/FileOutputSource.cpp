@@ -16,7 +16,7 @@ FileOutputSource::FileOutputSource(int fd):
 
 
 size_t FileOutputSource::write(const void *data, size_t length){
-	ssize_t result = ::write(m_fd, data, length);
+	const ssize_t result = ::write(m_fd, data, length);
 	if(result == -1){
 		throw std::runtime_error("write() failed with: " + std::string(strerror(errno)));
 	}

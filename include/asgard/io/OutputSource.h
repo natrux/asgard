@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <cstddef>
 
 
@@ -22,7 +21,6 @@ public:
 	 * Throws if part of the data is refused.
 	 */
 	void write_all(const void *data, size_t length);
-	void write_all(const std::string &data);
 };
 
 

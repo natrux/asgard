@@ -126,7 +126,11 @@ void Gateway::read_loop(){
 				}
 				if(!connect_error){
 					set_output(m_endpoint->output_source());
-					on_connect();
+					try{
+						on_connect();
+					}catch(const std::exception &err){
+						log(WARN) << err.what();
+					}
 				}
 			}
 		}
@@ -141,10 +145,18 @@ void Gateway::read_loop(){
 			}
 			m_endpoint->close();
 			set_output(nullptr);
-			on_disconnect();
+			try{
+				on_disconnect();
+			}catch(const std::exception &err){
+				log(WARN) << err.what();
+			}
 		}
 	}
-	on_hang_up();
+	try{
+		on_hang_up();
+	}catch(const std::exception &err){
+		log(WARN) << err.what();
+	}
 }
 
 

@@ -15,7 +15,7 @@ FileInputSource::FileInputSource(int fd):
 
 
 size_t FileInputSource::read(void *data, size_t length){
-	ssize_t result = ::read(m_fd, data, length);
+	const ssize_t result = ::read(m_fd, data, length);
 	if(result < 0){
 		throw std::runtime_error("read() failed with: " + std::string(strerror(errno)));
 	}
