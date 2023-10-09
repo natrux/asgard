@@ -1,5 +1,7 @@
 #pragma once
 
+#include <asgard/time/time.h>
+
 #include <chrono>
 #include <functional>
 
@@ -8,7 +10,7 @@ namespace asgard{
 namespace time{
 
 
-template<class duration_t, class clock_t=std::chrono::steady_clock>
+template<class duration_t=duration, class clock_t=clock>
 class Timer{
 public:
 	Timer(const duration_t &period_, const std::function<void()> &function_, bool periodic_):

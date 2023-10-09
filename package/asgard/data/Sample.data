@@ -1,3 +1,4 @@
 extends(Message)
 
+time.time time
 ptr<Data> data

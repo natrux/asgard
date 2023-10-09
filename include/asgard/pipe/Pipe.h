@@ -1,6 +1,7 @@
 #pragma once
 
 #include <asgard/core/ID.h>
+#include <asgard/time/time.h>
 #include <asgard/pipe/PipeIn.h>
 #include <asgard/data/Message.hxx>
 #include <asgard/util/UniqueQueue.h>
@@ -53,9 +54,9 @@ std::shared_ptr<const data::Message> Pipe::pop(const std::chrono::duration<Rep, 
 	while(found == data.end()){
 		auto remaining_time = wait_time;
 		while(opened && pending.empty() && remaining_time > std::chrono::duration<Rep, Period>::zero()){
-			const auto now = std::chrono::steady_clock::now();
+			const auto now = time::clock::now();
 			cv.wait_for(lock, remaining_time);
-			const auto elapsed = std::chrono::steady_clock::now() - now;
+			const auto elapsed = time::clock::now() - now;
 			remaining_time -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(elapsed);
 		}
 

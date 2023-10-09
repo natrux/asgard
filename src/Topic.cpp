@@ -10,6 +10,7 @@ namespace topic{
 
 void Topic::publish(std::shared_ptr<const data::Data> value){
 	auto sample = std::make_shared<data::Sample>();
+	sample->time = time::clock::now();
 	sample->data = value;
 
 	std::lock_guard<std::mutex> lock(mutex);
