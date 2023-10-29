@@ -33,13 +33,13 @@ void Math::calculate_something(){
 		wait_for_zero = calc_async->wait_for_sum_(0);
 	}
 
-	const int a = dist(generator);
-	const int b = dist(generator);
+	const auto a = dist(generator);
+	const auto b = dist(generator);
 
-	const int plus = calc.plus(a, b);
+	const auto plus = calc.plus(a, b);
 	log(INFO) << a << " + " << b << " = " << plus;
 
-	const double div = calc.divide(a, b);
+	const auto div = calc.divide(a, b);
 	log(INFO) << a << " / " << b << " = " << div;
 }
 

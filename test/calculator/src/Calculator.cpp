@@ -14,7 +14,7 @@ void Calculator::main(){
 }
 
 
-int Calculator::plus_sync(int a, int b) const{
+int32_t Calculator::plus_sync(const int32_t &a, const int32_t &b) const{
 	num_plus++;
 	const auto sum = a + b;
 
@@ -32,7 +32,7 @@ int Calculator::plus_sync(int a, int b) const{
 }
 
 
-double Calculator::divide_sync(int a, int b) const{
+double Calculator::divide_sync(const int32_t &a, const int32_t &b) const{
 	num_div++;
 	if(b == 0){
 		num_div_failed++;
@@ -42,7 +42,7 @@ double Calculator::divide_sync(int a, int b) const{
 }
 
 
-void Calculator::wait_for_sum_async(int sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const{
+void Calculator::wait_for_sum_async(const int32_t &sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const{
 	waiting_for_sum[sum].push_back(std::move(return_me));
 }
 

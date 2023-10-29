@@ -2,6 +2,6 @@ extends(asgard.mod.Module)
 
 asgard.time.duration stats_interval = 5s
 
-const int plus(int a, int b)
-const double divide(int a, int b)
-const int wait_for_sum(int sum)
+const i32 plus(i32 a, i32 b)
+const f64 divide(i32 a, i32 b)
+const i32 wait_for_sum(i32 sum)

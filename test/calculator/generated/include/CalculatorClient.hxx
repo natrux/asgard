@@ -10,12 +10,12 @@ public:
 	CalculatorClient(const std::string &destination_);
 	CalculatorClient(asgard::pipe::PipeIn &&destination_);
 
-	int plus(int a, int b);
-	std::future<int> plus_(int a, int b);
-	double divide(int a, int b);
-	std::future<double> divide_(int a, int b);
-	int wait_for_sum(int sum);
-	std::future<int> wait_for_sum_(int sum);
+	int32_t plus(const int32_t &a, const int32_t &b);
+	std::future<int32_t> plus_(const int32_t &a, const int32_t &b);
+	double divide(const int32_t &a, const int32_t &b);
+	std::future<double> divide_(const int32_t &a, const int32_t &b);
+	int32_t wait_for_sum(const int32_t &sum);
+	std::future<int32_t> wait_for_sum_(const int32_t &sum);
 
 private:
 	std::map<size_t, std::promise<int>> pending_requests_plus;

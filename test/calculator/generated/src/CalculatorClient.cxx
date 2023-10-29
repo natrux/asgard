@@ -27,7 +27,7 @@ CalculatorClient::CalculatorClient(asgard::pipe::PipeIn &&destination_):
 }
 
 
-int CalculatorClient::plus(int a, int b){
+int32_t CalculatorClient::plus(const int32_t &a, const int32_t &b){
 	auto ret_ = request<Calculator_plus>(a, b);
 	if(auto ret = std::dynamic_pointer_cast<const Calculator_plus_return>(ret_)){
 		return ret->result;
@@ -38,13 +38,13 @@ int CalculatorClient::plus(int a, int b){
 }
 
 
-std::future<int> CalculatorClient::plus_(int a, int b){
+std::future<int32_t> CalculatorClient::plus_(const int32_t &a, const int32_t &b){
 	call<Calculator_plus>(a, b);
 	return pending_requests_plus[last_request_id()].get_future();
 }
 
 
-double CalculatorClient::divide(int a, int b){
+double CalculatorClient::divide(const int32_t &a, const int32_t &b){
 	auto ret_ = request<Calculator_divide>(a, b);
 	if(auto ret = std::dynamic_pointer_cast<const Calculator_divide_return>(ret_)){
 		return ret->result;
@@ -55,13 +55,13 @@ double CalculatorClient::divide(int a, int b){
 }
 
 
-std::future<double> CalculatorClient::divide_(int a, int b){
+std::future<double> CalculatorClient::divide_(const int32_t &a, const int32_t &b){
 	call<Calculator_divide>(a, b);
 	return pending_requests_divide[last_request_id()].get_future();
 }
 
 
-int CalculatorClient::wait_for_sum(int sum){
+int32_t CalculatorClient::wait_for_sum(const int32_t &sum){
 	auto ret_ = request<Calculator_wait_for_sum>(sum);
 	if(auto ret = std::dynamic_pointer_cast<const Calculator_wait_for_sum_return>(ret_)){
 		return ret->result;
@@ -72,7 +72,7 @@ int CalculatorClient::wait_for_sum(int sum){
 }
 
 
-std::future<int> CalculatorClient::wait_for_sum_(int sum){
+std::future<int32_t> CalculatorClient::wait_for_sum_(const int32_t &sum){
 	call<Calculator_wait_for_sum>(sum);
 	return pending_requests_wait_for_sum[last_request_id()].get_future();
 }

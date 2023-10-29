@@ -20,13 +20,13 @@ protected:
 
 	void process(std::shared_ptr<const asgard::data::Request> request) override;
 
-	virtual void plus_async(int a, int b, asgard::core::ReturnMe<Calculator_plus_return> &&return_me) const;
-	virtual int plus_sync(int a, int b) const;
+	virtual void plus_async(const int32_t &a, const int32_t &b, asgard::core::ReturnMe<Calculator_plus_return> &&return_me) const;
+	virtual int32_t plus_sync(const int32_t &a, const int32_t &b) const;
 
-	virtual void divide_async(int a, int b, asgard::core::ReturnMe<Calculator_divide_return> &&return_me) const;
-	virtual double divide_sync(int a, int b) const;
+	virtual void divide_async(const int32_t &a, const int &b, asgard::core::ReturnMe<Calculator_divide_return> &&return_me) const;
+	virtual double divide_sync(const int32_t &a, const int32_t &b) const;
 
-	virtual void wait_for_sum_async(int sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const;
-	virtual int wait_for_sum_sync(int sum) const;
+	virtual void wait_for_sum_async(const int32_t &sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const;
+	virtual int32_t wait_for_sum_sync(const int32_t &sum) const;
 };
 

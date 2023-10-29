@@ -29,9 +29,9 @@ void CalculatorModule::process(std::shared_ptr<const asgard::data::Request> requ
 }
 
 
-void CalculatorModule::plus_async(int a, int b, asgard::core::ReturnMe<Calculator_plus_return> &&return_me) const{
+void CalculatorModule::plus_async(const int32_t &a, const int32_t &b, asgard::core::ReturnMe<Calculator_plus_return> &&return_me) const{
 	try{
-		const int result = plus_sync(a, b);
+		const int32_t result = plus_sync(a, b);
 		return_me.retrn(result);
 	}catch(const std::exception &err){
 		return_me.except(err);
@@ -39,12 +39,12 @@ void CalculatorModule::plus_async(int a, int b, asgard::core::ReturnMe<Calculato
 }
 
 
-int CalculatorModule::plus_sync(int /*a*/, int /*b*/) const{
+int32_t CalculatorModule::plus_sync(const int32_t &/*a*/, const int32_t &/*b*/) const{
 	throw std::logic_error("Not implemented");
 }
 
 
-void CalculatorModule::divide_async(int a, int b, asgard::core::ReturnMe<Calculator_divide_return> &&return_me) const{
+void CalculatorModule::divide_async(const int32_t &a, const int32_t &b, asgard::core::ReturnMe<Calculator_divide_return> &&return_me) const{
 	try{
 		const double result = divide_sync(a, b);
 		return_me.retrn(result);
@@ -54,14 +54,14 @@ void CalculatorModule::divide_async(int a, int b, asgard::core::ReturnMe<Calcula
 }
 
 
-double CalculatorModule::divide_sync(int /*a*/, int /*b*/) const{
+double CalculatorModule::divide_sync(const int32_t &/*a*/, const int32_t &/*b*/) const{
 	throw std::logic_error("Not implemented");
 }
 
 
-void CalculatorModule::wait_for_sum_async(int sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const{
+void CalculatorModule::wait_for_sum_async(const int32_t &sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const{
 	try{
-		const int result = wait_for_sum_sync(sum);
+		const int32_t result = wait_for_sum_sync(sum);
 		return_me.retrn(result);
 	}catch(const std::exception &err){
 		return_me.except(err);
@@ -69,7 +69,7 @@ void CalculatorModule::wait_for_sum_async(int sum, asgard::core::ReturnMe<Calcul
 }
 
 
-int CalculatorModule::wait_for_sum_sync(int /*sum*/) const{
+int32_t CalculatorModule::wait_for_sum_sync(const int32_t &/*sum*/) const{
 	throw std::logic_error("Not implemented");
 }
 

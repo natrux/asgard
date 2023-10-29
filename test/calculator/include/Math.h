@@ -19,7 +19,7 @@ private:
 	std::random_device device;
 	std::mt19937 generator;
 	std::uniform_int_distribution<> dist;
-	std::future<int> wait_for_zero;
+	std::future<int32_t> wait_for_zero;
 
 	void calculate_something();
 };
