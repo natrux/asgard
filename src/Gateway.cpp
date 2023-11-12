@@ -120,6 +120,7 @@ void Gateway::read_loop(){
 			if(m_endpoint->is_open()){
 				try{
 					m_endpoint->connect();
+					log(INFO) << "Connected";
 				}catch(const std::exception &err){
 					connect_error = true;
 					log(WARN) << err.what();

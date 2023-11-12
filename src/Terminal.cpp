@@ -133,9 +133,9 @@ void Terminal::process(std::shared_ptr<const data::LogMessage> value){
 
 
 Terminal::terminal_state_e Terminal::execute(const std::string &command_line){
-	size_t first_space = command_line.find(' ');
-	std::string command = command_line.substr(0, first_space);
-	std::vector<std::string> args = util::string_split(command_line, ' ', first_space, true);
+	const size_t first_space = command_line.find(' ');
+	const std::string command = command_line.substr(0, first_space);
+	const std::vector<std::string> args = util::string_split(command_line, ' ', first_space, true);
 	return execute(command, args);
 }
 
