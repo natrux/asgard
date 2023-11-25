@@ -9,6 +9,8 @@
 #else
 #include <sys/socket.h>
 #include <unistd.h>
+#include <poll.h>
+#include <fcntl.h>
 #endif
 
 
@@ -136,9 +138,75 @@ void SocketEndpoint::bind(void *addr, socklen_t length) const{
 }
 
 
-void SocketEndpoint::connect(void *addr, socklen_t length) const{
-	if(::connect(m_socket, static_cast<sockaddr *>(addr), length) == -1){
-		throw std::runtime_error("connect() failed with: " + std::string(strerror(errno)));
+void SocketEndpoint::connect(void *addr, socklen_t length, bool allow_eagain) const{
+	const bool has_timeout = (connect_timeout > time::duration::zero());
+	if(has_timeout){
+		set_blocking(false);
+	}
+	try{
+		if(::connect(m_socket, static_cast<sockaddr *>(addr), length) == -1){
+			if(!has_timeout || (errno != EWOULDBLOCK && errno != EINPROGRESS && (!allow_eagain || errno != EAGAIN))){
+				throw std::runtime_error("connect() failed with: " + std::string(strerror(errno)));
+			}
+
+			bool success = false;
+			time::duration remaining = connect_timeout;
+			const auto start_time = time::clock::now();
+			size_t num_wait = 0;
+			while(!success && remaining > time::duration::zero()){
+				num_wait++;
+				const int wait_ret = wait_writable(remaining);
+				if(wait_ret > 0){
+					int error = 0;
+					socklen_t len = sizeof(error);
+#ifdef _WIN32
+					char *optval = reinterpret_cast<char *>(&error);
+#else
+					void *optval = &error;
+#endif
+					if(getsockopt(m_socket, SOL_SOCKET, SO_ERROR, optval, &len) < 0){
+						throw std::runtime_error("getsockopt(SOL_SOCKET, SO_ERROR) failed with: " + std::string(strerror(errno)));
+					}
+
+					if(error == 0){
+						success = true;
+					}else{
+						throw std::runtime_error("connect() failed with: " + std::string(strerror(error)));
+					}
+				}else if(wait_ret < 0 && errno != EINTR){
+					throw std::runtime_error(
+#ifdef _WIN32
+						"select()"
+#else
+						"poll()"
+#endif
+						" failed with: " + std::string(strerror(errno))
+					);
+				}
+
+				remaining = connect_timeout - (time::clock::now() - start_time);
+			}
+			if(!success){
+				// timeout, interrupt connection attempt
+				shutdown();
+				throw std::runtime_error(
+					"connect() timed out after " + std::to_string(num_wait) + " call" + (num_wait == 1 ? "" : "s") + " to "
+#ifdef _WIN32
+					"select()"
+#else
+					"poll()"
+#endif
+				);
+			}
+		}
+	}catch(const std::runtime_error &/*err*/){
+		if(has_timeout){
+			set_blocking(true);
+		}
+		throw;
+	}
+	if(has_timeout){
+		set_blocking(true);
 	}
 }
 
@@ -146,6 +214,46 @@ void SocketEndpoint::connect(void *addr, socklen_t length) const{
 void SocketEndpoint::set_socket(socket_t socket, bool connected_){
 	m_socket = socket;
 	connected = connected_;
+}
+
+
+void SocketEndpoint::set_blocking(bool blocking) const{
+#ifdef _WIN32
+	u_long non_blocking_mode = (blocking ? 0 : 1);
+	if(ioctlsocket(m_socket, FIONBIO, &non_blocking_mode) != 0){
+		throw std::runtime_error("ioctlsocket(FIONBIO) failed with: " + std::string(strerror(errno)));
+	}
+#else
+	const int flags_before = fcntl(m_socket, F_GETFL);
+	if(flags_before == -1){
+		throw std::runtime_error("fcntl(F_GETFL) failed with: " + std::string(strerror(errno)));
+	}
+
+	const int flags_after = (blocking ? flags_before & ~O_NONBLOCK : flags_before | O_NONBLOCK);
+	if(fcntl(m_socket, F_SETFL, flags_after) == -1){
+		throw std::runtime_error("fcntl(F_SETFL) failed with: " + std::string(strerror(errno)));
+	}
+#endif
+}
+
+
+int SocketEndpoint::wait_writable(const time::duration &duration) const{
+	const int remaining_us = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
+#ifdef _WIN32
+	fd_set fdset;
+	FD_ZERO(&fdset);
+	FD_SET(m_socket, &fdset);
+	timeval tv;
+	tv.tv_sec = remaining_us / 1000000;
+	tv.tv_usec = remaining_us - tv.tv_sec * 1000000 + 1;
+	return select(m_socket + 1, NULL, &fdset, NULL, &tv);
+#else
+	pollfd fd;
+	fd.fd = m_socket;
+	// POLLIN is needed to detect shutdown()
+	fd.events = POLLOUT | POLLIN;
+	return poll(&fd, 1, remaining_us / 1000 + 1);
+#endif
 }
 
 

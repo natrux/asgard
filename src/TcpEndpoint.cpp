@@ -66,8 +66,12 @@ void TcpEndpoint::bind() const{
 	freeaddrinfo(info);
 
 	if(!bind_success){
-		const std::string summary = util::string_join(bind_errors, "; ");
-		throw std::runtime_error("No suitable addrinfo found for bind(): " + summary);
+		if(bind_errors.size() == 1){
+			throw std::runtime_error(bind_errors.front());
+		}else{
+			const std::string summary = util::string_join(bind_errors, "; ");
+			throw std::runtime_error("No suitable addrinfo found for bind(): " + summary);
+		}
 	}
 }
 
@@ -79,7 +83,7 @@ void TcpEndpoint::connect(){
 	std::vector<std::string> connect_errors;
 	for(addrinfo *i=info; i!=NULL; i=i->ai_next){
 		try{
-			SocketEndpoint::connect(i->ai_addr, i->ai_addrlen);
+			SocketEndpoint::connect(i->ai_addr, i->ai_addrlen, false);
 			connect_success = true;
 			break;
 		}catch(const std::runtime_error &err){
@@ -95,8 +99,12 @@ void TcpEndpoint::connect(){
 	freeaddrinfo(info);
 
 	if(!connect_success){
-		const std::string summary = util::string_join(connect_errors, "; ");
-		throw std::runtime_error("No suitable addrinfo found for connect(): " + summary);
+		if(connect_errors.size() == 1){
+			throw std::runtime_error(connect_errors.front());
+		}else{
+			const std::string summary = util::string_join(connect_errors, "; ");
+			throw std::runtime_error("No suitable addrinfo found for connect(): " + summary);
+		}
 	}
 	connected = true;
 }

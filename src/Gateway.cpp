@@ -30,7 +30,7 @@ Gateway::Gateway(const std::string &name_, const std::string &address):
 
 
 void Gateway::init(){
-	if(!m_endpoint){
+	if(!m_endpoint && !m_address.empty()){
 		try{
 			m_endpoint = net::Endpoint::from_address(m_address);
 		}catch(const std::exception &err){
@@ -49,12 +49,10 @@ void Gateway::main(){
 
 	Super::main();
 
-	if(m_endpoint->is_connected()){
-		try{
-			m_endpoint->shutdown();
-		}catch(const std::exception &err){
-			log(WARN) << err.what();
-		}
+	try{
+		m_endpoint->shutdown();
+	}catch(const std::exception &err){
+		log(WARN) << err.what();
 	}
 
 	if(read_thread.joinable()){
@@ -125,7 +123,13 @@ void Gateway::read_loop(){
 					connect_error = true;
 					log(WARN) << err.what();
 				}
-				if(!connect_error){
+				if(connect_error){
+					try{
+						m_endpoint->close();
+					}catch(const std::exception &err){
+						log(WARN) << err.what();
+					}
+				}else{
 					set_output(m_endpoint->output_source());
 					try{
 						on_connect();

@@ -52,7 +52,8 @@ void UnixEndpoint::bind() const{
 
 void UnixEndpoint::connect(){
 	sockaddr_un addr = get_sockaddr(m_path);
-	SocketEndpoint::connect(&addr, sizeof(addr));
+	SocketEndpoint::connect(&addr, sizeof(addr), true);
+	connected = true;
 }
 
 

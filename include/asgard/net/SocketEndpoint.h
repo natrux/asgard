@@ -3,6 +3,7 @@
 #include <asgard/net/Endpoint.h>
 #include <asgard/io/SocketInputSource.h>
 #include <asgard/io/SocketOutputSource.h>
+#include <asgard/time/time.h>
 #ifdef _WIN32
 #include <ws2tcpip.h>
 #else
@@ -42,18 +43,22 @@ protected:
 #endif
 	void open(int family);
 	void bind(void *addr, socklen_t length) const;
-	void connect(void *addr, socklen_t length) const;
+	void connect(void *addr, socklen_t length, bool allow_eagain) const;
 	void set_socket(socket_t socket, bool connected);
 	bool connected = false;
 
 private:
 	const int listen_queue_size = 5;
+	const time::duration connect_timeout = time::duration::zero();
 	const bool use_dual_stack = true;
 	const bool reuse_address = true;
 	socket_t m_socket = INVALID_SOCKET;
+
 	virtual std::unique_ptr<SocketEndpoint> from_socket(socket_t socket, bool connected) const = 0;
 	virtual void bind() const = 0;
 	void listen(int queue) const;
+	void set_blocking(bool blocking) const;
+	int wait_writable(const time::duration &duration) const;
 };
 
 
