@@ -1,5 +1,6 @@
 extends(Data)
 
+time.time time
 log_level_e level
 string unit
 string message

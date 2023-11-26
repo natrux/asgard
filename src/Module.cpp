@@ -62,6 +62,7 @@ void Module::start(std::unique_ptr<Module> self_ptr){
 
 
 void Module::main(){
+	subscribe(input_shutdown);
 	while(node_should_run()){
 		if(execute_timers()){
 			answer_pending_requests();
@@ -220,7 +221,6 @@ bool Module::receive_messages(){
 
 void Module::module_thread(){
 	bool error = false;
-	subscribe(input_shutdown);
 	try{
 		log(DEBUG) << "Init";
 		init();

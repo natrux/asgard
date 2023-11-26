@@ -14,7 +14,7 @@ public:
 	NetworkStream(const std::string &name_, const std::string &address);
 
 protected:
-	void init() override;
+	void main() override;
 
 	void process(std::shared_ptr<const data::DataPacket> data) override;
 

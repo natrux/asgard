@@ -19,14 +19,15 @@ NetworkStream::NetworkStream(const std::string &name_, std::unique_ptr<net::Endp
 
 
 NetworkStream::NetworkStream(const std::string &name_, const std::string &address):
-	NetworkStream(name_, net::Endpoint::from_address(address))
+	NetworkStreamModule(name_)
 {
+	init_endpoint(address);
 }
 
 
-void NetworkStream::init(){
+void NetworkStream::main(){
 	subscribe(input_data);
-	Super::init();
+	Super::main();
 }
 
 
@@ -38,6 +39,7 @@ void NetworkStream::process(std::shared_ptr<const data::DataPacket> data){
 void NetworkStream::keep_reading(std::unique_ptr<io::InputSource> input_source){
 	while(true){
 		auto packet = std::make_shared<data::DataPacket>();
+		packet->time = time::clock::now();
 		packet->payload.resize(read_buffer_size);
 		const size_t read = input_source->read(packet->payload.data(), read_buffer_size);
 		if(read == 0){
@@ -52,6 +54,7 @@ void NetworkStream::keep_reading(std::unique_ptr<io::InputSource> input_source){
 void NetworkStream::on_hang_up(){
 	// publish empty packet
 	auto packet = std::make_shared<data::DataPacket>();
+	packet->time = time::clock::now();
 	publish(packet, output_data);
 }
 
