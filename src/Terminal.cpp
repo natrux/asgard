@@ -5,7 +5,6 @@
 #include <asgard/util/string.h>
 
 #include <thread>
-#include <csignal>
 
 
 namespace asgard{
@@ -22,19 +21,16 @@ Terminal::Terminal(const std::string &name_):
 }
 
 
-void Terminal::init(){
-	subscribe(input_log);
-	Super::init();
-}
-
-
 void Terminal::main(){
+	subscribe(input_log);
+
 	set_terminal_mode();
 	std::thread read_thread(&Terminal::read_loop, this);
 
 	Super::main();
 
-	pthread_kill(read_thread.native_handle(), SIGINT);
+	// Only way to interrupt std::getchar() ?
+	pthread_cancel(read_thread.native_handle());
 	if(read_thread.joinable()){
 		read_thread.join();
 	}

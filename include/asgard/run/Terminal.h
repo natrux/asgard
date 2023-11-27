@@ -19,7 +19,6 @@ public:
 	Terminal(const std::string &name_);
 
 protected:
-	void init() override;
 	void main() override;
 
 	void process(std::shared_ptr<const data::LogMessage> value) override;
