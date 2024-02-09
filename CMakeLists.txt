@@ -107,6 +107,7 @@ add_executable(codegen
 	src/ModuleType.cpp
 	src/Namespace.cpp
 	src/packages.cpp
+	src/Token.cpp
 	src/Type.cpp
 	src/codegen.cpp
 )

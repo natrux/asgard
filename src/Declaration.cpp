@@ -9,23 +9,20 @@ namespace asgard{
 namespace codegen{
 
 
-std::string Declaration::to_string() const{
-	std::stringstream stream;
+void Declaration::to_string(std::ostream &stream) const{
 	if(is_const){
 		stream << "const ";
 	}
 	stream << type->get_name();
 	if(!template_types.empty()){
-		std::vector<std::string> template_strings;
-		for(auto t : template_types){
-			template_strings.push_back(t->get_name());
-		}
 		stream << "<";
-		for(size_t i=0; i<template_strings.size(); i++){
-			if(i > 0){
+		bool is_first = true;
+		for(const auto &t : template_types){
+			if(!is_first){
 				stream << ", ";
 			}
-			stream << template_strings[i];
+			stream << t->get_name();
+			is_first = false;
 		}
 		stream << ">";
 	}
@@ -39,6 +36,12 @@ std::string Declaration::to_string() const{
 	}else if(type->has_default_initializer()){
 		stream << " = " << type->get_default_initializer();
 	}
+}
+
+
+std::string Declaration::to_string() const{
+	std::stringstream stream;
+	to_string(stream);
 	return stream.str();
 }
 

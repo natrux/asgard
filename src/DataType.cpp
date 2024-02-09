@@ -89,11 +89,15 @@ void DataType::generate_header() const{
 	stream << "public:" << std::endl;
 
 	for(const auto &field : fields){
-		stream << "\t" << field->to_string() << ";" << std::endl;
+		stream << "\t";
+		field->to_string(stream);
+		stream << ";" << std::endl;
 	}
 	stream << std::endl;
 	for(const auto &method : methods){
-		stream << "\t" << method->to_string() << ";" << std::endl;
+		stream << "\t";
+		method->to_string(stream);
+		stream << ";" << std::endl;
 	}
 
 	stream << "};" << std::endl;

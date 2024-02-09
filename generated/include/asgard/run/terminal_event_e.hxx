@@ -43,7 +43,7 @@ public:
 	terminal_event_e &operator=(const enum_e &v){ value = v; return *this; }
 	terminal_event_e &operator=(const terminal_event_e &other){ value = other.value; return *this; }
 
-	operator enum_e() const{ return value; }
+	constexpr operator enum_e() const{ return value; }
 };
 
 

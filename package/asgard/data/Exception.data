@@ -1,6 +1,6 @@
 extends(Return)
 
-static Exception *from_request(Request *request, string message);
+static Exception *from_request(Request *request, string message)
 
 string message
 const string what()

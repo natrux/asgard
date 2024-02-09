@@ -9,6 +9,7 @@ namespace codegen{
 
 class Method{
 public:
+	void to_string(std::ostream &stream) const;
 	std::string to_string() const;
 
 private:

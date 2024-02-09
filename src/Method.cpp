@@ -7,9 +7,7 @@ namespace asgard{
 namespace codegen{
 
 
-std::string Method::to_string() const{
-	std::stringstream  stream;
-
+void Method::to_string(std::ostream &stream) const{
 	if(is_pure_virtual){
 		stream << "virtual ";
 	}
@@ -25,15 +23,13 @@ std::string Method::to_string() const{
 	stream << name;
 	stream << "(";
 	{
-		std::vector<std::string> input_str;
+		bool is_first = true;
 		for(const auto &d : input){
-			input_str.push_back(d.to_string());
-		}
-		for(size_t i=0; i<input_str.size(); i++){
-			if(i > 0){
+			if(!is_first){
 				stream << ", ";
 			}
-			stream << input_str[i];
+			d.to_string(stream);
+			is_first = false;
 		}
 	}
 	stream << ")";
@@ -46,7 +42,12 @@ std::string Method::to_string() const{
 	if(is_pure_virtual){
 		stream << " = 0";
 	}
+}
 
+
+std::string Method::to_string() const{
+	std::stringstream stream;
+	to_string(stream);
 	return stream.str();
 }
 

@@ -3,12 +3,14 @@
 #include <asgard/codegen/ModuleType.h>
 #include <asgard/codegen/Method.h>
 #include <asgard/codegen/packages.h>
+#include <asgard/codegen/Token.h>
 #include <asgard/util/ls.h>
 
 #include <string>
 #include <vector>
 #include <stdexcept>
 #include <iostream>
+#include <fstream>
 
 
 namespace asgard{
@@ -100,13 +102,27 @@ static void codegen(const std::vector<std::string> &packages){
 			std::cout << "Builtin type: " << type->get_full_name(".")  << std::endl;
 		}else{
 			std::cout << "Parsing: " << type->get_full_name(".") << std::endl;
-			type->parse(root_namespace);
+
+			std::string source;
+			{
+				const auto path = type->get_path_declaration();
+				std::ifstream stream(path);
+				if(!stream){
+					throw std::runtime_error("Failed to open '" + path + "'");
+				}
+				source = std::string(std::istreambuf_iterator<char>(stream), std::istreambuf_iterator<char>());
+			}
+			const auto tokens = tokenize(source);
+			std::cout << "Tokenized source: ";
+			for(const auto &token : tokens){
+				std::cout << token.content << ", ";
+			}
+			std::cout << std::endl;
 		}
 	}
 
 	for(const auto &type : root_namespace.get_types()){
 		std::cout << "Generating: " << type->get_full_name(".") << std::endl;
-		type->generate_code();
 	}
 }
 
