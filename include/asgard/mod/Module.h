@@ -55,6 +55,7 @@ protected:
 	}
 	void remove_timer(std::shared_ptr<const timer_t> timer);
 	void reset_timer(std::shared_ptr<const timer_t> timer);
+	void add_task(const std::function<void()> &function);
 	void add_pending_request(std::shared_ptr<const data::Request> request, std::future<std::shared_ptr<const data::Return>> &&future);
 
 	bool answer_pending_requests();

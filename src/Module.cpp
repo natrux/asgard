@@ -113,8 +113,8 @@ topic::LogPublisher Module::log(const data::log_level_e &level) const{
 
 
 std::shared_ptr<const Module::timer_t> Module::set_timer(const time::duration &period, const std::function<void()> &function, bool periodic){
-	if(period <= time::duration::zero()){
-		throw std::logic_error("Attempt to create a timer with zero period");
+	if(periodic && period <= time::duration::zero()){
+		throw std::logic_error("Attempt to create a periodic timer with zero period");
 	}
 	auto tim = std::make_shared<timer_t>(period, function, periodic);
 	timers.insert(tim);
@@ -136,6 +136,11 @@ void Module::reset_timer(std::shared_ptr<const timer_t> timer){
 	timers.erase(find);
 	mut_timer->reset();
 	timers.insert(mut_timer);
+}
+
+
+void Module::add_task(const std::function<void()> &function){
+	set_timeout(time::duration::zero(), function);
 }
 
 
