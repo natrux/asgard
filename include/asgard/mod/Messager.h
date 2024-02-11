@@ -23,6 +23,7 @@ protected:
 	bool node_should_run() const;
 	void node_exit();
 	pipe::PipeIn make_pipe_in() const;
+
 	void bind() const;
 	void bind(const core::ID &id) const;
 	void bind(const std::string &name) const;
@@ -53,6 +54,8 @@ protected:
 		}
 		return false;
 	}
+	void interrupt();
+
 	virtual void process(std::shared_ptr<const data::Message> message);
 	virtual void process(std::shared_ptr<const data::RPC> rpc);
 	virtual void process(std::shared_ptr<const data::Request> /*request*/){ /* default empty */ }
@@ -63,6 +66,7 @@ private:
 	const core::ID id;
 	std::map<core::ID, std::shared_ptr<Messager>> other_ids;
 	std::shared_ptr<pipe::Pipe> pipe_in;
+	pipe::PipeIn own_input;
 	mutable std::mutex mutex_should_run;
 	bool should_run = true;
 

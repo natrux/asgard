@@ -118,6 +118,7 @@ std::shared_ptr<const Module::timer_t> Module::set_timer(const time::duration &p
 	}
 	auto tim = std::make_shared<timer_t>(period, function, periodic);
 	timers.insert(tim);
+	interrupt();
 	return tim;
 }
 
@@ -136,6 +137,7 @@ void Module::reset_timer(std::shared_ptr<const timer_t> timer){
 	timers.erase(find);
 	mut_timer->reset();
 	timers.insert(mut_timer);
+	interrupt();
 }
 
 

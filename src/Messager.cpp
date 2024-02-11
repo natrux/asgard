@@ -1,4 +1,5 @@
 #include <asgard/mod/Messager.h>
+#include <asgard/data/Interrupt.hxx>
 
 
 namespace asgard{
@@ -6,9 +7,8 @@ namespace mod{
 
 
 Messager::Messager():
-	id()
+	Messager(core::ID())
 {
-	pipe_in = pipe::Pipe::create();
 }
 
 
@@ -16,6 +16,7 @@ Messager::Messager(const core::ID &id_):
 	id(id_)
 {
 	pipe_in = pipe::Pipe::create();
+	own_input = make_pipe_in();
 }
 
 
@@ -112,9 +113,17 @@ bool Messager::process_next(){
 }
 
 
+void Messager::interrupt(){
+	auto message = std::make_shared<data::Interrupt>();
+	own_input.push(message);
+}
+
+
 void Messager::process(std::shared_ptr<const data::Message> message){
 	if(auto rpc = std::dynamic_pointer_cast<const data::RPC>(message)){
 		process(rpc);
+	}else if(std::dynamic_pointer_cast<const data::Interrupt>(message)){
+		// Nothing to do, but interrupted waiting
 	}else if(auto sample = std::dynamic_pointer_cast<const data::Sample>(message)){
 		process(sample);
 	}
