@@ -18,7 +18,9 @@ public:
 	TopicPtr();
 	TopicPtr(const std::string &topic_name);
 	TopicPtr(const char *topic_name);
+	TopicPtr(const std::nullptr_t &);
 	TopicPtr &operator=(const std::string &topic_name);
+	TopicPtr &operator=(const std::nullptr_t &);
 	std::shared_ptr<Topic> operator->();
 
 	struct Compare{
