@@ -210,11 +210,11 @@ bool Module::execute_timers(){
 
 bool Module::receive_messages(){
 	bool did_something = false;
-	const auto now = time::clock::now();
 	try{
 		if(timers.empty()){
 			did_something = process_next();
 		}else{
+			const auto now = time::clock::now();
 			const auto timeout = (*timers.begin())->remaining(now);
 			did_something = process_next(timeout);
 		}

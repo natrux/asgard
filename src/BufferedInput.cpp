@@ -15,7 +15,7 @@ BufferedInput::BufferedInput(std::unique_ptr<InputSource> source):
 
 void BufferedInput::read(void *data_, size_t length){
 	char *data = reinterpret_cast<char *>(data_);
-	size_t available = end - start;
+	const size_t available = end - start;
 	if(length <= available){
 		read_from_buffer(data, length);
 		return;
@@ -24,22 +24,22 @@ void BufferedInput::read(void *data_, size_t length){
 	read_from_buffer(data, available);
 	reset_buffer();
 
-	size_t written = available;
-	size_t remaining = length - written;
+	const size_t remaining = length - available;
 	if(remaining <= BUFFER_THRESHOLD){
 		// The data is not too big, so requesting more and buffering it might be worth it.
-		available = 0;
-		while(available < remaining){
-			size_t read = fill_buffer();
+		size_t collected = 0;
+		while(collected < remaining){
+			const size_t read = fill_buffer();
 			if(read == 0){
 				throw std::underflow_error("EOF");
 			}
-			available += read;
+			collected += read;
 		}
-		read_from_buffer(data+written, remaining);
+		read_from_buffer(data+available, remaining);
 	}else{
+		size_t written = available;
 		while(written < length){
-			size_t read = m_source->read(data+written, length-written);
+			const size_t read = m_source->read(data+written, length-written);
 			if(read == 0){
 				throw std::underflow_error("EOF");
 			}
@@ -63,8 +63,8 @@ void BufferedInput::read_from_buffer(char *data, size_t length){
 
 
 size_t BufferedInput::fill_buffer(){
-	size_t free_space = BUFFER_SIZE - end;
-	size_t read = m_source->read(m_buffer+end, free_space);
+	const size_t free_space = BUFFER_SIZE - end;
+	const size_t read = m_source->read(m_buffer+end, free_space);
 	end += read;
 	return read;
 }

@@ -26,11 +26,11 @@ Server::Server(const std::string &name_, const std::string &address):
 
 
 void Server::init(){
-	if(!m_endpoint){
+	if(!m_endpoint && !m_address.empty()){
 		try{
 			m_endpoint = net::Endpoint::from_address(m_address);
 		}catch(const std::exception &err){
-			throw std::runtime_error("Creating endpoint from address failed with: " + std::string(err.what()));
+			throw std::runtime_error("Creating endpoint from '" + m_address + "' failed with: " + std::string(err.what()));
 		}
 	}
 	if(!m_endpoint){
