@@ -23,5 +23,34 @@ using duration = std::common_type<
 >::type;
 
 
+inline time now(){
+	return clock::now();
+}
+
+inline wall_time now_wall(){
+	return wall_clock::now();
+}
+
+inline duration since(const time &before){
+	return now() - before;
+}
+
+inline duration since(const wall_time &before){
+	return now_wall() - before;
+}
+
+inline duration until(const time &after){
+	return after - now();
+}
+
+inline duration until(const wall_time &after){
+	return after - now_wall();
+}
+
+inline duration immediate(){
+	return duration::zero();
+}
+
+
 }
 }

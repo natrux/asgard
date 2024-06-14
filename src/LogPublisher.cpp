@@ -26,7 +26,7 @@ LogPublisher::LogPublisher(LogPublisher &&other):
 
 LogPublisher::~LogPublisher(){
 	auto msg = std::make_shared<data::LogMessage>();
-	msg->time = time::clock::now();
+	msg->time = time::now();
 	msg->level = level;
 	msg->unit = unit;
 	msg->message = str();

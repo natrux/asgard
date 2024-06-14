@@ -49,7 +49,7 @@ protected:
 
 private:
 	const int listen_queue_size = 5;
-	const time::duration connect_timeout = time::duration::zero();
+	const time::duration connect_timeout = time::immediate();
 	const bool use_dual_stack = true;
 	const bool reuse_address = true;
 	socket_t m_socket = INVALID_SOCKET;

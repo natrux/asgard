@@ -39,7 +39,7 @@ void NetworkStream::process(std::shared_ptr<const data::DataPacket> data){
 void NetworkStream::keep_reading(std::unique_ptr<io::InputSource> input_source){
 	while(true){
 		auto packet = std::make_shared<data::DataPacket>();
-		packet->time = time::clock::now();
+		packet->time = time::now();
 		packet->payload.resize(read_buffer_size);
 		const size_t read = input_source->read(packet->payload.data(), read_buffer_size);
 		if(read == 0){
@@ -54,7 +54,7 @@ void NetworkStream::keep_reading(std::unique_ptr<io::InputSource> input_source){
 void NetworkStream::on_hang_up(){
 	// publish empty packet
 	auto packet = std::make_shared<data::DataPacket>();
-	packet->time = time::clock::now();
+	packet->time = time::now();
 	publish(packet, output_data);
 }
 

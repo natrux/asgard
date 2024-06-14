@@ -103,6 +103,16 @@ std::shared_ptr<const data::Message> Messager::get_next(){
 }
 
 
+std::shared_ptr<const data::Message> Messager::get_next(const time::duration &timeout){
+	try{
+		return pipe_in->pop(timeout);
+	}catch(const std::underflow_error &err){
+		node_exit();
+	}
+	return nullptr;
+}
+
+
 bool Messager::process_next(){
 	auto data = get_next();
 	if(data){

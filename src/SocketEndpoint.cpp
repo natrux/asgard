@@ -139,7 +139,7 @@ void SocketEndpoint::bind(void *addr, socklen_t length) const{
 
 
 void SocketEndpoint::connect(void *addr, socklen_t length, bool allow_eagain) const{
-	const bool has_timeout = (connect_timeout > time::duration::zero());
+	const bool has_timeout = (connect_timeout > time::immediate());
 	if(has_timeout){
 		set_blocking(false);
 	}
@@ -151,9 +151,9 @@ void SocketEndpoint::connect(void *addr, socklen_t length, bool allow_eagain) co
 
 			bool success = false;
 			time::duration remaining = connect_timeout;
-			const auto start_time = time::clock::now();
+			const auto start_time = time::now();
 			size_t num_wait = 0;
-			while(!success && remaining > time::duration::zero()){
+			while(!success && remaining > time::immediate()){
 				num_wait++;
 				const int wait_ret = wait_writable(remaining);
 				if(wait_ret > 0){
@@ -184,7 +184,7 @@ void SocketEndpoint::connect(void *addr, socklen_t length, bool allow_eagain) co
 					);
 				}
 
-				remaining = connect_timeout - (time::clock::now() - start_time);
+				remaining = connect_timeout - time::since(start_time);
 			}
 			if(!success){
 				// timeout, interrupt connection attempt

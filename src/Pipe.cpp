@@ -85,6 +85,40 @@ void Pipe::push(size_t from, std::shared_ptr<const data::Message> value){
 }
 
 
+std::shared_ptr<const data::Message> Pipe::pop(const time::duration &wait_time){
+	std::unique_lock<std::mutex> lock(mutex);
+
+	unsigned long next = 0;
+	auto found = data.end();
+	while(found == data.end()){
+		auto remaining_time = wait_time;
+		while(opened && pending.empty() && remaining_time > time::immediate()){
+			const auto now = time::now();
+			cv.wait_for(lock, remaining_time);
+			remaining_time -= time::since(now);
+		}
+
+		if(!opened){
+			throw std::underflow_error("EOF");
+		}
+		if(pending.empty()){
+			return nullptr;
+		}
+
+		next = pending.pop();
+		found = data.find(next);
+	}
+
+	auto &queue = found->second;
+	std::shared_ptr<const data::Message> result = queue.front();
+	queue.pop();
+	if(!queue.empty()){
+		pending.push(next);
+	}
+	return result;
+}
+
+
 std::shared_ptr<const data::Message> Pipe::pop(){
 	std::unique_lock<std::mutex> lock(mutex);
 

@@ -35,15 +35,7 @@ protected:
 	void unbind_other(std::shared_ptr<const Messager> other);
 
 	std::shared_ptr<const data::Message> get_next();
-	template<class Rep, class Period>
-	std::shared_ptr<const data::Message> get_next(const std::chrono::duration<Rep, Period> &timeout){
-		try{
-			return pipe_in->pop(timeout);
-		}catch(const std::underflow_error &err){
-			node_exit();
-		}
-		return nullptr;
-	}
+	std::shared_ptr<const data::Message> get_next(const time::duration &timeout);
 	bool process_next();
 	template<class Rep, class Period>
 	bool process_next(const std::chrono::duration<Rep, Period> &timeout){

@@ -37,7 +37,7 @@ void Topic::publish(std::shared_ptr<const data::Data> value){
 	}
 
 	auto sample = std::make_shared<data::Sample>();
-	sample->time = time::clock::now();
+	sample->time = time::now();
 	sample->data = value;
 
 	std::lock_guard<std::mutex> lock(mutex);

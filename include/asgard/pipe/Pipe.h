@@ -24,8 +24,7 @@ public:
 	static PipeIn get(const core::ID &id);
 
 	void push(size_t from, std::shared_ptr<const data::Message> value);
-	template<class Rep, class Period>
-	std::shared_ptr<const data::Message> pop(const std::chrono::duration<Rep, Period> &wait_time);
+	std::shared_ptr<const data::Message> pop(const time::duration &wait_time);
 	std::shared_ptr<const data::Message> pop();
 	size_t add_id();
 	void close();
@@ -43,43 +42,6 @@ private:
 	std::map<size_t, std::queue<std::shared_ptr<const data::Message>>> data;
 	util::UniqueQueue<size_t> pending;
 };
-
-
-template<class Rep, class Period>
-std::shared_ptr<const data::Message> Pipe::pop(const std::chrono::duration<Rep, Period> &wait_time){
-	std::unique_lock<std::mutex> lock(mutex);
-
-	unsigned long next = 0;
-	auto found = data.end();
-	while(found == data.end()){
-		auto remaining_time = wait_time;
-		while(opened && pending.empty() && remaining_time > std::chrono::duration<Rep, Period>::zero()){
-			const auto now = time::clock::now();
-			cv.wait_for(lock, remaining_time);
-			const auto elapsed = time::clock::now() - now;
-			remaining_time -= std::chrono::duration_cast<std::chrono::duration<Rep, Period>>(elapsed);
-		}
-
-		if(!opened){
-			throw std::underflow_error("EOF");
-		}
-		if(pending.empty()){
-			return nullptr;
-		}
-
-		next = pending.pop();
-		found = data.find(next);
-	}
-
-	auto &queue = found->second;
-	std::shared_ptr<const data::Message> result = queue.front();
-	queue.pop();
-	if(!queue.empty()){
-		pending.push(next);
-	}
-	return result;
-}
-
 
 
 }

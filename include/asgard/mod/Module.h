@@ -45,14 +45,7 @@ protected:
 	std::string get_name() const;
 	topic::LogPublisher log(const data::log_level_e &level) const;
 	std::shared_ptr<const timer_t> set_timer(const time::duration &period, const std::function<void()> &function, bool periodic=true);
-	template<class Rep, class Period>
-	std::shared_ptr<const timer_t> set_timer(const std::chrono::duration<Rep, Period> &period, const std::function<void()> &function, bool periodic=true){
-		return set_timer(std::chrono::duration_cast<time::duration>(period), function, periodic);
-	}
-	template<class Rep, class Period>
-	std::shared_ptr<const timer_t> set_timeout(const std::chrono::duration<Rep, Period> &period, const std::function<void()> &function){
-		return set_timer(period, function, false);
-	}
+	std::shared_ptr<const timer_t> set_timeout(const time::duration &period, const std::function<void()> &function);
 	void remove_timer(std::shared_ptr<const timer_t> timer);
 	void reset_timer(std::shared_ptr<const timer_t> timer);
 	void add_task(const std::function<void()> &function);

@@ -113,13 +113,18 @@ topic::LogPublisher Module::log(const data::log_level_e &level) const{
 
 
 std::shared_ptr<const Module::timer_t> Module::set_timer(const time::duration &period, const std::function<void()> &function, bool periodic){
-	if(periodic && period <= time::duration::zero()){
+	if(periodic && period <= time::immediate()){
 		throw std::logic_error("Attempt to create a periodic timer with zero period");
 	}
 	auto tim = std::make_shared<timer_t>(period, function, periodic);
 	timers.insert(tim);
 	interrupt();
 	return tim;
+}
+
+
+std::shared_ptr<const Module::timer_t> Module::set_timeout(const time::duration &period, const std::function<void()> &function){
+	return set_timer(period, function, false);
 }
 
 
@@ -142,7 +147,7 @@ void Module::reset_timer(std::shared_ptr<const timer_t> timer){
 
 
 void Module::add_task(const std::function<void()> &function){
-	set_timeout(time::duration::zero(), function);
+	set_timeout(time::immediate(), function);
 }
 
 
@@ -156,7 +161,7 @@ bool Module::answer_pending_requests(){
 	for(auto iter=pending_requests.begin(); iter!=pending_requests.end(); /* no iter */){
 		const auto &request = iter->first;
 		auto &future = iter->second;
-		const auto status = future.wait_for(time::duration::zero());
+		const auto status = future.wait_for(time::immediate());
 		if(status == std::future_status::ready){
 			std::shared_ptr<const data::Return> ret;
 			try{
@@ -189,7 +194,7 @@ bool Module::answer_pending_requests(){
 
 bool Module::execute_timers(){
 	bool did_something = false;
-	const auto now = time::clock::now();
+	const auto now = time::now();
 	if(!timers.empty() && (*timers.begin())->is_expired(now)){
 		auto expired_timer = *timers.begin();
 		timers.erase(timers.begin());
@@ -214,7 +219,7 @@ bool Module::receive_messages(){
 		if(timers.empty()){
 			did_something = process_next();
 		}else{
-			const auto now = time::clock::now();
+			const auto now = time::now();
 			const auto timeout = (*timers.begin())->remaining(now);
 			did_something = process_next(timeout);
 		}
