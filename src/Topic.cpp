@@ -14,9 +14,9 @@ const std::string Topic::null_name = "asgard.null";
 
 
 std::shared_ptr<Topic> Topic::create(const std::string &name){
-	static std::shared_ptr<Topic> lost_and_found(new Topic(true, false));
-	static std::shared_ptr<Topic> empty_topic(new Topic(false, true));
-	static std::shared_ptr<Topic> null_topic(new Topic(false, false));
+	static std::shared_ptr<Topic> lost_and_found(new Topic(no_name, true, false));
+	static std::shared_ptr<Topic> empty_topic(new Topic(empty_name, false, true));
+	static std::shared_ptr<Topic> null_topic(new Topic(null_name, false, false));
 
 	if(name == no_name){
 		return lost_and_found;
@@ -27,7 +27,12 @@ std::shared_ptr<Topic> Topic::create(const std::string &name){
 	if(name == null_name){
 		return null_topic;
 	}
-	return std::shared_ptr<Topic>(new Topic(true, true));
+	return std::shared_ptr<Topic>(new Topic(name, true, true));
+}
+
+
+std::string Topic::get_name() const{
+	return name;
 }
 
 
@@ -81,7 +86,8 @@ void Topic::unsubscribe(const pipe::PipeIn &pipe_in){
 }
 
 
-Topic::Topic(bool allow_publish_, bool allow_subscribe_):
+Topic::Topic(const std::string &name_, bool allow_publish_, bool allow_subscribe_):
+	name(name_),
 	allow_publish(allow_publish_),
 	allow_subscribe(allow_subscribe_)
 {

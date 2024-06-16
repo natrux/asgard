@@ -19,6 +19,7 @@ public:
 	const static std::string null_name;
 	static std::shared_ptr<Topic> create(const std::string &name);
 
+	std::string get_name() const;
 	void publish(std::shared_ptr<const data::Data> value);
 	void subscribe(const pipe::PipeIn &pipe_in);
 	void subscribe(pipe::PipeIn &&pipe_in);
@@ -26,12 +27,13 @@ public:
 
 private:
 	std::mutex mutex;
+	std::string name;
 	std::set<pipe::PipeIn, pipe::PipeIn::Compare> subscribers;
 	size_t sample_count = 0;
 	const bool allow_publish;
 	const bool allow_subscribe;
 
-	Topic(bool allow_publish, bool allow_subscribe);
+	Topic(const std::string &name, bool allow_publish, bool allow_subscribe);
 };
 
 

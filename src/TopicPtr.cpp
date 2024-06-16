@@ -6,7 +6,7 @@ namespace topic{
 
 
 std::mutex TopicPtr::mutex_topic_map;
-std::map<std::string, std::shared_ptr<Topic>> TopicPtr::topic_map;
+std::map<std::string, std::weak_ptr<Topic>> TopicPtr::topic_map;
 
 
 TopicPtr::TopicPtr():
@@ -20,27 +20,48 @@ TopicPtr::TopicPtr(const std::string &topic_name){
 }
 
 
+TopicPtr::TopicPtr(const char *topic_name){
+	if(topic_name){
+		*this = std::string(topic_name);
+	}else{
+		*this = nullptr;
+	}
+}
+
+
 TopicPtr::TopicPtr(const std::nullptr_t &):
 	TopicPtr(Topic::null_name)
 {
 }
 
 
-TopicPtr::TopicPtr(const char *topic_name):
-	TopicPtr(std::string(topic_name))
-{
+TopicPtr::~TopicPtr(){
+	cleanup();
 }
 
 
 TopicPtr &TopicPtr::operator=(const std::string &topic_name){
+	cleanup();
+
 	std::lock_guard<std::mutex> lock(mutex_topic_map);
 	const std::string topic_name_ = topic_name.empty() ? Topic::empty_name : topic_name;
-	auto &t = topic_map[topic_name_];
-	if(!t){
-		t = Topic::create(topic_name_);
+	auto &w = topic_map[topic_name_];
+	if(auto t = w.lock()){
+		topic = t;
+	}else{
+		topic = Topic::create(topic_name_);
+		w = topic;
 	}
-	topic = t;
 	return *this;
+}
+
+
+TopicPtr &TopicPtr::operator=(const char *topic_name){
+	if(topic_name){
+		return (*this = std::string(topic_name));
+	}else{
+		return (*this = nullptr);
+	}
 }
 
 
@@ -56,6 +77,22 @@ std::shared_ptr<Topic> TopicPtr::operator->(){
 
 bool TopicPtr::Compare::operator()(const TopicPtr &a, const TopicPtr &b) const{
 	return is_less(a.topic, b.topic);
+}
+
+
+void TopicPtr::cleanup(){
+	if(!topic){
+		return;
+	}
+	const std::string old_name = topic->get_name();
+	topic = nullptr;
+
+	std::lock_guard<std::mutex> lock(mutex_topic_map);
+	const auto iter = topic_map.find(old_name);
+	if(iter != topic_map.end() && !iter->second.lock()){
+		// no references left, garbage collect
+		topic_map.erase(iter);
+	}
 }
 
 

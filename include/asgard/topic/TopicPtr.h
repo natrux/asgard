@@ -16,10 +16,16 @@ namespace topic{
 class TopicPtr{
 public:
 	TopicPtr();
+	TopicPtr(const TopicPtr &other) = default;
+	TopicPtr(TopicPtr &&other) = default;
 	TopicPtr(const std::string &topic_name);
 	TopicPtr(const char *topic_name);
 	TopicPtr(const std::nullptr_t &);
+	~TopicPtr();
+	TopicPtr &operator=(const TopicPtr &other) = default;
+	TopicPtr &operator=(TopicPtr &&other) = default;
 	TopicPtr &operator=(const std::string &topic_name);
+	TopicPtr &operator=(const char *topic_name);
 	TopicPtr &operator=(const std::nullptr_t &);
 	std::shared_ptr<Topic> operator->();
 
@@ -30,9 +36,11 @@ public:
 
 private:
 	static std::mutex mutex_topic_map;
-	static std::map<std::string, std::shared_ptr<Topic>> topic_map;
+	static std::map<std::string, std::weak_ptr<Topic>> topic_map;
 
 	std::shared_ptr<Topic> topic;
+
+	void cleanup();
 };
 
 
