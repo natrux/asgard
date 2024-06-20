@@ -1,5 +1,4 @@
 #include <asgard/net/TcpEndpoint.h>
-#include <asgard/make_unique.h>
 #include <asgard/util/string.h>
 
 #include <stdexcept>

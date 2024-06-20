@@ -2,7 +2,6 @@
 #include <asgard/codegen/Declaration.h>
 #include <asgard/codegen/Method.h>
 #include <asgard/codegen/packages.h>
-#include <asgard/make_unique.h>
 
 #include <sstream>
 

@@ -1,5 +1,4 @@
 #include <asgard/net/UnixEndpoint.h>
-#include <asgard/make_unique.h>
 #include <stdexcept>
 #include <unistd.h>
 #include <sys/un.h>

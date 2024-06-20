@@ -1,5 +1,4 @@
 #include <asgard/net/SocketEndpoint.h>
-#include <asgard/make_unique.h>
 
 #include <stdexcept>
 #include <cstring>

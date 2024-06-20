@@ -1,7 +1,6 @@
 #include <EchoGatewayModule.hxx>
 #include <EchoServerModule.hxx>
 
-#include <asgard/make_unique.h>
 #include <asgard/io/BufferedInput.h>
 #include <asgard/run/Terminal.h>
 

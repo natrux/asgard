@@ -4,7 +4,6 @@
 #include <asgard/net/UnixEndpoint.h>
 #endif
 #include <asgard/net/NamedEndpoint.h>
-#include <asgard/make_unique.h>
 
 #include <stdexcept>
 

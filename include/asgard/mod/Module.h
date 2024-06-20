@@ -8,7 +8,6 @@
 #include <asgard/data/PleaseShutDown.hxx>
 #include <asgard/data/log_level_e.hxx>
 #include <asgard/topic/LogPublisher.h>
-#include <asgard/make_unique.h>
 
 #include <memory>
 #include <mutex>
