@@ -51,6 +51,10 @@ inline duration immediate(){
 	return duration::zero();
 }
 
+inline duration tick(){
+	return since(now());
+}
+
 
 }
 }

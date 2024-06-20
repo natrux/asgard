@@ -88,7 +88,7 @@ void Pipe::push(size_t from, std::shared_ptr<const data::Message> value){
 std::shared_ptr<const data::Message> Pipe::pop(const time::duration &wait_time){
 	std::unique_lock<std::mutex> lock(mutex);
 
-	unsigned long next = 0;
+	size_t next = 0;
 	auto found = data.end();
 	while(found == data.end()){
 		auto remaining_time = wait_time;

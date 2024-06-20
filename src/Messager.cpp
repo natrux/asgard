@@ -123,6 +123,16 @@ bool Messager::process_next(){
 }
 
 
+bool Messager::process_next(const time::duration &timeout){
+	auto data = get_next(timeout);
+	if(data){
+		process(data);
+		return true;
+	}
+	return false;
+}
+
+
 void Messager::interrupt(){
 	auto message = std::make_shared<data::Interrupt>();
 	own_input.push(message);

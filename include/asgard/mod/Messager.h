@@ -37,15 +37,7 @@ protected:
 	std::shared_ptr<const data::Message> get_next();
 	std::shared_ptr<const data::Message> get_next(const time::duration &timeout);
 	bool process_next();
-	template<class Rep, class Period>
-	bool process_next(const std::chrono::duration<Rep, Period> &timeout){
-		auto data = get_next(timeout);
-		if(data){
-			process(data);
-			return true;
-		}
-		return false;
-	}
+	bool process_next(const time::duration &timeout);
 	void interrupt();
 
 	virtual void process(std::shared_ptr<const data::Message> message);
