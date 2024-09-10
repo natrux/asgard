@@ -29,8 +29,6 @@ void Terminal::main(){
 
 	Super::main();
 
-	// Only way to interrupt std::getchar() ?
-	pthread_cancel(read_thread.native_handle());
 	if(read_thread.joinable()){
 		read_thread.join();
 	}

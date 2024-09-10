@@ -3,6 +3,8 @@
 #include <asgard/run/Terminal_read_event.hxx>
 #include <asgard/run/TerminalClient.hxx>
 
+#include <sys/poll.h>
+
 
 namespace asgard{
 namespace run{
@@ -10,7 +12,21 @@ namespace run{
 
 void Terminal::read_loop(){
 	TerminalClient terminal(make_pipe_in());
+	const auto stdin_fd = fileno(stdin);
+
 	while(node_should_run()) {
+		{
+			pollfd fds;
+			fds.fd = stdin_fd;
+			fds.events = POLLIN;
+			const auto polled = poll(&fds, 1, 100);
+			if(polled < 0){
+				break;
+			}else if(polled == 0){
+				continue;
+			}
+		}
+
 		const auto c = std::getchar();
 		if(c == EOF){
 			terminal.read_event(terminal_event_e::END_OF_FILE);
