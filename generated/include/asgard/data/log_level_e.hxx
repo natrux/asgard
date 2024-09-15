@@ -22,9 +22,7 @@ public:
 	constexpr static enum_e ERROR = enum_e::ERROR;
 
 	constexpr log_level_e() = default;
-	constexpr log_level_e(const log_level_e &other) = default;
 	constexpr log_level_e(const enum_e &v) : value(v){}
-	log_level_e &operator=(const log_level_e &other){ value = other.value; return *this; }
 	log_level_e &operator=(const enum_e &v){ value = v; return *this; }
 
 	constexpr operator enum_e() const{ return value; }

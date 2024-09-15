@@ -38,10 +38,8 @@ public:
 	constexpr static enum_e END_OF_FILE = enum_e::END_OF_FILE;
 
 	constexpr terminal_event_e() = default;
-	constexpr terminal_event_e(const terminal_event_e &other) = default;
 	constexpr terminal_event_e(const enum_e &v) : value(v){}
 	terminal_event_e &operator=(const enum_e &v){ value = v; return *this; }
-	terminal_event_e &operator=(const terminal_event_e &other){ value = other.value; return *this; }
 
 	constexpr operator enum_e() const{ return value; }
 };
