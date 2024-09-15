@@ -138,6 +138,25 @@ Terminal::terminal_state_e Terminal::execute(const std::string &command, const s
 	if(command == "quit"){
 		Module::shutdown_all();
 		return terminal_state_e::INACTIVE;
+	}else if(command == "topic"){
+		const auto all_topics = topic::TopicPtr::get_all_topics();
+		size_t longest_name = 0;
+		for(const auto &entry : all_topics){
+			longest_name = std::max(longest_name, entry->get_name().size());
+		}
+		for(const auto &entry : all_topics){
+			const std::string topic_name = entry->get_name();
+			const size_t num_samples = entry->get_num_samples();
+			const size_t num_subscribers = entry->get_num_subscribers();
+			std::cout
+				<< topic_name << std::string(longest_name - topic_name.size(), ' ')
+				<< ": "
+				<< num_samples << " sample" << (num_samples == 1 ? "" : "s")
+				<< ", "
+				<< num_subscribers << " subscriber" << (num_subscribers == 1 ? "" : "s")
+				<< std::endl;
+		}
+		return terminal_state_e::DISPLAY;
 	}else{
 		if(!command.empty()){
 			if(args.empty()){

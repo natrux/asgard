@@ -36,6 +36,16 @@ std::string Topic::get_name() const{
 }
 
 
+size_t Topic::get_num_samples() const{
+	return sample_count;
+}
+
+
+size_t Topic::get_num_subscribers() const{
+	return subscribers.size();
+}
+
+
 void Topic::publish(std::shared_ptr<const data::Data> value){
 	if(!allow_publish){
 		return;

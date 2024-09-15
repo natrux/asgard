@@ -4,6 +4,7 @@
 #include <asgard/topic/Topic.h>
 
 #include <string>
+#include <vector>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -15,6 +16,8 @@ namespace topic{
 
 class TopicPtr{
 public:
+	static std::vector<TopicPtr> get_all_topics();
+
 	TopicPtr();
 	TopicPtr(const TopicPtr &other) = default;
 	TopicPtr(TopicPtr &&other) = default;
@@ -27,7 +30,7 @@ public:
 	TopicPtr &operator=(const std::string &topic_name);
 	TopicPtr &operator=(const char *topic_name);
 	TopicPtr &operator=(const std::nullptr_t &);
-	std::shared_ptr<Topic> operator->();
+	std::shared_ptr<Topic> operator->() const;
 
 	struct Compare{
 		std::less<const std::shared_ptr<Topic> &> is_less;
@@ -40,6 +43,7 @@ private:
 
 	std::shared_ptr<Topic> topic;
 
+	TopicPtr(std::shared_ptr<Topic> topic);
 	void cleanup();
 };
 

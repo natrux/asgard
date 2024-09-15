@@ -20,6 +20,8 @@ public:
 	static std::shared_ptr<Topic> create(const std::string &name);
 
 	std::string get_name() const;
+	size_t get_num_samples() const;
+	size_t get_num_subscribers() const;
 	void publish(std::shared_ptr<const data::Data> value);
 	void subscribe(const pipe::PipeIn &pipe_in);
 	void subscribe(pipe::PipeIn &&pipe_in);

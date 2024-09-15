@@ -9,6 +9,18 @@ std::mutex TopicPtr::mutex_topic_map;
 std::map<std::string, std::weak_ptr<Topic>> TopicPtr::topic_map;
 
 
+std::vector<TopicPtr> TopicPtr::get_all_topics(){
+	std::lock_guard<std::mutex> lock(mutex_topic_map);
+	std::vector<TopicPtr> result;
+	for(const auto &entry : topic_map){
+		if(auto topic = entry.second.lock()){
+			result.push_back(topic);
+		}
+	}
+	return result;
+}
+
+
 TopicPtr::TopicPtr():
 	TopicPtr(Topic::no_name)
 {
@@ -70,13 +82,19 @@ TopicPtr &TopicPtr::operator=(const std::nullptr_t &){
 }
 
 
-std::shared_ptr<Topic> TopicPtr::operator->(){
+std::shared_ptr<Topic> TopicPtr::operator->() const{
 	return topic;
 }
 
 
 bool TopicPtr::Compare::operator()(const TopicPtr &a, const TopicPtr &b) const{
 	return is_less(a.topic, b.topic);
+}
+
+
+TopicPtr::TopicPtr(std::shared_ptr<Topic> topic_):
+	topic(topic_)
+{
 }
 
 
