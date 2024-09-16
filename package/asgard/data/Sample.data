@@ -1,4 +1,5 @@
 extends(Message)
 
 time.time time
+bool retained = false
 Data *data

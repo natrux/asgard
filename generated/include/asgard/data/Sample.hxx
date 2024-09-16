@@ -14,6 +14,7 @@ namespace data{
 class Sample : public Message{
 public:
 	time::time time;
+	bool retained = false;
 	std::shared_ptr<const Data> data;
 };
 

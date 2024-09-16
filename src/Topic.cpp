@@ -70,13 +70,14 @@ float Topic::get_publish_statistic() const{
 }
 
 
-void Topic::publish(std::shared_ptr<const data::Data> value){
+void Topic::publish(std::shared_ptr<const data::Data> value, bool retained){
 	if(!allow_publish){
 		return;
 	}
 
 	auto sample = std::make_shared<data::Sample>();
 	sample->time = time::now();
+	sample->retained = retained;
 	sample->data = value;
 
 	std::lock_guard<std::mutex> lock(mutex);
@@ -84,12 +85,12 @@ void Topic::publish(std::shared_ptr<const data::Data> value){
 		bool itered = false;
 		try{
 			(*iter).push(sample);
-		}catch(const std::overflow_error &err){
-		}catch(const std::runtime_error &err){
+		}catch(const std::overflow_error &){
+		}catch(const std::runtime_error &){
 			// pipe closed
 			iter = subscribers.erase(iter);
 			itered = true;
-		}catch(const std::exception &err){
+		}catch(const std::exception &){
 		}
 		if(!itered){
 			iter++;
@@ -115,6 +116,12 @@ void Topic::subscribe(pipe::PipeIn &&pipe_in){
 	}
 
 	std::lock_guard<std::mutex> lock(mutex);
+	if(last_sample && last_sample->retained){
+		try{
+			pipe_in.push(last_sample);
+		}catch(const std::exception &){
+		}
+	}
 	subscribers.insert(std::move(pipe_in));
 }
 

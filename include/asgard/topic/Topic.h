@@ -26,7 +26,7 @@ public:
 	size_t get_num_subscribers() const;
 	std::shared_ptr<const data::Sample> get_last_sample() const;
 	float get_publish_statistic() const;
-	void publish(std::shared_ptr<const data::Data> value);
+	void publish(std::shared_ptr<const data::Data> value, bool retained=false);
 	void subscribe(const pipe::PipeIn &pipe_in);
 	void subscribe(pipe::PipeIn &&pipe_in);
 	void unsubscribe(const pipe::PipeIn &pipe_in);
