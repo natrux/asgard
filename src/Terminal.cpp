@@ -151,9 +151,11 @@ Terminal::terminal_state_e Terminal::execute(const std::string &command, const s
 			std::cout
 				<< topic_name << std::string(longest_name - topic_name.size(), ' ')
 				<< ": "
+				<< num_subscribers << " subscriber" << (num_subscribers == 1 ? "" : "s")
+				<< ", "
 				<< num_samples << " sample" << (num_samples == 1 ? "" : "s")
 				<< ", "
-				<< num_subscribers << " subscriber" << (num_subscribers == 1 ? "" : "s")
+				<< entry->get_publish_statistic() << " samples/s"
 				<< std::endl;
 		}
 		return terminal_state_e::DISPLAY;

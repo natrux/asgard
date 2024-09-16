@@ -1,5 +1,4 @@
 #include <asgard/topic/Topic.h>
-#include <asgard/data/Sample.hxx>
 
 #include <stdexcept>
 
@@ -37,12 +36,37 @@ std::string Topic::get_name() const{
 
 
 size_t Topic::get_num_samples() const{
+	std::lock_guard<std::mutex> lock(mutex);
 	return sample_count;
 }
 
 
 size_t Topic::get_num_subscribers() const{
+	std::lock_guard<std::mutex> lock(mutex);
 	return subscribers.size();
+}
+
+
+std::shared_ptr<const data::Sample> Topic::get_last_sample() const{
+	std::lock_guard<std::mutex> lock(mutex);
+	return last_sample;
+}
+
+
+float Topic::get_publish_statistic() const{
+	std::queue<time::time> copy;
+	time::duration period;
+	{
+		// no update when const
+		std::lock_guard<std::mutex> lock(mutex);
+		copy = publish_times;
+		period = statistic_period;
+	}
+	while(!copy.empty() && time::since(copy.front()) > period){
+		copy.pop();
+	}
+	const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(period).count();
+	return static_cast<float>(copy.size()) / seconds;
 }
 
 
@@ -72,6 +96,11 @@ void Topic::publish(std::shared_ptr<const data::Data> value){
 		}
 	}
 	sample_count++;
+	last_sample = sample;
+	publish_times.push(sample->time);
+	while(!publish_times.empty() && time::since(publish_times.front()) > statistic_period){
+		publish_times.pop();
+	}
 }
 
 
