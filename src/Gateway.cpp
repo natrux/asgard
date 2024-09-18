@@ -175,7 +175,7 @@ void Gateway::keep_reading(std::unique_ptr<io::InputSource> input_source){
 
 
 void Gateway::error_wait() const{
-	const time::duration micro_time = std::chrono::milliseconds(10);
+	const time::duration micro_time = 10ms;
 	time::duration remaining = error_pause_time;
 	while(node_should_run() && remaining > time::immediate()){
 		const auto micro_wait = std::min(remaining, micro_time);

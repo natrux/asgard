@@ -16,7 +16,7 @@ public:
 	GatewayModule(const std::string &name_);
 
 protected:
-	time::duration error_pause_time = std::chrono::seconds(1);
+	time::duration error_pause_time = 1s;
 };
 
 

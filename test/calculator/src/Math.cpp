@@ -12,7 +12,7 @@ Math::Math(const std::string &name_):
 
 
 void Math::main(){
-	set_timer(std::chrono::seconds(2), std::bind(&Math::calculate_something, this));
+	set_timer(calculation_interval, std::bind(&Math::calculate_something, this));
 	bind_other(calc_async);
 	//wait_for_zero = calc_async->wait_for_sum_(0);
 	Super::main();

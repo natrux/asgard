@@ -1,1 +1,3 @@
 extends(asgard.mod.Module)
+
+asgard.time.duration calculation_interval = 2s

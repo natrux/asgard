@@ -8,5 +8,8 @@ public:
 	using Super = asgard::mod::Module;
 
 	MathModule(const std::string &name_);
+
+protected:
+	asgard::time::duration calculation_interval = 2s;
 };
 

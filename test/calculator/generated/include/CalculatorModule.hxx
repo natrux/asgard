@@ -16,7 +16,7 @@ public:
 	CalculatorModule(const std::string &name_);
 
 protected:
-	asgard::time::duration stats_interval = std::chrono::seconds(5);
+	asgard::time::duration stats_interval = 5s;
 
 	void process(std::shared_ptr<const asgard::data::Request> request) override;
 

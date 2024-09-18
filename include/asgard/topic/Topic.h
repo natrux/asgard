@@ -40,7 +40,7 @@ private:
 	std::queue<time::time> publish_times;
 	const bool allow_publish;
 	const bool allow_subscribe;
-	time::duration statistic_period = std::chrono::seconds(10);
+	time::duration statistic_period = 10s;
 
 	Topic(const std::string &name, bool allow_publish, bool allow_subscribe);
 };
