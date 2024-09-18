@@ -69,6 +69,7 @@ add_library(asgard SHARED
 	src/PipeIn.cpp
 	src/RPC.cpp
 	src/random.cpp
+	src/strtime.cpp
 	src/Topic.cpp
 	src/TopicPtr.cpp
 	src/NetworkStream.cpp

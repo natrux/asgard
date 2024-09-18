@@ -2,6 +2,7 @@
 #include <asgard/run/Terminal_read_char.hxx>
 #include <asgard/run/Terminal_read_event.hxx>
 
+#include <asgard/time/strtime.h>
 #include <asgard/util/string.h>
 
 #include <thread>
@@ -148,12 +149,14 @@ Terminal::terminal_state_e Terminal::execute(const std::string &command, const s
 			const std::string topic_name = entry->get_name();
 			const size_t num_samples = entry->get_num_samples();
 			const size_t num_subscribers = entry->get_num_subscribers();
+			const auto last_sample = entry->get_last_sample();
 			std::cout
 				<< topic_name << std::string(longest_name - topic_name.size(), ' ')
 				<< ": "
 				<< num_subscribers << " subscriber" << (num_subscribers == 1 ? "" : "s")
 				<< ", "
 				<< num_samples << " sample" << (num_samples == 1 ? "" : "s")
+				<< (last_sample ? " (last sample " + time::strtime(last_sample->time) + ")" : "")
 				<< ", "
 				<< entry->get_publish_statistic() << " samples/s"
 				<< std::endl;
