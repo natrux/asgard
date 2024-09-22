@@ -53,6 +53,8 @@ add_library(asgard SHARED
 	src/Exception.cpp
 	src/FileInputSource.cpp
 	src/FileOutputSource.cpp
+	src/Fifo.cpp
+	src/FifoInputSource.cpp
 	src/Gateway.cpp
 	src/NamedEndpoint.cpp
 	src/OutputSource.cpp
