@@ -15,7 +15,8 @@ public:
 	size_t size() const;
 	bool empty() const;
 	void push(const std::vector<uint8_t> &data);
-	void pop(std::vector<uint8_t> &data, size_t count);
+	void push(const uint8_t *data, size_t length);
+	std::vector<uint8_t> pop(size_t count);
 	void close();
 
 private:

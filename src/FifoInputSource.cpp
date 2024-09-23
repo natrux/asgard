@@ -1,7 +1,5 @@
 #include <asgard/io/FifoInputSource.h>
 
-#include <vector>
-#include <cstdint>
 #include <cstring>
 #include <stdexcept>
 
@@ -20,8 +18,7 @@ FifoInputSource::FifoInputSource(std::shared_ptr<util::Fifo> source_):
 
 
 size_t FifoInputSource::read(void *data, size_t size){
-	std::vector<uint8_t> buffer;
-	source->pop(buffer, size);
+	const auto buffer = source->pop(size);
 	std::memcpy(data, buffer.data(), buffer.size());
 	return buffer.size();
 }

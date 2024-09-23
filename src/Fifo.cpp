@@ -34,20 +34,32 @@ void Fifo::push(const std::vector<uint8_t> &data){
 }
 
 
-void Fifo::pop(std::vector<uint8_t> &data, size_t count){
+void Fifo::push(const uint8_t *data, size_t length){
+	std::lock_guard<std::mutex> lock(mutex);
+	buffer.insert(buffer.end(), data, data+length);
+	condition.notify_all();
+}
+
+
+std::vector<uint8_t> Fifo::pop(size_t count){
+	std::vector<uint8_t> result;
 	if(count <= 0){
-		return;
+		return result;
 	}
 	std::unique_lock<std::mutex> lock(mutex);
 	while(!closed && buffer.empty()){
 		condition.wait(lock);
 	}
 	if(closed){
-		return;
+		return result;
 	}
-	const auto end = advanced(buffer.begin(), std::min(count, buffer.size()));
-	data.insert(data.end(), buffer.begin(), end);
+
+	const auto count_ = std::min(count, buffer.size());
+	result.resize(count_);
+	const auto end = advanced(buffer.begin(), count_);
+	result.insert(result.end(), buffer.begin(), end);
 	buffer.erase(buffer.begin(), end);
+	return result;
 }
 
 
