@@ -169,7 +169,7 @@ void Gateway::keep_reading(std::unique_ptr<io::InputSource> input_source){
 	// Dummy implementation, overwrite in child class
 	io::BufferedInput input(std::move(input_source));
 	while(true){
-		input.read_next();
+		input.read<char>();
 	}
 }
 

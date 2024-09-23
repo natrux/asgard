@@ -35,6 +35,9 @@ void Fifo::push(const std::vector<uint8_t> &data){
 
 
 void Fifo::pop(std::vector<uint8_t> &data, size_t count){
+	if(count <= 0){
+		return;
+	}
 	std::unique_lock<std::mutex> lock(mutex);
 	while(!closed && buffer.empty()){
 		condition.wait(lock);

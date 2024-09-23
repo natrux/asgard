@@ -49,9 +49,10 @@ void BufferedInput::read(void *data_, size_t length){
 }
 
 
-char BufferedInput::read_next(){
-	char result;
-	read(&result, 1);
+std::vector<uint8_t> BufferedInput::read(size_t length){
+	std::vector<uint8_t> result;
+	result.resize(length);
+	read(result.data(), length);
 	return result;
 }
 

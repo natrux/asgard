@@ -21,7 +21,7 @@ private:
 
 		std::string current = "";
 		while(true){
-			const char next_char = input.read_next();
+			const char next_char = input.read<char>();
 
 			if(next_char == '\n'){
 				log(INFO) << current;

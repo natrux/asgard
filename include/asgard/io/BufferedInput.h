@@ -1,6 +1,8 @@
 #pragma once
 
 #include <asgard/io/InputSource.h>
+
+#include <vector>
 #include <memory>
 
 
@@ -8,13 +10,10 @@ namespace asgard{
 namespace io{
 
 
-#define BUFFER_SIZE 65536
-#define BUFFER_THRESHOLD 8192
-
-
 class BufferedInput{
 public:
 	BufferedInput(std::unique_ptr<InputSource> source);
+
 	/**
 	 * Reads length bytes into the given buffer, possibly blocking.
 	 * Throws if the input source gets closed before the requested
@@ -26,11 +25,24 @@ public:
 	void read(void *data, size_t length);
 
 	/**
-	 * Reads one byte in the same way that read() does.
+	 * Reads length bytes and returns them as a vector.
+	 * Reading behaves in the same way as in read(void*, size_t).
 	 */
-	char read_next();
+	std::vector<uint8_t> read(size_t length);
+
+	/**
+	 * Reads sizeof(T) bytes in the same way that read(void*, size_t) does.
+	 */
+	template<class T>
+	T read(){
+		T result;
+		read(&result, sizeof(T));
+		return result;
+	}
 
 private:
+	static constexpr size_t BUFFER_SIZE = 65536;
+	static constexpr size_t BUFFER_THRESHOLD = 8192;
 	std::unique_ptr<InputSource> m_source;
 	// buffer is filled from start until before end
 	char m_buffer[BUFFER_SIZE];

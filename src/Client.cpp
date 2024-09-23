@@ -57,9 +57,8 @@ std::shared_ptr<const data::Return> Client::request(std::shared_ptr<data::Reques
 	}
 
 	if(has_return){
-		std::shared_ptr<const data::Return> result;
 		try{
-			result = future.get();
+			return future.get();
 		}catch(const std::future_error &err){
 			std::string message;
 			if(err.code() == std::future_errc::broken_promise){
@@ -67,11 +66,8 @@ std::shared_ptr<const data::Return> Client::request(std::shared_ptr<data::Reques
 			}else{
 				message = err.what();
 			}
-			auto ex = data::Exception::from_request(req, message);
-			result = ex;
+			return data::Exception::from_request(req, message);
 		}
-
-		return result;
 	}
 	return nullptr;
 }
