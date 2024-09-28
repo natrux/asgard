@@ -66,7 +66,7 @@ PipeIn Pipe::get(const core::ID &id){
 	if(find != pipe_map.end()){
 		return PipeIn(find->second);
 	}
-	throw std::logic_error("No pipe at address " + id.str());
+	return PipeIn(id);
 }
 
 

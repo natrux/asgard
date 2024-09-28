@@ -4,7 +4,7 @@
 #include <asgard/data/Data.hxx>
 #include <asgard/data/Sample.hxx>
 
-#include <set>
+#include <list>
 #include <queue>
 #include <memory>
 #include <mutex>
@@ -34,7 +34,7 @@ public:
 private:
 	mutable std::mutex mutex;
 	std::string name;
-	std::set<pipe::PipeIn, pipe::PipeIn::Compare> subscribers;
+	std::list<pipe::PipeIn> subscribers;
 	size_t sample_count = 0;
 	std::shared_ptr<const data::Sample> last_sample;
 	std::queue<time::time> publish_times;

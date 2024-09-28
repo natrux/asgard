@@ -122,13 +122,18 @@ void Topic::subscribe(pipe::PipeIn &&pipe_in){
 		}catch(const std::exception &){
 		}
 	}
-	subscribers.insert(std::move(pipe_in));
+	subscribers.push_back(std::move(pipe_in));
 }
 
 
 void Topic::unsubscribe(const pipe::PipeIn &pipe_in){
 	std::lock_guard<std::mutex> lock(mutex);
-	subscribers.erase(pipe_in);
+	for(auto iter=subscribers.begin(); iter!=subscribers.end(); iter++){
+		if((*iter) == pipe_in){
+			subscribers.erase(iter);
+			break;
+		}
+	}
 }
 
 

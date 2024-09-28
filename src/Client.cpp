@@ -9,7 +9,8 @@ namespace mod{
 
 Client::Client(const core::ID &destination_):
 	Messager(),
-	dst_address(destination_)
+	dst_address(destination_),
+	destination(dst_address)
 {
 	bind();
 }
@@ -77,9 +78,6 @@ void Client::send_request(std::shared_ptr<data::Request> req){
 	req->message_id = num_requests++;
 	req->source_address = get_id();
 	req->destination_address = dst_address;
-	if(!destination.is_connected()){
-		destination = pipe::Pipe::get(dst_address);
-	}
 	destination.push(req);
 }
 

@@ -13,10 +13,10 @@ Messager::Messager():
 
 
 Messager::Messager(const core::ID &id_):
-	id(id_)
+	id(id_),
+	pipe_in(pipe::Pipe::create()),
+	own_input(make_pipe_in())
 {
-	pipe_in = pipe::Pipe::create();
-	own_input = make_pipe_in();
 }
 
 
