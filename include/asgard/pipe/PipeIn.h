@@ -22,12 +22,11 @@ public:
 
 	bool operator==(const PipeIn &other) const;
 
-	bool is_connected() const;
 	PipeIn copy() const;
 	void push(std::shared_ptr<const data::Message> value);
 private:
 	core::ID address;
-	std::shared_ptr<Pipe> pipe;
+	std::weak_ptr<Pipe> pipe;
 	size_t id;
 
 	void connect();

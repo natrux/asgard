@@ -17,38 +17,38 @@ PipeIn::PipeIn(std::shared_ptr<Pipe> pipe_):
 	pipe(pipe_),
 	id(pipe_->add_id())
 {
+	address.set(0);
 }
 
 
 bool PipeIn::operator==(const PipeIn &other) const{
-	if(pipe || other.pipe){
-		return pipe == other.pipe;
+	auto own_pipe = pipe.lock();
+	auto other_pipe = other.pipe.lock();
+	if(own_pipe || other_pipe){
+		return own_pipe == other_pipe;
 	}
 	return address == other.address;
 }
 
 
-bool PipeIn::is_connected() const{
-	return (pipe != nullptr);
-}
-
-
 PipeIn PipeIn::copy() const{
-	if(pipe){
-		return PipeIn(pipe);
+	if(auto pipe_ptr = pipe.lock()){
+		return PipeIn(pipe_ptr);
 	}
 	return PipeIn(address);
 }
 
 
 void PipeIn::push(std::shared_ptr<const data::Message> value){
-	if(!pipe){
+	std::shared_ptr<Pipe> pipe_ptr = pipe.lock();
+	if(!pipe_ptr){
 		connect();
+		pipe_ptr = pipe.lock();
 	}
-	if(!pipe){
+	if(!pipe_ptr){
 		throw std::logic_error("No pipe connected");
 	}
-	pipe->push(id, value);
+	pipe_ptr->push(id, value);
 }
 
 
