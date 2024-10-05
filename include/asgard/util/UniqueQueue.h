@@ -37,7 +37,7 @@ T UniqueQueue<T>::pop(){
 	if(queue.empty()){
 		throw std::runtime_error("Queue empty");
 	}
-	T result = queue.front();
+	const T result = queue.front();
 	queue.pop();
 	contained.erase(result);
 	return result;

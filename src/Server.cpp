@@ -42,7 +42,6 @@ void Server::init(){
 
 void Server::main(){
 	m_endpoint->open();
-	m_endpoint->expect();
 	std::thread accept_thread(&Server::accept_loop, this);
 
 	Super::main();
@@ -76,6 +75,17 @@ void Server::init_endpoint(std::unique_ptr<net::Endpoint> endpoint){
 
 
 void Server::accept_loop(){
+	bool bound = false;
+	while(node_should_run() && !bound){
+		try{
+			m_endpoint->expect();
+			bound = true;
+		}catch(const std::exception &err){
+			log(WARN) << err.what();
+			error_wait();
+		}
+	}
+
 	while(node_should_run() && m_endpoint->is_open()){
 		std::unique_ptr<net::Endpoint> connection;
 		try{
@@ -93,6 +103,17 @@ void Server::accept_loop(){
 				log(WARN) << err.what();
 			}
 		}
+	}
+}
+
+
+void Server::error_wait() const{
+	const time::duration micro_time = 10ms;
+	time::duration remaining = error_pause_time;
+	while(node_should_run() && remaining > time::immediate()){
+		const auto micro_wait = std::min(remaining, micro_time);
+		std::this_thread::sleep_for(micro_wait);
+		remaining -= micro_wait;
 	}
 }
 

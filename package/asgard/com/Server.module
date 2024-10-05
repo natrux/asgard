@@ -1,1 +1,4 @@
 extends(mod.Module)
+
+time.duration error_pause_time = 1s
+

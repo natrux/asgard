@@ -28,6 +28,8 @@ private:
 	std::unique_ptr<net::Endpoint> m_endpoint;
 	void accept_loop();
 	virtual void spawn_gateway(std::unique_ptr<net::Endpoint> endpoint) = 0;
+
+	void error_wait() const;
 };
 
 
