@@ -50,9 +50,9 @@ protected:
 	void add_task(const std::function<void()> &function);
 	void add_pending_request(std::shared_ptr<const data::Request> request, std::future<std::shared_ptr<const data::Return>> &&future);
 
-	bool answer_pending_requests();
-	bool execute_timers();
-	bool receive_messages();
+	void answer_pending_requests();
+	void execute_timers();
+	void receive_messages();
 
 	void process(std::shared_ptr<const data::Request> request) override;
 	void process(std::shared_ptr<const data::Return> retrn) override;

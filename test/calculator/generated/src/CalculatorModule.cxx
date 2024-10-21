@@ -12,15 +12,15 @@ CalculatorModule::CalculatorModule(const std::string &name_):
 
 void CalculatorModule::process(std::shared_ptr<const asgard::data::Request> request){
 	if(auto plus_r = std::dynamic_pointer_cast<const Calculator_plus>(request)){
-		asgard::core::ReturnMe<Calculator_plus_return> return_me(request);
+		asgard::core::ReturnMe<Calculator_plus_return> return_me(request, make_pipe_in());
 		add_pending_request(request, return_me.get_future());
 		plus_async(plus_r->a, plus_r->b, std::move(return_me));
 	}else if(auto divide_r = std::dynamic_pointer_cast<const Calculator_divide>(request)){
-		asgard::core::ReturnMe<Calculator_divide_return> return_me(request);
+		asgard::core::ReturnMe<Calculator_divide_return> return_me(request, make_pipe_in());
 		add_pending_request(request, return_me.get_future());
 		divide_async(divide_r->a, divide_r->b, std::move(return_me));
 	}else if(auto wait_for_sum_r = std::dynamic_pointer_cast<const Calculator_wait_for_sum>(request)){
-		asgard::core::ReturnMe<Calculator_wait_for_sum_return> return_me(request);
+		asgard::core::ReturnMe<Calculator_wait_for_sum_return> return_me(request, make_pipe_in());
 		add_pending_request(request, return_me.get_future());
 		wait_for_sum_async(wait_for_sum_r->sum, std::move(return_me));
 	}else{

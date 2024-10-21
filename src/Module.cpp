@@ -64,12 +64,9 @@ void Module::start(std::unique_ptr<Module> self_ptr){
 void Module::main(){
 	subscribe(input_shutdown);
 	while(node_should_run()){
-		if(execute_timers()){
-			answer_pending_requests();
-		}
-		if(receive_messages()){
-			answer_pending_requests();
-		}
+		execute_timers();
+		receive_messages();
+		answer_pending_requests();
 	}
 }
 
@@ -156,8 +153,7 @@ void Module::add_pending_request(std::shared_ptr<const data::Request> request, s
 }
 
 
-bool Module::answer_pending_requests(){
-	bool did_something = false;
+void Module::answer_pending_requests(){
 	for(auto iter=pending_requests.begin(); iter!=pending_requests.end(); /* no iter */){
 		const auto &request = iter->first;
 		auto &future = iter->second;
@@ -182,18 +178,15 @@ bool Module::answer_pending_requests(){
 			}catch(const std::exception &err){
 				log(WARN) << err.what();
 			}
-			did_something = true;
 			iter = pending_requests.erase(iter);
 		}else{
 			iter++;
 		}
 	}
-	return did_something;
 }
 
 
-bool Module::execute_timers(){
-	bool did_something = false;
+void Module::execute_timers(){
 	const auto now = time::now();
 	if(!timers.empty() && (*timers.begin())->is_expired(now)){
 		auto expired_timer = *timers.begin();
@@ -207,27 +200,22 @@ bool Module::execute_timers(){
 		}catch(const std::exception &err){
 			log(WARN) << err.what();
 		}
-		did_something = true;
 	}
-	return did_something;
 }
 
 
-bool Module::receive_messages(){
-	bool did_something = false;
+void Module::receive_messages(){
 	try{
 		if(timers.empty()){
-			did_something = process_next();
+			process_next();
 		}else{
 			const auto now = time::now();
 			const auto timeout = (*timers.begin())->remaining(now);
-			did_something = process_next(timeout);
+			process_next(timeout);
 		}
 	}catch(const std::exception &err){
 		log(WARN) << err.what();
-		did_something = true;
 	}
-	return did_something;
 }
 
 
