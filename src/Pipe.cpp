@@ -64,7 +64,7 @@ PipeIn Pipe::get(const core::ID &id){
 	std::lock_guard<std::mutex> lock(mutex_pipe_map);
 	auto find = pipe_map.find(id);
 	if(find != pipe_map.end()){
-		return PipeIn(find->second);
+		return PipeIn(id, find->second);
 	}
 	return PipeIn(id);
 }

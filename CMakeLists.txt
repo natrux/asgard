@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(asgard CXX)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 add_compile_options(
 	-pedantic -Wall -Wextra
 	-Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization
