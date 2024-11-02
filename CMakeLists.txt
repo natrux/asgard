@@ -47,7 +47,6 @@ add_library(asgard SHARED
 	${GENERATED_CXX}
 	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
-	src/exception.cpp
 	src/BufferedInput.cpp
 	src/Endpoint.cpp
 	src/Exception.cpp
