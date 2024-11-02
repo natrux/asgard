@@ -158,7 +158,7 @@ Terminal::terminal_state_e Terminal::execute(const std::string &command, const s
 				<< num_samples << " sample" << (num_samples == 1 ? "" : "s")
 				<< (last_sample ? " (last sample " + time::strtime(last_sample->time) + ")" : "")
 				<< ", "
-				<< entry->get_publish_statistic() << " samples/s"
+				<< entry->get_publish_frequency() << " samples/s"
 				<< std::endl;
 		}
 		return terminal_state_e::DISPLAY;

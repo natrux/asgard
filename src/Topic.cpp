@@ -53,7 +53,7 @@ std::shared_ptr<const data::Sample> Topic::get_last_sample() const{
 }
 
 
-float Topic::get_publish_statistic() const{
+float Topic::get_publish_frequency() const{
 	std::queue<time::time> copy;
 	time::duration period;
 	{
