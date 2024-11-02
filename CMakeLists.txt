@@ -1,17 +1,7 @@
-cmake_minimum_required(VERSION 3.22)
+cmake_minimum_required(VERSION 3.10)
 project(asgard CXX)
 
-set(CMAKE_CXX_STANDARD 17)
-add_compile_options(
-	-pedantic -Wall -Wextra
-	-Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization
-	-Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations
-	-Wmissing-include-dirs -Wold-style-cast -Wredundant-decls -Wshadow
-	-Wsign-conversion -Wsign-promo -Wstrict-null-sentinel
-	-Wstrict-overflow -Wsuggest-override -Wswitch-default -Wundef
-
-	#-Werror
-)
+option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 find_package(Threads)
 
@@ -43,7 +33,7 @@ endif()
 
 file(GLOB GENERATED_CXX generated/src/*.cxx)
 
-add_library(asgard SHARED
+add_library(asgard
 	${GENERATED_CXX}
 	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
@@ -78,6 +68,18 @@ add_library(asgard SHARED
 	src/string.cpp
 	src/LogMessage.cpp
 	src/LogPublisher.cpp
+)
+
+set_property(TARGET asgard PROPERTY CXX_STANDARD 17)
+target_compile_options(asgard PRIVATE
+	-Wall -Wextra -Wpedantic
+	-Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization
+	-Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations
+	-Wmissing-include-dirs -Wold-style-cast -Wredundant-decls -Wshadow
+	-Wsign-conversion -Wsign-promo -Wstrict-null-sentinel
+	-Wstrict-overflow -Wsuggest-override -Wswitch-default -Wundef
+
+	#-Werror
 )
 
 target_include_directories(asgard PUBLIC
