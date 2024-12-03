@@ -6,11 +6,6 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 find_package(Threads)
 
 
-set(CRC_BUILD_COMBINED OFF)
-set(CRC_BUILD_crc_64_xz ON)
-add_subdirectory(crc)
-
-
 if(WIN32)
 	list(APPEND PLATFORM_SOURCE_FILES
 		src/win32/Terminal.cpp
@@ -68,6 +63,7 @@ add_library(asgard
 	src/string.cpp
 	src/LogMessage.cpp
 	src/LogPublisher.cpp
+	src/crc_64_xz.cpp
 )
 
 set_property(TARGET asgard PROPERTY CXX_STANDARD 17)
@@ -89,7 +85,6 @@ target_include_directories(asgard PUBLIC
 
 target_link_libraries(asgard
 	Threads::Threads
-	crc_64_xz
 )
 if(WIN32)
 	target_link_libraries(asgard
@@ -98,7 +93,7 @@ if(WIN32)
 endif()
 
 
-add_executable(codegen
+add_executable(asgard_codegen
 	${PLATFORM_CODEGEN_SOURCE_FILES}
 	src/ClassType.cpp
 	src/DataType.cpp
@@ -112,7 +107,7 @@ add_executable(codegen
 	src/codegen.cpp
 )
 
-target_include_directories(codegen PUBLIC
+target_include_directories(asgard_codegen PUBLIC
 	include
 )
 

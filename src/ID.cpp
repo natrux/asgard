@@ -1,6 +1,6 @@
 #include <asgard/core/ID.h>
 #include <asgard/core/random.h>
-#include <crc/crc_64_xz.h>
+#include <asgard/util/crc_64_xz.h>
 
 #include <sstream>
 
@@ -15,7 +15,7 @@ ID::ID(){
 
 
 ID::ID(const std::string &str){
-	set(CRC_64_XZ::compute(str.c_str(), str.length()));
+	set(util::CRC_64_XZ::compute(str.c_str(), str.length()));
 }
 
 
