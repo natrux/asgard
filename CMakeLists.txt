@@ -66,7 +66,7 @@ add_library(asgard
 	src/crc_64_xz.cpp
 )
 
-set_property(TARGET asgard PROPERTY CXX_STANDARD 17)
+target_compile_features(asgard PUBLIC cxx_std_17)
 target_compile_options(asgard PRIVATE
 	-Wall -Wextra -Wpedantic
 	-Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization
