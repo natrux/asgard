@@ -99,7 +99,7 @@ extends: 'extends' '(' type ')' ;
 handles: 'handles' types ;
 
 
-module: extends (member | function | method)* handles EOF;
+module: extends (member | function | method)* handles? EOF;
 class: extends (declaration | function | method)* EOF;
 enum: ID* EOF;
 
