@@ -1,4 +1,5 @@
 #include <asgard/com/NetworkStream.h>
+#include <asgard/data/EndOfFile.hxx>
 
 
 namespace asgard{
@@ -52,8 +53,7 @@ void NetworkStream::keep_reading(std::unique_ptr<io::InputSource> input_source){
 
 
 void NetworkStream::on_hang_up(){
-	// publish empty packet
-	auto packet = std::make_shared<data::DataPacket>();
+	auto packet = std::make_shared<data::EndOfFile>();
 	packet->time = time::now();
 	publish(packet, output_data);
 }
