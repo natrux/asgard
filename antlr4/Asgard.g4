@@ -24,17 +24,12 @@ MINUTES: 'm' ;
 HOURS: 'h' ;
 WHITESPACE: [ \t\n\r\f]+ -> skip ;
 
-STRING
-	: '"' (ESC | SAFECODEPOINT)* '"'
-	;
-fragment ESC
-	: '\\' ["\\nt]
-	;
-fragment SAFECODEPOINT
-	: ~ ["\\\u0000-\u001F]
-	;
 
 ID: [a-zA-Z_][a-zA-Z_0-9]* ;
+
+STRING: '"' (ESC | SAFECODEPOINT)* '"' ;
+fragment ESC : '\\' ["\\nt] ;
+fragment SAFECODEPOINT: ~ ["\\\u0000-\u001F] ;
 
 NUMBER
 	: '-'? NATURAL ('.' [0-9]+)?
@@ -45,17 +40,12 @@ fragment NATURAL
 	| [1-9][0-9]*
 	;
 
-
-
-
 value
 	: NUMBER
 	| BOOL
 	| STRING
 	| duration
 	;
-
-
 
 duration: duration_unit+ ;
 duration_unit
@@ -67,11 +57,13 @@ duration_unit
 	| NUMBER 'h'
 	;
 
+classname: (ID '.')* ID ;
+
 type
-	: (ID '.')* ID
+	: classname
 	| type '*'
 	| type '?'
-	| type '<' type (',' type)* '>'
+	| classname '<' type (',' type)* '>'
 	;
 
 return_type
@@ -81,22 +73,17 @@ return_type
 
 declaration: type ID ('=' value)? ;
 
-types
-	: '(' ')'
-	| '(' type (',' type)* ','? ')'
-	;
-
-declarations
+parameters
 	: '(' ')'
 	| '(' declaration (',' declaration)* ')'
 	;
 
 member: 'mut'? declaration ;
-function: 'static' return_type ID declarations ;
-method: 'const'? return_type ID declarations ;
+function: 'static' return_type ID parameters ;
+method: 'const'? return_type ID parameters ;
 
-extends: 'extends' '(' type ')' ;
-handles: 'handles' types ;
+extends: 'extends' '(' classname ')' ;
+handles: 'handles' '(' classname* ')' ;
 
 
 module: extends (member | function | method)* handles? EOF;
