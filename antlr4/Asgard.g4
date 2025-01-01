@@ -61,10 +61,12 @@ classname: (ID '.')* ID ;
 
 type
 	: classname
+	| template_type
 	| type '*'
 	| type '?'
-	| classname '<' type (',' type)* '>'
 	;
+
+template_type: classname '<' type (',' type)* '>' ;
 
 return_type
 	: 'void'
@@ -78,7 +80,9 @@ parameters
 	| '(' declaration (',' declaration)* ')'
 	;
 
-member: 'mut'? declaration ;
+member: declaration ;
+static_member: 'static' declaration ;
+module_member: 'mut'? declaration ;
 function: 'static' return_type ID parameters ;
 method: 'const'? return_type ID parameters ;
 
@@ -86,8 +90,8 @@ extends: 'extends' '(' classname ')' ;
 handles: 'handles' '(' classname* ')' ;
 
 
-module: extends (member | function | method)* handles? EOF;
-class: extends (declaration | function | method)* EOF;
+module: extends (module_member | function | method)* handles? EOF;
+class: extends (static_member | member | function | method)* EOF;
 enum: ID* EOF;
 
 

@@ -24,18 +24,18 @@ static std::string get_classname(AsgardParser::ClassnameContext *context){
 
 static std::string get_type(AsgardParser::TypeContext *context, bool const_ref){
 	if(context->QUESTION_MARK()){
-		auto *type = context->type(0);
+		auto *type = context->type();
 		const std::string name = "std::optional<" + get_type(type, false) + ">";
 		if(const_ref){
 			return "const " + name + "&";
 		}
 		return name;
 	}else if(context->ASTERISK()){
-		auto *type = context->type(0);
+		auto *type = context->type();
 		return "std::shared_ptr<const " + get_type(type, false) + ">";
-	}else if(context->LESS_THAN()){
+	}else if(auto *template_type = context->template_type()){
 		auto *base_class = context->classname();
-		const auto types = context->type();
+		const auto types = template_type->type();
 		std::string result = get_classname(base_class) + "<";
 		bool is_first = true;
 		for(auto *type : types){
@@ -142,7 +142,7 @@ int main(int argc, char **argv){
 	}
 
 	std::cout << "extends " << get_classname(module->extends()->classname()) << std::endl;
-	for(auto *member : module->member()){
+	for(auto *member : module->module_member()){
 		auto *declaration = member->declaration();
 		std::cout << get_type(declaration->type(), false) << " " << declaration->ID()->getSymbol()->getText();
 		if(auto *value = declaration->value()){
