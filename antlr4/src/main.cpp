@@ -2,6 +2,15 @@
 #include "AsgardLexer.h"
 
 
+const static std::map<std::string, std::string> primitive_types = {
+	{"size_t", "std::size_t"},
+	{"u8", "std::uint8_t"},
+	{"i8", "std::int8_t"},
+	{"i32", "std::int32_t"},
+	{"i64", "std::int64_t"},
+	{"string", "std::string"},
+};
+
 
 class ThrowingErrorListener : public antlr4::BaseErrorListener{
 public:
@@ -11,47 +20,65 @@ public:
 };
 
 
-static std::string get_classname(AsgardParser::ClassnameContext *context){
+static std::string get_class_path(AsgardParser::Class_pathContext *context){
 	std::string name;
-	for(auto *id : context->ID()){
-		if(!name.empty()){
-			name += "::";
+	if(auto *name_space = context->name_space()){
+		for(auto *id : name_space->ID()){
+			if(!name.empty()){
+				name += "::";
+			}
+			name += id->getSymbol()->getText();
 		}
-		name += id->getSymbol()->getText();
+		name += "::";
 	}
+	name += context->ID()->getSymbol()->getText();
+
 	return name;
 }
 
 static std::string get_type(AsgardParser::TypeContext *context, bool const_ref){
-	if(context->QUESTION_MARK()){
-		auto *type = context->type();
-		const std::string name = "std::optional<" + get_type(type, false) + ">";
-		if(const_ref){
-			return "const " + name + "&";
-		}
-		return name;
-	}else if(context->ASTERISK()){
-		auto *type = context->type();
+	if(context->ASTERISK()){
+		// special case for no const-ref
+		auto *type = context->type(0);
 		return "std::shared_ptr<const " + get_type(type, false) + ">";
-	}else if(auto *template_type = context->template_type()){
-		auto *base_class = context->classname();
-		const auto types = template_type->type();
-		std::string result = get_classname(base_class) + "<";
-		bool is_first = true;
-		for(auto *type : types){
-			if(!is_first){
-				result += ", ";
-			}
-			result += get_type(type, false);
-			is_first = false;
-		}
-		result += ">";
-		if(const_ref){
-			result = "const " + result + "&";
-		}
-		return result;
 	}
-	const auto name = get_classname(context->classname());
+	std::string name;
+	if(context->QUESTION_MARK()){
+		auto *type = context->type(0);
+		name = "std::optional<" + get_type(type, false) + ">";
+	}else if(context->PARENTHESIS_OPEN()){
+		const auto types = context->type();
+		const auto size = types.size();
+		if(size == 1){
+			name = "std::unordered_set<" + get_type(types[0], false) + ">";
+		}else if(size == 2){
+			name = "std::unordered_map<" + get_type(types[0], false) + ", " + get_type(types[1], false) + ">";
+		}
+	}else if(context->BRACKET_OPEN()){
+		auto *type = context->type(0);
+		if(auto *number = context->NATURAL()){
+			name = "std::array<" + get_type(type, false) + ", " + number->getSymbol()->getText() + ">";
+		}else{
+			name = "std::vector<" + get_type(type, false) + ">";
+		}
+	}else if(context->BRACE_OPEN()){
+		const auto types = context->type();
+		const auto size = types.size();
+		if(size == 1){
+			name = "std::set<" + get_type(types[0], false) + ">";
+		}else if(size == 2){
+			name = "std::map<" + get_type(types[0], false) + ", " + get_type(types[1], false) + ">";
+		}
+	}else if(auto *primitive_type = context->primitive_type()){
+		const auto type_name = primitive_type->start->getText();
+		const auto find = primitive_types.find(type_name);
+		if(find == primitive_types.end()){
+			throw std::logic_error("Primitive type '" + type_name + "' not found");
+		}
+		name = find->second;
+	}else{
+		name = get_class_path(context->class_path());
+	}
 	if(const_ref){
 		return "const " + name + "&";
 	}
@@ -141,7 +168,7 @@ int main(int argc, char **argv){
 		return 1;
 	}
 
-	std::cout << "extends " << get_classname(module->extends()->classname()) << std::endl;
+	std::cout << "extends " << get_class_path(module->extends()->class_path()) << std::endl;
 	for(auto *member : module->module_member()){
 		auto *declaration = member->declaration();
 		std::cout << get_type(declaration->type(), false) << " " << declaration->ID()->getSymbol()->getText();
@@ -180,8 +207,8 @@ int main(int argc, char **argv){
 		std::cout << std::endl;
 	}
 	if(auto *handles = module->handles()){
-		for(auto *classname : handles->classname()){
-			std::cout << "void handle(std::shared_ptr<const " << get_classname(classname) << "> sample)" << std::endl;
+		for(auto *class_path : handles->class_path()){
+			std::cout << "void handle(std::shared_ptr<const " << get_class_path(class_path) << "> sample)" << std::endl;
 		}
 	}
 
