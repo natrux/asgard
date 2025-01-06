@@ -31,16 +31,14 @@ std::shared_ptr<Type> Namespace::find(const std::string &type_name) const{
 std::shared_ptr<Type> Namespace::find(const std::string &type_name, const std::vector<std::string> &name_space) const{
 	if(name_space.empty()){
 		return find(type_name);
-	}else{
-		std::vector<std::string> sub_name_space(name_space.size()-1);
-		std::copy(name_space.begin()+1, name_space.end(), sub_name_space.begin());
-		const auto find = namespaces.find(name_space.front());
-		if(find != namespaces.end()){
-			return find->second.find(type_name, sub_name_space);
-		}else{
-			return nullptr;
-		}
 	}
+	std::vector<std::string> sub_name_space(name_space.size()-1);
+	std::copy(name_space.begin()+1, name_space.end(), sub_name_space.begin());
+	const auto find = namespaces.find(name_space.front());
+	if(find != namespaces.end()){
+		return find->second.find(type_name, sub_name_space);
+	}
+	return nullptr;
 }
 
 
@@ -68,6 +66,9 @@ Namespace &Namespace::get(const std::string &name){
 Namespace &Namespace::get(const std::vector<std::string> &names){
 	if(names.empty()){
 		return *this;
+	}
+	if(names.size() == 1){
+		return get(names.front());
 	}
 	std::vector<std::string> sub_names(names.size()-1);
 	std::copy(names.begin()+1, names.end(), sub_names.begin());

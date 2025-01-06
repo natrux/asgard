@@ -71,9 +71,8 @@ TopicPtr &TopicPtr::operator=(const std::string &topic_name){
 TopicPtr &TopicPtr::operator=(const char *topic_name){
 	if(topic_name){
 		return (*this = std::string(topic_name));
-	}else{
-		return (*this = nullptr);
 	}
+	return (*this = nullptr);
 }
 
 
