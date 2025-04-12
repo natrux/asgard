@@ -32,6 +32,7 @@ add_library(asgard
 	${GENERATED_CXX}
 	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
+	src/InputSource.cpp
 	src/BufferedInput.cpp
 	src/Endpoint.cpp
 	src/Exception.cpp
@@ -42,6 +43,7 @@ add_library(asgard
 	src/Gateway.cpp
 	src/NamedEndpoint.cpp
 	src/OutputSource.cpp
+	src/BufferedOutput.cpp
 	src/Server.cpp
 	src/SocketEndpoint.cpp
 	src/SocketInputSource.cpp

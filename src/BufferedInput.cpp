@@ -14,18 +14,20 @@ BufferedInput::BufferedInput(std::unique_ptr<InputSource> source):
 
 
 void BufferedInput::read(void *data_, size_t length){
-	char *data = reinterpret_cast<char *>(data_);
 	const size_t available = end - start;
 	if(length <= available){
-		read_from_buffer(data, length);
+		read_from_buffer(data_, length);
 		return;
 	}
 
-	read_from_buffer(data, available);
+	read_from_buffer(data_, available);
 	reset_buffer();
 
+	uint8_t *data = reinterpret_cast<uint8_t *>(data_);
 	const size_t remaining = length - available;
-	if(remaining <= BUFFER_THRESHOLD){
+	if(remaining > BUFFER_THRESHOLD){
+		m_source->read_all(data+available, remaining);
+	}else{
 		// The data is not too big, so requesting more and buffering it might be worth it.
 		size_t collected = 0;
 		while(collected < remaining){
@@ -36,15 +38,6 @@ void BufferedInput::read(void *data_, size_t length){
 			collected += read;
 		}
 		read_from_buffer(data+available, remaining);
-	}else{
-		size_t written = available;
-		while(written < length){
-			const size_t read = m_source->read(data+written, length-written);
-			if(read == 0){
-				throw std::underflow_error("EOF");
-			}
-			written += read;
-		}
 	}
 }
 
@@ -57,7 +50,7 @@ std::vector<uint8_t> BufferedInput::read(size_t length){
 }
 
 
-void BufferedInput::read_from_buffer(char *data, size_t length){
+void BufferedInput::read_from_buffer(void *data, size_t length){
 	memcpy(data, m_buffer+start, length);
 	start += length;
 }

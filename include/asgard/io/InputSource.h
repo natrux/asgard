@@ -18,6 +18,13 @@ public:
 	 * Throws if there was an error.
 	 */
 	virtual size_t read(void *data, size_t length) = 0;
+
+	/**
+	 * Reads length bytes into the given buffer, possibly blocking.
+	 * Throws if the input source gets closed before the requested
+	 * amount of data is retrieved.
+	*/
+	void read_all(void *data, size_t length);
 };
 
 
