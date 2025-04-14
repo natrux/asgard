@@ -40,6 +40,9 @@ add_library(asgard
 	src/FileOutputSource.cpp
 	src/Fifo.cpp
 	src/FifoInputSource.cpp
+	src/FifoOutputSource.cpp
+	src/VectorInputSource.cpp
+	src/VectorOutputSource.cpp
 	src/Gateway.cpp
 	src/NamedEndpoint.cpp
 	src/OutputSource.cpp

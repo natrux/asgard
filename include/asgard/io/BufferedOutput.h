@@ -35,7 +35,7 @@ public:
 	/**
 	 * Writes all internally buffered data to the output.
 	 * Throws if part of the data is refused.
-	*/
+	 */
 	void flush();
 
 private:

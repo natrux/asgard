@@ -23,6 +23,9 @@ BufferedOutput::~BufferedOutput(){
 
 
 void BufferedOutput::write(const void *data, size_t length){
+	if(!m_source){
+		return;
+	}
 	if(length > BUFFER_THRESHOLD){
 		flush();
 		m_source->write_all(data, length);
@@ -43,6 +46,9 @@ void BufferedOutput::write(const std::vector<uint8_t> &data){
 
 
 void BufferedOutput::flush(){
+	if(!m_source){
+		return;
+	}
 	if(end > 0){
 		m_source->write_all(m_buffer, end);
 	}
