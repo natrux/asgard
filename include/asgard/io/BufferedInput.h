@@ -12,7 +12,7 @@ namespace io{
 
 class BufferedInput{
 public:
-	BufferedInput(std::unique_ptr<InputSource> source);
+	BufferedInput(std::shared_ptr<InputSource> source);
 
 	/**
 	 * Reads length bytes into the given buffer, possibly blocking.
@@ -43,7 +43,7 @@ public:
 private:
 	static constexpr size_t BUFFER_SIZE = 65536;
 	static constexpr size_t BUFFER_THRESHOLD = 8192;
-	std::unique_ptr<InputSource> m_source;
+	std::shared_ptr<InputSource> m_source;
 	// buffer is filled from start until before end
 	uint8_t m_buffer[BUFFER_SIZE];
 	size_t start = 0;

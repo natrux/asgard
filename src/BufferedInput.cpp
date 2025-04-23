@@ -7,8 +7,8 @@ namespace asgard{
 namespace io{
 
 
-BufferedInput::BufferedInput(std::unique_ptr<InputSource> source):
-	m_source(std::move(source))
+BufferedInput::BufferedInput(std::shared_ptr<InputSource> source):
+	m_source(source)
 {
 }
 

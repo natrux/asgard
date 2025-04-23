@@ -12,7 +12,7 @@ namespace io{
 
 class BufferedOutput{
 public:
-	BufferedOutput(std::unique_ptr<OutputSource> source);
+	BufferedOutput(std::shared_ptr<OutputSource> source);
 
 	~BufferedOutput();
 
@@ -33,6 +33,14 @@ public:
 	void write(const std::vector<uint8_t> &data);
 
 	/**
+	 * Writes data (sizeof(T) bytes) in the same way as write(void*, size_t).
+	 */
+	template<class T>
+	void write(const T &data){
+		write(&data, sizeof(T));
+	}
+
+	/**
 	 * Writes all internally buffered data to the output.
 	 * Throws if part of the data is refused.
 	 */
@@ -41,7 +49,7 @@ public:
 private:
 	static constexpr size_t BUFFER_SIZE = 65536;
 	static constexpr size_t BUFFER_THRESHOLD = 8192;
-	std::unique_ptr<OutputSource> m_source;
+	std::shared_ptr<OutputSource> m_source;
 	// buffer is filled from 0 until before end
 	uint8_t m_buffer[BUFFER_SIZE];
 	size_t end = 0;
