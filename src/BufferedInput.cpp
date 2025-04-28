@@ -50,6 +50,11 @@ std::vector<uint8_t> BufferedInput::read(size_t length){
 }
 
 
+void BufferedInput::read(uint8_t &data){
+	read(&data, 1);
+}
+
+
 void BufferedInput::read_from_buffer(void *data, size_t length){
 	memcpy(data, m_buffer+start, length);
 	start += length;
