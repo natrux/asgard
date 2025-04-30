@@ -32,12 +32,42 @@ void TypeReader::read_type(bool &value, typecode_t code){
 }
 
 
+void TypeReader::read_type(uint8_t &value, typecode_t code){
+	read_number(value, code);
+}
+
+
 void TypeReader::read_type(int8_t &value, typecode_t code){
 	read_number(value, code);
 }
 
 
+void TypeReader::read_type(uint16_t &value, typecode_t code){
+	read_number(value, code);
+}
+
+
+void TypeReader::read_type(int16_t &value, typecode_t code){
+	read_number(value, code);
+}
+
+
+void TypeReader::read_type(uint32_t &value, typecode_t code){
+	read_number(value, code);
+}
+
+
+void TypeReader::read_type(int32_t &value, typecode_t code){
+	read_number(value, code);
+}
+
+
 void TypeReader::read_type(uint64_t &value, typecode_t code){
+	read_number(value, code);
+}
+
+
+void TypeReader::read_type(int64_t &value, typecode_t code){
 	read_number(value, code);
 }
 
@@ -137,6 +167,13 @@ void TypeReader::skip(typecode_t code){
 		break;
 	}
 	case TYPE_PAIR: skip(); skip(); break;
+	case TYPE_TUPLE:{
+		const auto size = read_le<uint64_t>();
+		for(size_t i=0; i<size; i++){
+			skip();
+		}
+		break;
+	}
 	case TYPE_DURATION: read(8); break;
 	}
 }

@@ -14,7 +14,7 @@ class BufferedOutput{
 public:
 	BufferedOutput(std::shared_ptr<OutputSource> source);
 
-	~BufferedOutput();
+	virtual ~BufferedOutput();
 
 	/**
 	 * Writes length bytes from the given buffer, possibly looping and blocking.

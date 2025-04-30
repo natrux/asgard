@@ -27,7 +27,7 @@ enum : typecode_t {
 	TYPE_LIST = 0x0e,                                         // std::vector, std::array, std::set, std::unordered_set
 	TYPE_MAP = 0x0f,                                          // std::map, std::unordered_map
 	TYPE_PAIR = 0x10,
-	//TYPE_TUPLE = 0x11,
+	TYPE_TUPLE = 0x11,
 
 	//TYPE_ENUM = 0xfe,
 	//TYPE_CLASS = 0xff,

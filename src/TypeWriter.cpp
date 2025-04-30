@@ -74,18 +74,14 @@ void TypeWriter::write_type(const int64_t &value){
 
 
 void TypeWriter::write_type(const float &value){
-	uint32_t tmp = 0;
-	std::memcpy(&tmp, &value, 4);
 	write_le(TYPE_F32);
-	write_le(tmp);
+	write_le(value);
 }
 
 
 void TypeWriter::write_type(const double &value){
-	uint64_t tmp = 0;
-	std::memcpy(&tmp, &value, 8);
 	write_le(TYPE_F64);
-	write_le(tmp);
+	write_le(value);
 }
 
 
