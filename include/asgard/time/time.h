@@ -15,6 +15,7 @@ using wall_clock = std::chrono::system_clock;
 using time = clock::time_point;
 using wall_time = wall_clock::time_point;
 
+using resolution = std::chrono::nanoseconds;
 using duration = std::common_type<
 	std::chrono::nanoseconds,
 	std::chrono::microseconds,

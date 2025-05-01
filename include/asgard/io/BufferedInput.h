@@ -31,14 +31,9 @@ public:
 	std::vector<uint8_t> read(size_t length);
 
 	/**
-	 * Reads sizeof(T) bytes in the same way that read(void*, size_t) does.
+	 * Reads a single byte in the same way read(void*, size_t) does.
 	 */
-	template<class T>
-	T read(){
-		T result;
-		read(&result, sizeof(T));
-		return result;
-	}
+	void read(uint8_t &data);
 
 private:
 	static constexpr size_t BUFFER_SIZE = 65536;

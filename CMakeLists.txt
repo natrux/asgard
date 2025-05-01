@@ -34,6 +34,7 @@ add_library(asgard
 	src/ID.cpp
 	src/InputSource.cpp
 	src/BufferedInput.cpp
+	src/TypeReader.cpp
 	src/Endpoint.cpp
 	src/Exception.cpp
 	src/FileInputSource.cpp
@@ -47,6 +48,7 @@ add_library(asgard
 	src/NamedEndpoint.cpp
 	src/OutputSource.cpp
 	src/BufferedOutput.cpp
+	src/TypeWriter.cpp
 	src/Server.cpp
 	src/SocketEndpoint.cpp
 	src/SocketInputSource.cpp

@@ -14,7 +14,7 @@ class BufferedOutput{
 public:
 	BufferedOutput(std::shared_ptr<OutputSource> source);
 
-	~BufferedOutput();
+	virtual ~BufferedOutput();
 
 	/**
 	 * Writes length bytes from the given buffer, possibly looping and blocking.
@@ -33,12 +33,9 @@ public:
 	void write(const std::vector<uint8_t> &data);
 
 	/**
-	 * Writes data (sizeof(T) bytes) in the same way as write(void*, size_t).
+	 * Writes one byte in the same way as write(void*, size_t).
 	 */
-	template<class T>
-	void write(const T &data){
-		write(&data, sizeof(T));
-	}
+	void write(const uint8_t &data);
 
 	/**
 	 * Writes all internally buffered data to the output.

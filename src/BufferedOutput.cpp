@@ -45,6 +45,11 @@ void BufferedOutput::write(const std::vector<uint8_t> &data){
 }
 
 
+void BufferedOutput::write(const uint8_t &data){
+	write(&data, 1);
+}
+
+
 void BufferedOutput::flush(){
 	if(!m_source){
 		return;
