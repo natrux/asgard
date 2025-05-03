@@ -66,14 +66,14 @@ public:
 	}
 	template<class T, class U>
 	void write_type(const std::pair<T, U> &value){
-		write_le(TYPE_PAIR);
+		write_le(typecode_t::TYPE_PAIR);
 		write_type(value.first);
 		write_type(value.second);
 	}
 	template<class... Ts>
 	void write_type(const std::tuple<Ts...> &value){
 		const uint64_t size = sizeof...(Ts);
-		write_le(TYPE_TUPLE);
+		write_le(typecode_t::TYPE_TUPLE);
 		write_le(size);
 		write_tuple_elements<sizeof...(Ts)>(value);
 	}
@@ -114,7 +114,7 @@ private:
 	template<class T>
 	void write_list(const T &value){
 		const uint64_t size = value.size();
-		write_le(TYPE_LIST);
+		write_le(typecode_t::TYPE_LIST);
 		write_le(size);
 		for(const auto &entry : value){
 			write_type(entry);
@@ -124,7 +124,7 @@ private:
 	template<class T>
 	void write_map(const T &value){
 		const uint64_t size = value.size();
-		write_le(TYPE_MAP);
+		write_le(typecode_t::TYPE_MAP);
 		write_le(size);
 		for(const auto &entry : value){
 			write_type(entry.first);
