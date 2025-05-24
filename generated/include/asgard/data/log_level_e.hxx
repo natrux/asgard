@@ -1,11 +1,13 @@
 #pragma once
 
+#include <asgard/data/Enum.h>
+
 
 namespace asgard{
 namespace data{
 
 
-class log_level_e{
+class log_level_e : public Enum{
 private:
 	enum class enum_e{
 		DEBUG,
@@ -14,6 +16,12 @@ private:
 		ERROR,
 	};
 	enum_e value = static_cast<enum_e>(-1);
+
+	static const std::map<enum_e, std::string> enum_to_string;
+	static const std::map<std::string, enum_e> string_to_enum;
+
+	void from_string(const std::string &str) override;
+	std::string to_string() const override;
 
 public:
 	constexpr static enum_e DEBUG = enum_e::DEBUG;

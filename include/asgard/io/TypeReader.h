@@ -40,6 +40,22 @@ public:
 		read_type(value, code);
 	}
 
+	void read_type(bool &value, typecode_e code);
+	void read_type(uint8_t &value, typecode_e code);
+	void read_type(int8_t &value, typecode_e code);
+	void read_type(uint16_t &value, typecode_e code);
+	void read_type(int16_t &value, typecode_e code);
+	void read_type(uint32_t &value, typecode_e code);
+	void read_type(int32_t &value, typecode_e code);
+	void read_type(uint64_t &value, typecode_e code);
+	void read_type(int64_t &value, typecode_e code);
+	void read_type(float &value, typecode_e code);
+	void read_type(double &value, typecode_e code);
+	void read_type(std::string &value, typecode_e code);
+	void read_type(time::time &value, typecode_e code);
+	void read_type(time::wall_time &value, typecode_e code);
+	void read_type(time::duration &value, typecode_e code);
+
 	template<class T>
 	void read_type(std::vector<T> &value, typecode_e code){
 		if(code == typecode_t::TYPE_LIST){
@@ -182,32 +198,13 @@ public:
 		value = ptr;
 	}
 
-	void read_type(bool &value, typecode_e code);
-	void read_type(uint8_t &value, typecode_e code);
-	void read_type(int8_t &value, typecode_e code);
-	void read_type(uint16_t &value, typecode_e code);
-	void read_type(int16_t &value, typecode_e code);
-	void read_type(uint32_t &value, typecode_e code);
-	void read_type(int32_t &value, typecode_e code);
-	void read_type(uint64_t &value, typecode_e code);
-	void read_type(int64_t &value, typecode_e code);
-	void read_type(float &value, typecode_e code);
-	void read_type(double &value, typecode_e code);
-	void read_type(std::string &value, typecode_e code);
-	void read_type(time::time &value, typecode_e code);
-	void read_type(time::wall_time &value, typecode_e code);
-	void read_type(time::duration &value, typecode_e code);
-
 	template<class T>
 	void read_type(T &value, typecode_e code){
-		value.read_from(this, code);
+		value.read_from(*this, code);
 	}
 
 	void skip();
 	void skip(typecode_e code);
-
-private:
-	time::duration delta_time;
 
 	template<class T>
 	T read_le(){
@@ -222,6 +219,9 @@ private:
 		std::memcpy(&result, &tmp, sizeof(T));
 		return result;
 	}
+
+private:
+	time::duration delta_time = time::immediate();
 
 	template<class T>
 	void read_number(T &value, typecode_e code){

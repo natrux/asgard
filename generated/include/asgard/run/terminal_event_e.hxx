@@ -1,11 +1,13 @@
 #pragma once
 
+#include <asgard/data/Enum.h>
+
 
 namespace asgard{
 namespace run{
 
 
-class terminal_event_e{
+class terminal_event_e : public data::Enum{
 private:
 	enum class enum_e{
 		ARROW_UP,
@@ -22,6 +24,12 @@ private:
 		END_OF_FILE,
 	};
 	enum_e value = static_cast<enum_e>(-1);
+
+	static const std::map<enum_e, std::string> enum_to_string;
+	static const std::map<std::string, enum_e> string_to_enum;
+
+	void from_string(const std::string &str) override;
+	std::string to_string() const override;
 
 public:
 	constexpr static enum_e ARROW_UP = enum_e::ARROW_UP;

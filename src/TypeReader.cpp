@@ -87,6 +87,7 @@ void TypeReader::read_type(std::string &value, typecode_e code){
 		const uint64_t size = read_le<uint64_t>();
 		const auto chrs = read(size);
 		value.append(chrs.begin(), chrs.end());
+	//}else if(code == typecode_t::TYPE_ENUM){
 	}else{
 		skip(code);
 	}

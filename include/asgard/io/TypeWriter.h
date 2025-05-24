@@ -37,6 +37,7 @@ public:
 	void write_type(const float &value);
 	void write_type(const double &value);
 	void write_type(const std::string &value);
+	void write_type(const char *value);
 	void write_type(const time::duration &value);
 	void write_type(const time::time &value);
 	void write_type(const time::wall_time &value);
@@ -93,13 +94,11 @@ public:
 			write_type(nullptr);
 		}
 	}
-
 	template<class T>
 	void write_type(const T &value){
 		value.write_to(*this);
 	}
 
-private:
 	template<class T>
 	void write_le(const T &value){
 		using B = util::uintw_t<T>;
@@ -111,6 +110,7 @@ private:
 		}
 	}
 
+private:
 	template<class T>
 	void write_list(const T &value){
 		const uint64_t size = value.size();

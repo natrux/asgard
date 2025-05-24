@@ -95,6 +95,12 @@ void TypeWriter::write_type(const std::string &value){
 }
 
 
+void TypeWriter::write_type(const char *value){
+	const std::string value_ = value;
+	write_type(value_);
+}
+
+
 void TypeWriter::write_type(const time::duration &value){
 	const int64_t ticks = std::chrono::duration_cast<time::resolution>(value).count();
 	write_le(typecode_t::TYPE_DURATION);
