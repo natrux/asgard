@@ -93,7 +93,7 @@ std::unique_ptr<io::OutputSource> SocketEndpoint::output_source() const{
 }
 
 
-void SocketEndpoint::open(int family){
+void SocketEndpoint::open_socket(int family){
 	if(m_socket != INVALID_SOCKET){
 		return;
 	}
@@ -137,7 +137,7 @@ void SocketEndpoint::bind(void *addr, socklen_t length) const{
 }
 
 
-void SocketEndpoint::connect(void *addr, socklen_t length, bool allow_eagain) const{
+void SocketEndpoint::connect_socket(void *addr, socklen_t length, bool allow_eagain) const{
 	const bool has_timeout = (connect_timeout > time::immediate());
 	if(has_timeout){
 		set_blocking(false);

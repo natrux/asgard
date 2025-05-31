@@ -82,7 +82,7 @@ void TcpEndpoint::connect(){
 	std::vector<std::string> connect_errors;
 	for(addrinfo *i=info; i!=NULL; i=i->ai_next){
 		try{
-			SocketEndpoint::connect(i->ai_addr, i->ai_addrlen, false);
+			connect_socket(i->ai_addr, i->ai_addrlen, false);
 			connect_success = true;
 			break;
 		}catch(const std::runtime_error &err){
@@ -140,7 +140,7 @@ Tcp4Endpoint::Tcp4Endpoint(const std::string &host, unsigned int port):
 
 
 void Tcp4Endpoint::open(){
-	SocketEndpoint::open(AF_INET);
+	open_socket(AF_INET);
 }
 
 
@@ -169,7 +169,7 @@ Tcp6Endpoint::Tcp6Endpoint(const std::string &host, unsigned int port):
 
 
 void Tcp6Endpoint::open(){
-	SocketEndpoint::open(AF_INET6);
+	open_socket(AF_INET6);
 }
 
 

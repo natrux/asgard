@@ -41,9 +41,9 @@ protected:
 	using socket_t = int;
 	const socket_t INVALID_SOCKET = -1;
 #endif
-	void open(int family);
+	void open_socket(int family);
 	void bind(void *addr, socklen_t length) const;
-	void connect(void *addr, socklen_t length, bool allow_eagain) const;
+	void connect_socket(void *addr, socklen_t length, bool allow_eagain) const;
 	void set_socket(socket_t socket, bool connected);
 	bool connected = false;
 

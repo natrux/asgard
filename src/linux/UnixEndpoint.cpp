@@ -38,7 +38,7 @@ bool UnixEndpoint::can_connect() const{
 
 
 void UnixEndpoint::open(){
-	SocketEndpoint::open(AF_UNIX);
+	open_socket(AF_UNIX);
 }
 
 
@@ -51,7 +51,7 @@ void UnixEndpoint::bind() const{
 
 void UnixEndpoint::connect(){
 	sockaddr_un addr = get_sockaddr(m_path);
-	SocketEndpoint::connect(&addr, sizeof(addr), true);
+	connect_socket(&addr, sizeof(addr), true);
 	connected = true;
 }
 
