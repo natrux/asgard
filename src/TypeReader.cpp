@@ -11,13 +11,18 @@ TypeReader::TypeReader(std::shared_ptr<InputSource> source):
 }
 
 
-time::duration TypeReader::get_delta_time() const{
-	return delta_time;
+time::time TypeReader::get_remote_epoch() const{
+	return remote_epoch;
 }
 
 
-void TypeReader::set_delta_time(const time::duration &delta){
-	delta_time = delta;
+void TypeReader::set_remote_epoch(const time::time &time){
+	remote_epoch = time;
+}
+
+
+void TypeReader::set_remote_epoch(const time::duration &since_remote_epoch){
+	set_remote_epoch(time::now() - since_remote_epoch);
 }
 
 
@@ -126,7 +131,7 @@ void TypeReader::read_type(time::time &value, const typecode_t &type){
 	if(type.code == typecode_t::TYPE_DURATION){
 		int64_t ticks = 0;
 		read_number(ticks, type.code);
-		value = time::time() + time::resolution(ticks) + delta_time;
+		value = remote_epoch + time::resolution(ticks);
 	}else{
 		skip(type);
 	}

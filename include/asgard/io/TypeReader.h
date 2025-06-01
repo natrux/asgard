@@ -24,8 +24,9 @@ class TypeReader : public BufferedInput{
 public:
 	TypeReader(std::shared_ptr<InputSource> source);
 
-	time::duration get_delta_time() const;
-	void set_delta_time(const time::duration &delta);
+	time::time get_remote_epoch() const;
+	void set_remote_epoch(const time::time &time);
+	void set_remote_epoch(const time::duration &since_remote_epoch);
 
 	typecode_t read_typecode();
 
@@ -234,8 +235,7 @@ public:
 	}
 
 private:
-	// our clock at remote zero time
-	time::duration delta_time = time::immediate();
+	time::time remote_epoch;
 
 	template<class T>
 	void read_number(T &value, typecode_e code){
