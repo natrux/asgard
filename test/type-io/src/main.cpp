@@ -69,6 +69,13 @@ int main(int, char **){
 	}
 
 	{
+		const std::vector<std::optional<int32_t>> data = {
+			-42, {}, -23,
+		};
+		test_io(data);
+	}
+
+	/*{
 		std::vector<asgard::data::DataPacket> packet_list;
 		for(size_t i=0; i<5; i++){
 			asgard::data::DataPacket packet;
@@ -77,12 +84,12 @@ int main(int, char **){
 			packet_list.push_back(packet);
 		}
 		test_io(packet_list);
-	}
+	}*/
 
-	{
+	/*{
 		const asgard::data::log_level_e level = asgard::data::log_level_e::INFO;
 		test_io(level);
-	}
+	}*/
 
 	return 0;
 }
