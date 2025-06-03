@@ -41,7 +41,7 @@ typecode_t TypeReader::read_typecode(){
 		result.sub_types.push_back(read_typecode());
 		break;
 	case typecode_t::TYPE_TUPLE:{
-		const auto size = read_le<uint64_t>();
+		const auto size = read_le<length_t>();
 		for(size_t i=0; i<size; i++){
 			result.sub_types.push_back(read_typecode());
 		}
@@ -117,7 +117,7 @@ void TypeReader::read_type(double &value, const typecode_t &type){
 
 void TypeReader::read_type(std::string &value, const typecode_t &type){
 	if(type.code == typecode_t::TYPE_STRING){
-		const uint64_t size = read_le<uint64_t>();
+		const auto size = read_le<length_t>();
 		const auto chrs = read(size);
 		value.append(chrs.begin(), chrs.end());
 	//}else if(code == typecode_t::TYPE_ENUM){
@@ -181,19 +181,19 @@ void TypeReader::skip(const typecode_t &type){
 	case typecode_t::TYPE_F32: read(4); break;
 	case typecode_t::TYPE_F64: read(8); break;
 	case typecode_t::TYPE_STRING:{
-		const auto size = read_le<uint64_t>();
+		const auto size = read_le<length_t>();
 		read(size);
 		break;
 	}
 	case typecode_t::TYPE_LIST:{
-		const auto size = read_le<uint64_t>();
+		const auto size = read_le<length_t>();
 		for(size_t i=0; i<size; i++){
 			skip(type.sub_types.at(0));
 		}
 		break;
 	}
 	case typecode_t::TYPE_MAP:{
-		const auto size = read_le<uint64_t>();
+		const auto size = read_le<length_t>();
 		for(size_t i=0; i<size; i++){
 			skip(type.sub_types.at(0));
 			skip(type.sub_types.at(1));

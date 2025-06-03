@@ -25,14 +25,6 @@ void test_io(const T &data_out){
 	const auto d_w = asgard::time::since(t_w);
 
 	const auto vector = out->get();
-	auto in = std::make_shared<asgard::io::VectorInputSource>(vector);
-	const auto t_r = asgard::time::now();
-	{
-		asgard::io::TypeReader reader(in);
-		reader.read_type(data_in);
-	}
-	const auto d_r = asgard::time::since(t_r);
-
 	const size_t max_output = 128;
 	for(size_t i=0; i<std::min<size_t>(vector.size(), max_output); i++){
 		const auto &byte = vector[i];
@@ -42,8 +34,16 @@ void test_io(const T &data_out){
 		std::cout << "...";
 	}
 	std::cout << std::endl;
-	std::cout << vector.size() << " bytes w/r in " << asgard::time::strtime(d_w) << " / " << asgard::time::strtime(d_r) << std::endl;
 
+	auto in = std::make_shared<asgard::io::VectorInputSource>(vector);
+	const auto t_r = asgard::time::now();
+	{
+		asgard::io::TypeReader reader(in);
+		reader.read_type(data_in);
+	}
+	const auto d_r = asgard::time::since(t_r);
+
+	std::cout << vector.size() << " bytes w/r in " << asgard::time::strtime(d_w) << " / " << asgard::time::strtime(d_r) << std::endl;
 	const bool equal = (data_in == data_out);
 	if(equal){
 		std::cout << "Equal" << std::endl;

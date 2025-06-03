@@ -14,7 +14,7 @@ TypeWriter::TypeWriter(std::shared_ptr<OutputSource> source):
 
 
 void TypeWriter::write_typecode(const typecode_t &type){
-	uint64_t sub_types = 0;
+	length_t sub_types = 0;
 	bool write_size = false;
 	switch(type.code){
 	case typecode_t::TYPE_LIST:
@@ -34,7 +34,7 @@ void TypeWriter::write_typecode(const typecode_t &type){
 		sub_types = 0;
 		break;
 	}
-	sub_types = std::min(sub_types, type.sub_types.size());
+	sub_types = std::min<length_t>(sub_types, type.sub_types.size());
 
 	write_le(type.code);
 	if(write_size){
@@ -107,7 +107,7 @@ void TypeWriter::write_value(const double &value){
 
 
 void TypeWriter::write_value(const std::string &value){
-	const uint64_t length = value.size();
+	const length_t length = value.size();
 	write_le(length);
 	for(const auto &chr : value){
 		write(static_cast<uint8_t>(chr));

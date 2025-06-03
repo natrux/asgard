@@ -121,7 +121,7 @@ public:
 private:
 	template<class T>
 	void write_list(const T &value){
-		const uint64_t size = value.size();
+		const length_t size = value.size();
 		write_le(size);
 		for(const auto &entry : value){
 			write_value(entry);
@@ -130,7 +130,7 @@ private:
 
 	template<class T>
 	void write_map(const T &value){
-		const uint64_t size = value.size();
+		const length_t size = value.size();
 		write_le(size);
 		for(const auto &entry : value){
 			write_value(entry.first);

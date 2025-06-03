@@ -69,7 +69,7 @@ public:
 	template<class T>
 	void read_type(std::vector<T> &value, const typecode_t &type){
 		if(type.code == typecode_t::TYPE_LIST){
-			const auto size = read_le<uint64_t>();
+			const auto size = read_le<length_t>();
 			const auto &sub_type = type.sub_types.at(0);
 			for(size_t i=0; i<size; i++){
 				value.push_back(read_type<T>(sub_type));
@@ -91,7 +91,7 @@ public:
 	void read_type(std::array<T, N> &value, const typecode_t &type){
 		if(type.code == typecode_t::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<uint64_t>();
+			const auto size = read_le<length_t>();
 			for(size_t i=0; i<size; i++){
 				if(i < N){
 					value[i] = read_type<T>(sub_type);
@@ -154,7 +154,7 @@ public:
 			value.second = read_type<U>(type.sub_types.at(1));
 		}else if(type.code == typecode_t::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<uint64_t>();
+			const auto size = read_le<length_t>();
 			if(size >= 1){
 				value.first = read_type<T>(sub_type);
 			}
@@ -185,7 +185,7 @@ public:
 			}
 		}else if(type.code == typecode_t::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<uint64_t>();
+			const auto size = read_le<length_t>();
 			std::vector<typecode_t> sub_typecodes;
 			for(size_t i=0; i<size; i++){
 				sub_typecodes.push_back(sub_type);
@@ -263,7 +263,7 @@ private:
 		using K = typename T::key_type;
 		if(type.code == typecode_t::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<uint64_t>();
+			const auto size = read_le<length_t>();
 			for(size_t i=0; i<size; i++){
 				value.insert(read_type<K>(sub_type));
 			}
@@ -287,7 +287,7 @@ private:
 		if(type.code == typecode_t::TYPE_MAP){
 			const auto &key_type = type.sub_types.at(0);
 			const auto &value_type = type.sub_types.at(1);
-			const auto size = read_le<uint64_t>();
+			const auto size = read_le<length_t>();
 			for(size_t i=0; i<size; i++){
 				const auto k = read_type<K>(key_type);
 				const auto v = read_type<V>(value_type);
@@ -295,7 +295,7 @@ private:
 			}
 		}else if(type.code == typecode_t::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<uint64_t>();
+			const auto size = read_le<length_t>();
 			for(size_t i=0; i<size; i++){
 				std::pair<K, V> item;
 				read_type(item, sub_type);

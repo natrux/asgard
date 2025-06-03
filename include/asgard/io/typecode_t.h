@@ -9,6 +9,7 @@ namespace io{
 
 
 using typecode_e = uint8_t;
+using length_t = uint64_t;
 
 struct typecode_t{
 	enum : typecode_e {
