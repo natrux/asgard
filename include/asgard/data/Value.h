@@ -10,7 +10,6 @@ class TypeReader;
 class TypeWriter;
 }
 
-
 namespace data{
 
 

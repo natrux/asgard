@@ -4,6 +4,8 @@
 #include <asgard/io/get_typecode.h>
 #include <asgard/io/BufferedOutput.h>
 #include <asgard/time/time.h>
+#include <asgard/data/Value.h>
+#include <asgard/data/Enum.h>
 #include <asgard/util/uintw_t.h>
 
 #include <string>
@@ -57,6 +59,9 @@ public:
 	void write_value(const time::duration &value);
 	void write_value(const time::time &value);
 	void write_value(const time::wall_time &value);
+	void write_value(const data::Value &value);
+	void write_value(const data::Enum &value);
+
 	template<class T>
 	void write_value(const std::vector<T> &value){
 		write_list(value);

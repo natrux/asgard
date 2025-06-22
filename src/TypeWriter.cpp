@@ -1,5 +1,6 @@
 #include <asgard/io/TypeWriter.h>
 
+#include <stdexcept>
 #include <cstring>
 
 
@@ -138,6 +139,16 @@ void TypeWriter::write_value(const time::wall_time &value){
 	const auto since_epoch = value.time_since_epoch();
 	const int64_t ticks = std::chrono::duration_cast<time::resolution>(since_epoch).count();
 	write_le(ticks);
+}
+
+
+void TypeWriter::write_value(const data::Value &/*value*/){
+	throw std::logic_error("Not implemented");
+}
+
+
+void TypeWriter::write_value(const data::Enum &/*value*/){
+	throw std::logic_error("Not implemented");
 }
 
 

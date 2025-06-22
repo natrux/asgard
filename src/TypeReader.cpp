@@ -1,5 +1,7 @@
 #include <asgard/io/TypeReader.h>
 
+#include <stdexcept>
+
 
 namespace asgard{
 namespace io{
@@ -21,8 +23,8 @@ void TypeReader::set_remote_epoch(const time::time &time){
 }
 
 
-void TypeReader::set_remote_epoch(const time::duration &since_remote_epoch){
-	set_remote_epoch(time::now() - since_remote_epoch);
+void TypeReader::set_remote_since_epoch(const time::duration &since){
+	set_remote_epoch(time::now() - since);
 }
 
 
@@ -142,7 +144,7 @@ void TypeReader::read_type(time::wall_time &value, const typecode_t &type){
 	if(type.code == typecode_t::TYPE_DURATION){
 		int64_t ticks = 0;
 		read_number(ticks, type.code);
-		value = time::wall_time() + time::resolution(ticks);
+		value = time::epoch_wall() + time::resolution(ticks);
 	}else{
 		skip(type);
 	}
@@ -157,6 +159,16 @@ void TypeReader::read_type(time::duration &value, const typecode_t &type){
 	}else{
 		skip(type);
 	}
+}
+
+
+void TypeReader::read_type(data::Value &/*value*/, const typecode_t &/*type*/){
+	throw std::logic_error("Not implemented");
+}
+
+
+void TypeReader::read_type(data::Enum &/*value*/, const typecode_t &/*type*/){
+	throw std::logic_error("Not implemented");
 }
 
 
@@ -187,16 +199,19 @@ void TypeReader::skip(const typecode_t &type){
 	}
 	case typecode_t::TYPE_LIST:{
 		const auto size = read_le<length_t>();
+		const auto &sub_type = type.sub_types.at(0);
 		for(size_t i=0; i<size; i++){
-			skip(type.sub_types.at(0));
+			skip(sub_type);
 		}
 		break;
 	}
 	case typecode_t::TYPE_MAP:{
 		const auto size = read_le<length_t>();
+		const auto &key_type = type.sub_types.at(0);
+		const auto &value_type = type.sub_types.at(1);
 		for(size_t i=0; i<size; i++){
-			skip(type.sub_types.at(0));
-			skip(type.sub_types.at(1));
+			skip(key_type);
+			skip(value_type);
 		}
 		break;
 	}
@@ -212,6 +227,14 @@ void TypeReader::skip(const typecode_t &type){
 		break;
 	}
 	case typecode_t::TYPE_DURATION: read(8); break;
+	case typecode_t::TYPE_OPTIONAL:
+	case typecode_t::TYPE_POINTER:{
+		const bool flag = read_le<uint8_t>();
+		if(flag){
+			skip(type.sub_types.at(0));
+		}
+		break;
+	}
 	}
 }
 

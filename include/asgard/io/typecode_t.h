@@ -35,7 +35,7 @@ struct typecode_t{
 		TYPE_OPTIONAL = 0x12,
 		TYPE_POINTER = 0x13,
 
-		TYPE_CLASS = 0x80,
+		TYPE_VALUE = 0x80,
 		TYPE_ENUM = 0x81,
 	};
 

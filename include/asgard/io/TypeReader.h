@@ -3,6 +3,8 @@
 #include <asgard/io/BufferedInput.h>
 #include <asgard/io/typecode_t.h>
 #include <asgard/time/time.h>
+#include <asgard/data/Value.h>
+#include <asgard/data/Enum.h>
 #include <asgard/util/uintw_t.h>
 
 #include <string>
@@ -26,7 +28,7 @@ public:
 
 	time::time get_remote_epoch() const;
 	void set_remote_epoch(const time::time &time);
-	void set_remote_epoch(const time::duration &since_remote_epoch);
+	void set_remote_since_epoch(const time::duration &since);
 
 	typecode_t read_typecode();
 
@@ -65,6 +67,8 @@ public:
 	void read_type(time::time &value, const typecode_t &type);
 	void read_type(time::wall_time &value, const typecode_t &type);
 	void read_type(time::duration &value, const typecode_t &type);
+	void read_type(data::Value &value, const typecode_t &type);
+	void read_type(data::Enum &value, const typecode_t &type);
 
 	template<class T>
 	void read_type(std::vector<T> &value, const typecode_t &type){
@@ -201,19 +205,29 @@ public:
 
 	template<class T>
 	void read_type(std::optional<T> &value, const typecode_t &type){
-		const bool flag = read_le<uint8_t>();
-		if(flag){
-			value = read_type<T>(type.sub_types.at(0));
+		if(type.code == typecode_t::TYPE_OPTIONAL || type.code == typecode_t::TYPE_POINTER){
+			const bool flag = read_le<uint8_t>();
+			if(flag){
+				value = read_type<T>(type.sub_types.at(0));
+			}
+		//}else if(type matches get_typecode<T>()){
+		}else{
+			skip(type);
 		}
 	}
 
 	template<class T>
 	void read_type(std::shared_ptr<T> &value, const typecode_t &type){
-		const bool flag = read_le<uint8_t>();
-		if(flag){
-			auto ptr = std::make_shared<typename std::remove_const<T>::type>();
-			read_type(*ptr, type.sub_types.at(0));
-			value = ptr;
+		if(type.code == typecode_t::TYPE_OPTIONAL || type.code == typecode_t::TYPE_POINTER){
+			const bool flag = read_le<uint8_t>();
+			if(flag){
+				auto ptr = std::make_shared<typename std::remove_const<T>::type>();
+				read_type(*ptr, type.sub_types.at(0));
+				value = ptr;
+			}
+		//}else if(type matches get_typecode<T>()){
+		}else{
+			skip(type);
 		}
 	}
 

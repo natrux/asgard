@@ -26,6 +26,14 @@ using duration = std::common_type<
 >::type;
 
 
+inline time epoch(){
+	return time();
+}
+
+inline wall_time epoch_wall(){
+	return wall_time();
+}
+
 inline time now(){
 	return clock::now();
 }
