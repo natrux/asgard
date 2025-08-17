@@ -45,15 +45,13 @@ void test_io(const T &data_out){
 
 	std::cout << vector.size() << " bytes w/r in " << asgard::time::strtime(d_w) << " / " << asgard::time::strtime(d_r) << std::endl;
 	const bool equal = (data_in == data_out);
-	if(equal){
-		std::cout << "Equal" << std::endl;
-	}else{
-		std::cout << "Not equal" << std::endl;
+	if(!equal){
+		throw std::runtime_error("Not equal");
 	}
 }
 
 
-int main(int, char **){
+void test(){
 	{
 		const float number = 13.37;
 		test_io(number);
@@ -75,21 +73,25 @@ int main(int, char **){
 		test_io(data);
 	}
 
-	/*{
-		std::vector<asgard::data::DataPacket> packet_list;
-		for(size_t i=0; i<5; i++){
-			asgard::data::DataPacket packet;
-			packet.time = asgard::time::now();
-			packet.payload = {0, 255, 23, 42, 0x23, 0x42, static_cast<uint8_t>(i)};
-			packet_list.push_back(packet);
-		}
-		test_io(packet_list);
-	}*/
+	{
+		const std::vector<asgard::data::log_level_e> levels = {
+			asgard::data::log_level_e::DEBUG,
+			asgard::data::log_level_e::INFO,
+			asgard::data::log_level_e::WARN,
+			asgard::data::log_level_e::ERROR,
+		};
+		test_io(levels);
+	}
+}
 
-	/*{
-		const asgard::data::log_level_e level = asgard::data::log_level_e::INFO;
-		test_io(level);
-	}*/
+
+int main(int, char **){
+	try{
+		test();
+	}catch(const std::exception &err){
+		std::cerr << "Error: " << err.what() << std::ends;
+	}
 
 	return 0;
 }
+

@@ -31,6 +31,9 @@ void TypeReader::set_remote_since_epoch(const time::duration &since){
 typecode_t TypeReader::read_typecode(){
 	typecode_t result;
 	result.code = read_le<typecode_e>();
+	if(result.code == typecode_t::TYPE_VALUE || result.code == typecode_t::TYPE_ENUM){
+		read_string(result.name);
+	}
 	switch(result.code){
 	case typecode_t::TYPE_LIST:
 	case typecode_t::TYPE_OPTIONAL:
@@ -119,9 +122,7 @@ void TypeReader::read_type(double &value, const typecode_t &type){
 
 void TypeReader::read_type(std::string &value, const typecode_t &type){
 	if(type.code == typecode_t::TYPE_STRING){
-		const auto size = read_le<length_t>();
-		const auto chrs = read(size);
-		value.append(chrs.begin(), chrs.end());
+		read_string(value);
 	//}else if(code == typecode_t::TYPE_ENUM){
 	}else{
 		skip(type);
@@ -167,8 +168,14 @@ void TypeReader::read_type(data::Value &/*value*/, const typecode_t &/*type*/){
 }
 
 
-void TypeReader::read_type(data::Enum &/*value*/, const typecode_t &/*type*/){
-	throw std::logic_error("Not implemented");
+void TypeReader::read_type(data::Enum &value, const typecode_t &type){
+	if(type.code == typecode_t::TYPE_ENUM || type.code == typecode_t::TYPE_STRING){
+		std::string field;
+		read_string(field);
+		value.from_string(field);
+	}else{
+		skip(type);
+	}
 }
 
 
@@ -192,6 +199,7 @@ void TypeReader::skip(const typecode_t &type){
 	case typecode_t::TYPE_I64: read(8); break;
 	case typecode_t::TYPE_F32: read(4); break;
 	case typecode_t::TYPE_F64: read(8); break;
+	case typecode_t::TYPE_ENUM:
 	case typecode_t::TYPE_STRING:{
 		const auto size = read_le<length_t>();
 		read(size);
@@ -235,7 +243,20 @@ void TypeReader::skip(const typecode_t &type){
 		}
 		break;
 	}
+	case typecode_t::TYPE_VALUE:
+		// TODO
+		break;
+	default:
+		// suppress warning
+		throw std::runtime_error("attempt to skip unknown type");
 	}
+}
+
+
+void TypeReader::read_string(std::string &value){
+	const auto size = read_le<length_t>();
+	const auto chrs = read(size);
+	value.append(chrs.begin(), chrs.end());
 }
 
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <asgard/data/Enum.h>
+#include <asgard/io/get_typecode.h>
 
 
 namespace asgard{
@@ -50,6 +51,23 @@ public:
 	terminal_event_e &operator=(const enum_e &v){ value = v; return *this; }
 
 	constexpr operator enum_e() const{ return value; }
+};
+
+
+}
+}
+
+
+namespace asgard{
+namespace io{
+
+
+template<>
+struct get_typecode_t<asgard::run::terminal_event_e>{
+	static typecode_t value(){
+		static typecode_t instance(typecode_t::TYPE_ENUM, "asgard.run.terminal_event_e");
+		return instance;
+	}
 };
 
 

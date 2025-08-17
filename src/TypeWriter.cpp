@@ -38,6 +38,9 @@ void TypeWriter::write_typecode(const typecode_t &type){
 	sub_types = std::min<length_t>(sub_types, type.sub_types.size());
 
 	write_le(type.code);
+	if(type.code == typecode_t::TYPE_VALUE || type.code == typecode_t::TYPE_ENUM){
+		write_value(type.name);
+	}
 	if(write_size){
 		write_le(sub_types);
 	}
@@ -147,8 +150,8 @@ void TypeWriter::write_value(const data::Value &/*value*/){
 }
 
 
-void TypeWriter::write_value(const data::Enum &/*value*/){
-	throw std::logic_error("Not implemented");
+void TypeWriter::write_value(const data::Enum &value){
+	write_value(value.to_string());
 }
 
 

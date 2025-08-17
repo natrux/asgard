@@ -248,6 +248,8 @@ public:
 		return result;
 	}
 
+	void read_string(std::string &value);
+
 private:
 	time::time remote_epoch;
 

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <cstdint>
+#include <string>
 
 
 namespace asgard{
@@ -40,10 +41,13 @@ struct typecode_t{
 	};
 
 	typecode_e code;
+	std::string name;
 	std::vector<typecode_t> sub_types;
 
 	typecode_t() = default;
-	typecode_t(const typecode_e &code_, const std::vector<typecode_t> &sub_types_={}): code(code_), sub_types(sub_types_) {}
+	typecode_t(const typecode_e &code_): code(code_) {}
+	typecode_t(const typecode_e &code_, const std::vector<typecode_t> &sub_types_): code(code_), sub_types(sub_types_) {}
+	typecode_t(const typecode_e &code_, const std::string &name_): code(code_), name(name_) {}
 };
 
 
