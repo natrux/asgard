@@ -6,13 +6,14 @@
 
 
 namespace asgard{
-namespace io{
+namespace code{
 
 
 using typecode_e = uint8_t;
 using length_t = uint64_t;
 
-struct typecode_t{
+class Typecode{
+public:
 	enum : typecode_e {
 		TYPE_NULL = 0x00,
 
@@ -42,12 +43,12 @@ struct typecode_t{
 
 	typecode_e code;
 	std::string name;
-	std::vector<typecode_t> sub_types;
+	std::vector<Typecode> sub_types;
 
-	typecode_t() = default;
-	typecode_t(const typecode_e &code_): code(code_) {}
-	typecode_t(const typecode_e &code_, const std::vector<typecode_t> &sub_types_): code(code_), sub_types(sub_types_) {}
-	typecode_t(const typecode_e &code_, const std::string &name_): code(code_), name(name_) {}
+	Typecode() = default;
+	Typecode(const typecode_e &code_): code(code_) {}
+	Typecode(const typecode_e &code_, const std::vector<Typecode> &sub_types_): code(code_), sub_types(sub_types_) {}
+	Typecode(const typecode_e &code_, const std::string &name_): code(code_), name(name_) {}
 };
 
 

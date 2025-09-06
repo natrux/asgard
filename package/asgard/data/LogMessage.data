@@ -5,4 +5,5 @@ log_level_e level
 string unit
 string message
 
+const string get_level()
 const string format()

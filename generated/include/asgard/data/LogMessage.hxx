@@ -18,6 +18,7 @@ public:
 	std::string unit;
 	std::string message;
 
+	std::string get_level() const;
 	std::string format() const;
 };
 

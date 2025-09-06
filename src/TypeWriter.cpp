@@ -14,20 +14,20 @@ TypeWriter::TypeWriter(std::shared_ptr<OutputSource> source):
 }
 
 
-void TypeWriter::write_typecode(const typecode_t &type){
-	length_t sub_types = 0;
+void TypeWriter::write_typecode(const code::Typecode &type){
+	code::length_t sub_types = 0;
 	bool write_size = false;
 	switch(type.code){
-	case typecode_t::TYPE_LIST:
-	case typecode_t::TYPE_OPTIONAL:
-	case typecode_t::TYPE_POINTER:
+	case code::Typecode::TYPE_LIST:
+	case code::Typecode::TYPE_OPTIONAL:
+	case code::Typecode::TYPE_POINTER:
 		sub_types = 1;
 		break;
-	case typecode_t::TYPE_MAP:
-	case typecode_t::TYPE_PAIR:
+	case code::Typecode::TYPE_MAP:
+	case code::Typecode::TYPE_PAIR:
 		sub_types = 2;
 		break;
-	case typecode_t::TYPE_TUPLE:
+	case code::Typecode::TYPE_TUPLE:
 		sub_types = type.sub_types.size();
 		write_size = true;
 		break;
@@ -35,10 +35,10 @@ void TypeWriter::write_typecode(const typecode_t &type){
 		sub_types = 0;
 		break;
 	}
-	sub_types = std::min<length_t>(sub_types, type.sub_types.size());
+	sub_types = std::min<code::length_t>(sub_types, type.sub_types.size());
 
 	write_le(type.code);
-	if(type.code == typecode_t::TYPE_VALUE || type.code == typecode_t::TYPE_ENUM){
+	if(type.code == code::Typecode::TYPE_VALUE || type.code == code::Typecode::TYPE_ENUM){
 		write_value(type.name);
 	}
 	if(write_size){
@@ -111,7 +111,7 @@ void TypeWriter::write_value(const double &value){
 
 
 void TypeWriter::write_value(const std::string &value){
-	const length_t length = value.size();
+	const code::length_t length = value.size();
 	write_le(length);
 	for(const auto &chr : value){
 		write(static_cast<uint8_t>(chr));

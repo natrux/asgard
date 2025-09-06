@@ -1,7 +1,7 @@
 #pragma once
 
-#include <asgard/io/typecode_t.h>
-#include <asgard/io/get_typecode.h>
+#include <asgard/code/Typecode.h>
+#include <asgard/code/get_typecode.h>
 #include <asgard/io/BufferedOutput.h>
 #include <asgard/time/time.h>
 #include <asgard/data/Value.h>
@@ -27,11 +27,11 @@ class TypeWriter : public BufferedOutput{
 public:
 	TypeWriter(std::shared_ptr<OutputSource> source);
 
-	void write_typecode(const typecode_t &type);
+	void write_typecode(const code::Typecode &type);
 
 	template<class T>
 	void write_type(const T &value){
-		const auto type = get_typecode<T>();
+		const auto type = code::get_typecode<T>();
 		write_typecode(type);
 		write_value(value);
 	}
@@ -126,7 +126,7 @@ public:
 private:
 	template<class T>
 	void write_list(const T &value){
-		const length_t size = value.size();
+		const code::length_t size = value.size();
 		write_le(size);
 		for(const auto &entry : value){
 			write_value(entry);
@@ -135,7 +135,7 @@ private:
 
 	template<class T>
 	void write_map(const T &value){
-		const length_t size = value.size();
+		const code::length_t size = value.size();
 		write_le(size);
 		for(const auto &entry : value){
 			write_value(entry.first);

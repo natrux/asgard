@@ -1,7 +1,7 @@
 #pragma once
 
 #include <asgard/data/Enum.h>
-#include <asgard/io/get_typecode.h>
+#include <asgard/code/get_typecode.h>
 
 
 namespace asgard{
@@ -43,13 +43,13 @@ public:
 
 
 namespace asgard{
-namespace io{
+namespace code{
 
 
 template<>
 struct get_typecode_t<asgard::data::log_level_e>{
-	static typecode_t value(){
-		static typecode_t instance(typecode_t::TYPE_ENUM, "asgard.data.log_level_e");
+	static Typecode value(){
+		static Typecode instance(Typecode::TYPE_ENUM, "asgard.data.log_level_e");
 		return instance;
 	}
 };

@@ -5,13 +5,6 @@
 
 
 namespace asgard{
-
-namespace io{
-class TypeReader;
-class TypeWriter;
-struct typecode_t;
-}
-
 namespace data{
 
 
