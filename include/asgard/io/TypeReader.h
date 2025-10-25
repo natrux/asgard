@@ -31,6 +31,7 @@ public:
 	void set_remote_since_epoch(const time::duration &since);
 
 	code::Typecode read_typecode();
+	code::Signature read_signature();
 
 	template<class T>
 	T read_type(){
@@ -221,7 +222,10 @@ public:
 		if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
 			const bool flag = read_le<uint8_t>();
 			if(flag){
-				auto ptr = std::make_shared<typename std::remove_const<T>::type>();
+				auto ptr = value;
+				if(!ptr){
+					ptr = std::make_shared<typename std::remove_const<T>::type>();
+				}
 				read_type(*ptr, type.sub_types.at(0));
 				value = ptr;
 			}
@@ -248,10 +252,12 @@ public:
 		return result;
 	}
 
-	void read_string(std::string &value);
+	bool read_bool();
+	std::string read_string();
 
 private:
 	time::time remote_epoch;
+	std::map<std::string, code::Signature> signature_map;
 
 	template<class T>
 	void read_number(T &value, code::typecode_e code){

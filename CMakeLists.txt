@@ -32,6 +32,7 @@ add_library(asgard
 	${GENERATED_CXX}
 	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
+	src/Value.cpp
 	src/Enum.cpp
 	src/InputSource.cpp
 	src/BufferedInput.cpp

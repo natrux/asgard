@@ -28,27 +28,27 @@ public:
 		TYPE_I64 = 0x09,
 		TYPE_F32 = 0x0a,
 		TYPE_F64 = 0x0b,
-		TYPE_DURATION = 0x0c,
-		TYPE_STRING = 0x0d,
-		TYPE_LIST = 0x0e,                                         // std::vector, std::array, std::set, std::unordered_set
-		TYPE_MAP = 0x0f,                                          // std::map, std::unordered_map
-		TYPE_PAIR = 0x10,
-		TYPE_TUPLE = 0x11,
-		TYPE_OPTIONAL = 0x12,
-		TYPE_POINTER = 0x13,
 
-		TYPE_VALUE = 0x80,
-		TYPE_ENUM = 0x81,
+		TYPE_LIST = 0x20,                                         // std::vector, std::array, std::set, std::unordered_set
+		TYPE_MAP = 0x21,                                          // std::map, std::unordered_map
+		TYPE_PAIR = 0x22,
+		TYPE_TUPLE = 0x23,
+
+		TYPE_DURATION = 0x40,
+		TYPE_STRING = 0x41,
+		TYPE_OPTIONAL = 0x42,
+		TYPE_POINTER = 0x43,
+
+		TYPE_VALUE = 0x60,
+		TYPE_ENUM = 0x61,
 	};
 
 	typecode_e code;
-	std::string name;
 	std::vector<Typecode> sub_types;
 
 	Typecode() = default;
 	Typecode(const typecode_e &code_): code(code_) {}
 	Typecode(const typecode_e &code_, const std::vector<Typecode> &sub_types_): code(code_), sub_types(sub_types_) {}
-	Typecode(const typecode_e &code_, const std::string &name_): code(code_), name(name_) {}
 };
 
 

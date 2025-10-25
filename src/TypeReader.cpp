@@ -31,9 +31,6 @@ void TypeReader::set_remote_since_epoch(const time::duration &since){
 code::Typecode TypeReader::read_typecode(){
 	code::Typecode result;
 	result.code = read_le<code::typecode_e>();
-	if(result.code == code::Typecode::TYPE_VALUE || result.code == code::Typecode::TYPE_ENUM){
-		read_string(result.name);
-	}
 	switch(result.code){
 	case code::Typecode::TYPE_LIST:
 	case code::Typecode::TYPE_OPTIONAL:
@@ -56,6 +53,26 @@ code::Typecode TypeReader::read_typecode(){
 		break;
 	}
 	return result;
+}
+
+
+code::Signature TypeReader::read_signature(){
+	code::Signature signature;
+	signature.name = read_string();
+	{
+		const auto find = signature_map.find(signature.name);
+		if(find != signature_map.end()){
+			signature = find->second;
+		}
+	}
+	if(read_bool()){
+		const auto num_members = read_le<code::length_t>();
+		for(code::length_t i=0; i<num_members; i++){
+			signature.members.push_back(read_string());
+		}
+		signature_map[signature.name] = signature;
+	}
+	return signature;
 }
 
 
@@ -122,7 +139,7 @@ void TypeReader::read_type(double &value, const code::Typecode &type){
 
 void TypeReader::read_type(std::string &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_STRING){
-		read_string(value);
+		value = read_string();
 	//}else if(code == code::Typecode::TYPE_ENUM){
 	}else{
 		skip(type);
@@ -163,15 +180,21 @@ void TypeReader::read_type(time::duration &value, const code::Typecode &type){
 }
 
 
-void TypeReader::read_type(data::Value &/*value*/, const code::Typecode &/*type*/){
-	throw std::logic_error("Not implemented");
+void TypeReader::read_type(data::Value &value, const code::Typecode &type){
+	if(type.code == code::Typecode::TYPE_VALUE){
+		const auto signature = read_signature();
+		for(const auto &member : signature.members){
+			value.read_member(*this, member);
+		}
+	}else{
+		skip(type);
+	}
 }
 
 
 void TypeReader::read_type(data::Enum &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_ENUM || type.code == code::Typecode::TYPE_STRING){
-		std::string field;
-		read_string(field);
+		const std::string field = read_string();
 		value.from_string(field);
 	}else{
 		skip(type);
@@ -237,7 +260,7 @@ void TypeReader::skip(const code::Typecode &type){
 	case code::Typecode::TYPE_DURATION: read(8); break;
 	case code::Typecode::TYPE_OPTIONAL:
 	case code::Typecode::TYPE_POINTER:{
-		const bool flag = read_le<uint8_t>();
+		const bool flag = read_bool();
 		if(flag){
 			skip(type.sub_types.at(0));
 		}
@@ -253,10 +276,17 @@ void TypeReader::skip(const code::Typecode &type){
 }
 
 
-void TypeReader::read_string(std::string &value){
+bool TypeReader::read_bool(){
+	return read_le<uint8_t>();
+}
+
+
+std::string TypeReader::read_string(){
 	const auto size = read_le<code::length_t>();
 	const auto chrs = read(size);
+	std::string value = "";
 	value.append(chrs.begin(), chrs.end());
+	return value;
 }
 
 

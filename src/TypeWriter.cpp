@@ -38,14 +38,27 @@ void TypeWriter::write_typecode(const code::Typecode &type){
 	sub_types = std::min<code::length_t>(sub_types, type.sub_types.size());
 
 	write_le(type.code);
-	if(type.code == code::Typecode::TYPE_VALUE || type.code == code::Typecode::TYPE_ENUM){
-		write_value(type.name);
-	}
 	if(write_size){
 		write_le(sub_types);
 	}
 	for(size_t i=0; i<sub_types; i++){
 		write_typecode(type.sub_types.at(i));
+	}
+}
+
+
+void TypeWriter::write_signature(const code::Signature &signature){
+	const bool written = (signatures.find(signature.name) != signatures.end());
+
+	write_value(signature.name);
+	write_value(!written);
+	if(!written){
+		const code::length_t num_members = signature.members.size();
+		write_value(num_members);
+		for(const auto &member : signature.members){
+			write_value(member);
+		}
+		signatures.insert(signature.name);
 	}
 }
 
@@ -145,8 +158,12 @@ void TypeWriter::write_value(const time::wall_time &value){
 }
 
 
-void TypeWriter::write_value(const data::Value &/*value*/){
-	throw std::logic_error("Not implemented");
+void TypeWriter::write_value(const data::Value &value){
+	const auto signature = value.signature();
+	write_signature(signature);
+	for(const auto &member : signature.members){
+		value.write_member(*this, member);
+	}
 }
 
 

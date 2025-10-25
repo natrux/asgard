@@ -28,6 +28,7 @@ public:
 	TypeWriter(std::shared_ptr<OutputSource> source);
 
 	void write_typecode(const code::Typecode &type);
+	void write_signature(const code::Signature &signature);
 
 	template<class T>
 	void write_type(const T &value){
@@ -124,6 +125,8 @@ public:
 	}
 
 private:
+	std::set<std::string> signatures;
+
 	template<class T>
 	void write_list(const T &value){
 		const code::length_t size = value.size();
