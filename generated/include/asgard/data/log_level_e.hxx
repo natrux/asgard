@@ -49,7 +49,7 @@ namespace code{
 template<>
 struct get_typecode_t<asgard::data::log_level_e>{
 	static Typecode value(){
-		static Typecode instance(Typecode::TYPE_ENUM, "asgard.data.log_level_e");
+		static Typecode instance(Typecode::TYPE_ENUM);
 		return instance;
 	}
 };

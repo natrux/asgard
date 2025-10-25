@@ -65,7 +65,7 @@ namespace code{
 template<>
 struct get_typecode_t<asgard::run::terminal_event_e>{
 	static Typecode value(){
-		static Typecode instance(Typecode::TYPE_ENUM, "asgard.run.terminal_event_e");
+		static Typecode instance(Typecode::TYPE_ENUM);
 		return instance;
 	}
 };
