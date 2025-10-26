@@ -74,13 +74,26 @@ void test(){
 	}
 
 	{
-		const std::vector<asgard::data::log_level_e> levels = {
+		const std::vector<asgard::data::log_level_e> data = {
 			asgard::data::log_level_e::DEBUG,
 			asgard::data::log_level_e::INFO,
 			asgard::data::log_level_e::WARN,
 			asgard::data::log_level_e::ERROR,
 		};
-		test_io(levels);
+		test_io(data);
+	}
+
+	{
+		std::map<int16_t, asgard::data::DataPacket> data;
+		for(int16_t i=0; i<10; i++){
+			asgard::data::DataPacket packet;
+			packet.time = asgard::time::now();
+			for(uint8_t p=0; p<10; p++){
+				packet.payload.push_back(0x11*i + p);
+			}
+			data[i] = packet;
+		}
+		test_io(data);
 	}
 }
 
@@ -89,7 +102,7 @@ int main(int, char **){
 	try{
 		test();
 	}catch(const std::exception &err){
-		std::cerr << "Error: " << err.what() << std::ends;
+		std::cerr << "Error: " << err.what() << std::endl;
 	}
 
 	return 0;
