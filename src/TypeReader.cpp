@@ -267,9 +267,13 @@ void TypeReader::skip(const code::Typecode &type){
 		}
 		break;
 	}
-	case code::Typecode::TYPE_VALUE:
-		// TODO
+	case code::Typecode::TYPE_VALUE:{
+		const auto signature = read_signature();
+		for(size_t i=0; i<signature.members.size(); i++){
+			skip();
+		}
 		break;
+	}
 	default:
 		// suppress warning
 		throw std::runtime_error("attempt to skip unknown type");
