@@ -4,6 +4,7 @@
 #include <asgard/code/get_typecode.h>
 #include <asgard/io/BufferedOutput.h>
 #include <asgard/time/time.h>
+#include <asgard/core/ID.h>
 #include <asgard/data/Value.h>
 #include <asgard/data/Enum.h>
 #include <asgard/util/uintw_t.h>
@@ -125,7 +126,7 @@ public:
 	}
 
 private:
-	std::set<std::string> signatures;
+	std::set<core::ID> signatures;
 
 	template<class T>
 	void write_list(const T &value){

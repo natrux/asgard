@@ -3,6 +3,7 @@
 #include <asgard/io/BufferedInput.h>
 #include <asgard/code/Typecode.h>
 #include <asgard/time/time.h>
+#include <asgard/core/ID.h>
 #include <asgard/data/Value.h>
 #include <asgard/data/Enum.h>
 #include <asgard/util/uintw_t.h>
@@ -257,7 +258,7 @@ public:
 
 private:
 	time::time remote_epoch;
-	std::map<std::string, code::Signature> signature_map;
+	std::map<core::ID, code::Signature> signature_map;
 
 	template<class T>
 	void read_number(T &value, code::typecode_e code){

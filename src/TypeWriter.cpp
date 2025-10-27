@@ -48,17 +48,20 @@ void TypeWriter::write_typecode(const code::Typecode &type){
 
 
 void TypeWriter::write_signature(const code::Signature &signature){
-	const bool written = (signatures.find(signature.name) != signatures.end());
+	const auto id = core::ID(signature.name);
+	const bool written = (signatures.find(id) != signatures.end());
 
-	write_value(signature.name);
 	write_value(!written);
-	if(!written){
+	if(written){
+		write_value(static_cast<uint64_t>(id));
+	}else{
+		write_value(signature.name);
 		const code::length_t num_members = signature.members.size();
 		write_value(num_members);
 		for(const auto &member : signature.members){
 			write_value(member);
 		}
-		signatures.insert(signature.name);
+		signatures.insert(id);
 	}
 }
 

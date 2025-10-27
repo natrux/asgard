@@ -58,19 +58,20 @@ code::Typecode TypeReader::read_typecode(){
 
 code::Signature TypeReader::read_signature(){
 	code::Signature signature;
-	signature.name = read_string();
-	{
-		const auto find = signature_map.find(signature.name);
-		if(find != signature_map.end()){
-			signature = find->second;
-		}
-	}
 	if(read_bool()){
+		signature.name = read_string();
 		const auto num_members = read_le<code::length_t>();
 		for(code::length_t i=0; i<num_members; i++){
 			signature.members.push_back(read_string());
 		}
 		signature_map[signature.name] = signature;
+	}else{
+		core::ID id;
+		id.set(read_le<uint64_t>());
+		const auto find = signature_map.find(id);
+		if(find != signature_map.end()){
+			signature = find->second;
+		}
 	}
 	return signature;
 }
