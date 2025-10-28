@@ -228,12 +228,12 @@ struct get_typecode_t<std::tuple<Ts...>>{
 		std::vector<Typecode> result = typecode_list<Us...>();
 		result.insert(result.begin(), get_typecode<F>());
 		return result;
-	};
+	}
 
 	static Typecode value(){
 		static Typecode instance(Typecode::TYPE_TUPLE, typecode_list<Ts...>());
 		return instance;
-	};
+	}
 };
 
 template<class T>
