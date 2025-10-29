@@ -62,7 +62,8 @@ code::Signature TypeReader::read_signature(){
 		signature.name = read_string();
 		const auto num_members = read_le<code::length_t>();
 		for(code::length_t i=0; i<num_members; i++){
-			signature.members.push_back(read_string());
+			const auto key = read_string();
+			signature.members[key] = read_typecode();
 		}
 		signature_map[signature.name] = signature;
 	}else{
@@ -184,8 +185,8 @@ void TypeReader::read_type(time::duration &value, const code::Typecode &type){
 void TypeReader::read_type(data::Value &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_VALUE){
 		const auto signature = read_signature();
-		for(const auto &member : signature.members){
-			value.read_member(*this, member);
+		for(const auto &entry : signature.members){
+			value.read_member(*this, entry.first, entry.second);
 		}
 	}else{
 		skip(type);
@@ -269,8 +270,8 @@ void TypeReader::skip(const code::Typecode &type){
 	}
 	case code::Typecode::TYPE_VALUE:{
 		const auto signature = read_signature();
-		for(size_t i=0; i<signature.members.size(); i++){
-			skip();
+		for(const auto &entry : signature.members){
+			skip(entry.second);
 		}
 		break;
 	}

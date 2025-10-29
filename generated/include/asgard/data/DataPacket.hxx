@@ -23,7 +23,7 @@ public:
 	bool operator==(const DataPacket &other) const;
 
 protected:
-	bool try_read_member(io::TypeReader &reader, const std::string &name) override;
+	bool try_read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code) override;
 	bool try_write_member(io::TypeWriter &writer, const std::string &name) const override;
 };
 

@@ -17,8 +17,8 @@ code::Signature Data::signature() const{
 }
 
 
-bool Data::try_read_member(io::TypeReader &reader, const std::string &name){
-	if(Super::try_read_member(reader, name)){
+bool Data::try_read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
+	if(Super::try_read_member(reader, name, code)){
 		return true;
 	}
 	return false;

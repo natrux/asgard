@@ -1,7 +1,9 @@
 #pragma once
 
+#include <asgard/code/Typecode.h>
+
 #include <string>
-#include <vector>
+#include <map>
 
 
 namespace asgard{
@@ -11,7 +13,7 @@ namespace code{
 class Signature{
 public:
 	std::string name;
-	std::vector<std::string> members;
+	std::map<std::string, Typecode> members;
 };
 
 

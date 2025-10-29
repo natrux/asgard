@@ -19,9 +19,9 @@ code::Signature Value::signature() const{
 }
 
 
-void Value::read_member(io::TypeReader &reader, const std::string &name){
-	if(!try_read_member(reader, name)){
-		reader.skip();
+void Value::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
+	if(!try_read_member(reader, name, code)){
+		reader.skip(code);
 	}
 }
 
@@ -33,7 +33,7 @@ void Value::write_member(io::TypeWriter &writer, const std::string &name) const{
 }
 
 
-bool Value::try_read_member(io::TypeReader &/*reader*/, const std::string &/*name*/){
+bool Value::try_read_member(io::TypeReader &/*reader*/, const std::string &/*name*/, const code::Typecode &/*code*/){
 	return false;
 }
 

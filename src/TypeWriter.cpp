@@ -58,8 +58,9 @@ void TypeWriter::write_signature(const code::Signature &signature){
 		write_value(signature.name);
 		const code::length_t num_members = signature.members.size();
 		write_value(num_members);
-		for(const auto &member : signature.members){
-			write_value(member);
+		for(const auto &entry : signature.members){
+			write_value(entry.first);
+			write_typecode(entry.second);
 		}
 		signatures.insert(id);
 	}
@@ -164,8 +165,8 @@ void TypeWriter::write_value(const time::wall_time &value){
 void TypeWriter::write_value(const data::Value &value){
 	const auto signature = value.signature();
 	write_signature(signature);
-	for(const auto &member : signature.members){
-		value.write_member(*this, member);
+	for(const auto &entry : signature.members){
+		value.write_member(*this, entry.first);
 	}
 }
 
