@@ -83,59 +83,59 @@ void TypeReader::read_type(bool &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_BOOL){
 		read(byte);
 	}else{
-		read_number(byte, type.code);
+		read_number(byte, type);
 	}
 	value = (byte != 0);
 }
 
 
 void TypeReader::read_type(uint8_t &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(int8_t &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(uint16_t &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(int16_t &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(uint32_t &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(int32_t &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(uint64_t &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(int64_t &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(float &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
 void TypeReader::read_type(double &value, const code::Typecode &type){
-	read_number(value, type.code);
+	read_number(value, type);
 }
 
 
@@ -152,7 +152,7 @@ void TypeReader::read_type(std::string &value, const code::Typecode &type){
 void TypeReader::read_type(time::time &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_DURATION){
 		int64_t ticks = 0;
-		read_number(ticks, type.code);
+		read_number(ticks, type);
 		value = remote_epoch + time::resolution(ticks);
 	}else{
 		skip(type);
@@ -163,7 +163,7 @@ void TypeReader::read_type(time::time &value, const code::Typecode &type){
 void TypeReader::read_type(time::wall_time &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_DURATION){
 		int64_t ticks = 0;
-		read_number(ticks, type.code);
+		read_number(ticks, type);
 		value = time::epoch_wall() + time::resolution(ticks);
 	}else{
 		skip(type);
@@ -174,7 +174,7 @@ void TypeReader::read_type(time::wall_time &value, const code::Typecode &type){
 void TypeReader::read_type(time::duration &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_DURATION){
 		int64_t ticks = 0;
-		read_number(ticks, type.code);
+		read_number(ticks, type);
 		value = time::resolution(ticks);
 	}else{
 		skip(type);
@@ -187,6 +187,11 @@ void TypeReader::read_type(data::Value &value, const code::Typecode &type){
 		const auto signature = read_signature();
 		for(const auto &entry : signature.members){
 			value.read_member(*this, entry.first, entry.second);
+		}
+	}else if(type.code == code::Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
 		}
 	}else{
 		skip(type);
@@ -293,6 +298,17 @@ std::string TypeReader::read_string(){
 	std::string value = "";
 	value.append(chrs.begin(), chrs.end());
 	return value;
+}
+
+
+std::shared_ptr<data::Value> TypeReader::read_type_value(const code::Typecode &type){
+	if(type.code != code::Typecode::TYPE_VALUE){
+		skip(type);
+		return nullptr;
+	}
+	// TODO
+	skip(type);
+	return nullptr;
 }
 
 

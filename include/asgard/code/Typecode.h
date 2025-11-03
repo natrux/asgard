@@ -47,8 +47,8 @@ public:
 	std::vector<Typecode> sub_types;
 
 	Typecode() = default;
-	Typecode(const typecode_e &code_): code(code_) {}
-	Typecode(const typecode_e &code_, const std::vector<Typecode> &sub_types_): code(code_), sub_types(sub_types_) {}
+	explicit Typecode(const typecode_e &code_): code(code_) {}
+	explicit Typecode(const typecode_e &code_, const std::vector<Typecode> &sub_types_): code(code_), sub_types(sub_types_) {}
 };
 
 

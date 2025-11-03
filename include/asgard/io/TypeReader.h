@@ -88,6 +88,11 @@ public:
 			for(size_t i=0; i<size; i++){
 				value.push_back(read_type<T>(type.sub_types.at(i)));
 			}
+		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+			const bool flag = read_bool();
+			if(flag){
+				read_type(value, type.sub_types.at(0));
+			}
 		}else{
 			skip(type);
 		}
@@ -128,6 +133,11 @@ public:
 					skip(sub_type);
 				}
 			}
+		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+			const bool flag = read_bool();
+			if(flag){
+				read_type(value, type.sub_types.at(0));
+			}
 		}else{
 			skip(type);
 		}
@@ -158,6 +168,17 @@ public:
 		if(type.code == code::Typecode::TYPE_PAIR){
 			value.first = read_type<T>(type.sub_types.at(0));
 			value.second = read_type<U>(type.sub_types.at(1));
+		}else if(type.code == code::Typecode::TYPE_TUPLE){
+			const auto size = type.sub_types.size();
+			if(size >= 1){
+				value.first = read_type<T>(type.sub_types.at(0));
+			}
+			if(size >= 2){
+				value.second = read_type<U>(type.sub_types.at(1));
+			}
+			for(size_t i=2; i<size; i++){
+				skip(type.sub_types.at(i));
+			}
 		}else if(type.code == code::Typecode::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
 			const auto size = read_le<code::length_t>();
@@ -169,6 +190,11 @@ public:
 			}
 			for(size_t i=2; i<size; i++){
 				skip(sub_type);
+			}
+		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+			const bool flag = read_bool();
+			if(flag){
+				read_type(value, type.sub_types.at(0));
 			}
 		}else{
 			skip(type);
@@ -200,6 +226,11 @@ public:
 			for(size_t i=N; i<size; i++){
 				skip(sub_type);
 			}
+		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+			const bool flag = read_bool();
+			if(flag){
+				read_type(value, type.sub_types.at(0));
+			}
 		}else{
 			skip(type);
 		}
@@ -222,15 +253,18 @@ public:
 	void read_type(std::shared_ptr<T> &value, const code::Typecode &type){
 		if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
 			const bool flag = read_le<uint8_t>();
+			const auto &sub_type = type.sub_types.at(0);
 			if(flag){
-				auto ptr = value;
-				if(!ptr){
-					ptr = std::make_shared<typename std::remove_const<T>::type>();
+				if(sub_type.code == code::Typecode::TYPE_VALUE){
+					// vip treatment
+					value = std::dynamic_pointer_cast<T>(read_type_value(sub_type));
+				}else{
+					value = std::make_shared<typename std::remove_const<T>::type>();
+					read_type(*value, sub_type);
 				}
-				read_type(*ptr, type.sub_types.at(0));
-				value = ptr;
 			}
-		//}else if(type matches get_typecode<T>()){
+		}else if(type.code == code::Typecode::TYPE_VALUE){
+			value = std::dynamic_pointer_cast<T>(read_type_value(type));
 		}else{
 			skip(type);
 		}
@@ -261,8 +295,8 @@ private:
 	std::map<core::ID, code::Signature> signature_map;
 
 	template<class T>
-	void read_number(T &value, code::typecode_e code){
-		switch(code){
+	void read_number(T &value, const code::Typecode &type){
+		switch(type.code){
 		case code::Typecode::TYPE_NULL: value = 0; break;
 		case code::Typecode::TYPE_BOOL:
 		case code::Typecode::TYPE_U8: value = static_cast<T>(read_le<uint8_t>()); break;
@@ -276,8 +310,18 @@ private:
 		case code::Typecode::TYPE_DURATION: value = static_cast<T>(read_le<int64_t>()); break;
 		case code::Typecode::TYPE_F32: value = static_cast<T>(read_le<float>()); break;
 		case code::Typecode::TYPE_F64: value = static_cast<T>(read_le<double>()); break;
+		case code::Typecode::TYPE_POINTER:
+		case code::Typecode::TYPE_OPTIONAL:{
+			const bool flag = read_bool();
+			if(flag){
+				read_number(value, type.sub_types.at(0));
+			}else{
+				value = static_cast<T>(0);
+			}
+			break;
+		}
 		default:
-			skip(code);
+			skip(type);
 		}
 	}
 
@@ -297,6 +341,11 @@ private:
 			const auto size = type.sub_types.size();
 			for(size_t i=0; i<size; i++){
 				value.insert(read_type<K>(type.sub_types.at(i)));
+			}
+		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+			const bool flag = read_bool();
+			if(flag){
+				read_set(value, type.sub_types.at(0));
 			}
 		}else{
 			skip(type);
@@ -324,6 +373,11 @@ private:
 				read_type(item, sub_type);
 				value[item.first] = item.second;
 			}
+		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+			const bool flag = read_bool();
+			if(flag){
+				read_map(value, type.sub_types.at(0));
+			}
 		}else{
 			skip(type);
 		}
@@ -341,6 +395,8 @@ private:
 	template<size_t N, class... Ts>
 	typename std::enable_if<(N==0)>::type read_tuple_elements(std::tuple<Ts...> &value, size_t size, const std::vector<code::Typecode> &sub_types){
 	}
+
+	std::shared_ptr<data::Value> read_type_value(const code::Typecode &type);
 };
 
 
