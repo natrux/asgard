@@ -1,4 +1,5 @@
 #include <asgard/io/TypeReader.h>
+#include <asgard/core/TypeRegistry.h>
 
 #include <stdexcept>
 
@@ -185,9 +186,7 @@ void TypeReader::read_type(time::duration &value, const code::Typecode &type){
 void TypeReader::read_type(data::Value &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_VALUE){
 		const auto signature = read_signature();
-		for(const auto &entry : signature.members){
-			value.read_member(*this, entry.first, entry.second);
-		}
+		read_type(value, signature);
 	}else if(type.code == code::Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
@@ -195,6 +194,13 @@ void TypeReader::read_type(data::Value &value, const code::Typecode &type){
 		}
 	}else{
 		skip(type);
+	}
+}
+
+
+void TypeReader::read_type(data::Value &value, const code::Signature &signature){
+	for(const auto &entry : signature.members){
+		value.read_member(*this, entry.first, entry.second);
 	}
 }
 
@@ -306,9 +312,18 @@ std::shared_ptr<data::Value> TypeReader::read_type_value(const code::Typecode &t
 		skip(type);
 		return nullptr;
 	}
-	// TODO
-	skip(type);
-	return nullptr;
+	const auto signature = read_signature();
+	const auto registry = core::lookup_type(signature.name);
+	std::shared_ptr<data::Value> result;
+	if(registry.create){
+		// match
+		result = registry.create();
+	}else{
+		// TODO use better fallback type
+		result = data::Value::create();
+	}
+	read_type(*result, signature);
+	return result;
 }
 
 

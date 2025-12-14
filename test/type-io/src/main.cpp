@@ -13,9 +13,7 @@
 
 
 template<class T>
-void test_io(const T &data_out){
-	typename std::remove_cv<typename std::remove_reference<T>::type>::type data_in;
-
+std::vector<uint8_t> write_to_vector(const T &data_out){
 	auto out = std::make_shared<asgard::io::VectorOutputSource>();
 	const auto t_w = asgard::time::now();
 	{
@@ -34,7 +32,15 @@ void test_io(const T &data_out){
 		std::cout << "...";
 	}
 	std::cout << std::endl;
+	std::cout << vector.size() << " bytes written in " << asgard::time::strtime(d_w) << std::endl;
 
+	return vector;
+}
+
+
+template<class T>
+T read_from_vector(const std::vector<uint8_t> &vector){
+	typename std::remove_cv<typename std::remove_reference<T>::type>::type data_in;
 	auto in = std::make_shared<asgard::io::VectorInputSource>(vector);
 	const auto t_r = asgard::time::now();
 	{
@@ -42,19 +48,29 @@ void test_io(const T &data_out){
 		reader.read_type(data_in);
 	}
 	const auto d_r = asgard::time::since(t_r);
+	std::cout << vector.size() << " bytes read in " << asgard::time::strtime(d_r) << std::endl;
 
-	std::cout << vector.size() << " bytes w/r in " << asgard::time::strtime(d_w) << " / " << asgard::time::strtime(d_r) << std::endl;
+	return data_in;
+}
+
+
+template<class T>
+void test_by_value(const T &data_out){
+	const auto vector = write_to_vector(data_out);
+	const auto data_in = read_from_vector<T>(vector);
+
 	const bool equal = (data_in == data_out);
 	if(!equal){
 		throw std::runtime_error("Not equal");
 	}
+	std::cout << std::endl;
 }
 
 
 void test(){
 	{
 		const float number = 13.37;
-		test_io(number);
+		test_by_value(number);
 	}
 
 	{
@@ -63,14 +79,14 @@ void test(){
 			{{"World", 23}, {-3.14, -2.71828}},
 			{{"Foobar", -1337}, {-4.5, -1.9, 0, 1.9, 4.5}},
 		};
-		test_io(data);
+		test_by_value(data);
 	}
 
 	{
 		const std::vector<std::optional<int32_t>> data = {
 			-42, {}, -23,
 		};
-		test_io(data);
+		test_by_value(data);
 	}
 
 	{
@@ -80,7 +96,7 @@ void test(){
 			asgard::data::log_level_e::WARN,
 			asgard::data::log_level_e::ERROR,
 		};
-		test_io(data);
+		test_by_value(data);
 	}
 
 	{
@@ -93,7 +109,44 @@ void test(){
 			}
 			data[i] = packet;
 		}
-		test_io(data);
+		test_by_value(data);
+	}
+
+	{
+		std::vector<std::shared_ptr<asgard::data::DataPacket>> data;
+		for(int16_t i=0; i<10; i++){
+			auto packet = asgard::data::DataPacket::create();
+			packet->time = asgard::time::now();
+			for(uint8_t p=0; p<10; p++){
+				packet->payload.push_back(0x11*i + p);
+			}
+			data.push_back(packet);
+			if((i % 3) == 0){
+				data.push_back(nullptr);
+			}
+		}
+
+		const auto vector = write_to_vector(data);
+		const auto result = read_from_vector<std::vector<std::shared_ptr<asgard::data::Value>>>(vector);
+		const size_t size = data.size();
+		if(result.size() != size){
+			throw std::runtime_error("Not equal");
+		}
+		for(size_t i=0; i<size; i++){
+			const auto &d1 = data[i];
+			const auto &d2 = result[i];
+			if(!d1 && !d2){
+				continue;
+			}
+			if(!d1 || !d2){
+				throw std::runtime_error("Not equal");
+			}
+			auto p1 = std::dynamic_pointer_cast<const asgard::data::DataPacket>(d1);
+			auto p2 = std::dynamic_pointer_cast<const asgard::data::DataPacket>(d2);
+			if(!p1 || !p1 || !(*p1 == *p2)){
+				throw std::runtime_error("Not equal");
+			}
+		}
 	}
 }
 

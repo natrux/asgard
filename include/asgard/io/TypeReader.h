@@ -70,6 +70,7 @@ public:
 	void read_type(time::wall_time &value, const code::Typecode &type);
 	void read_type(time::duration &value, const code::Typecode &type);
 	void read_type(data::Value &value, const code::Typecode &type);
+	void read_type(data::Value &value, const code::Signature &signature);
 	void read_type(data::Enum &value, const code::Typecode &type);
 
 	template<class T>
