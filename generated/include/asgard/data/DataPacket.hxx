@@ -19,6 +19,7 @@ public:
 	std::vector<uint8_t> payload;
 
 	static code::Signature static_signature();
+	static std::shared_ptr<DataPacket> create();
 	code::Signature signature() const override;
 	bool operator==(const DataPacket &other) const;
 

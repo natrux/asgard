@@ -11,6 +11,7 @@ class Data : public Value{
 	using Super = Value;
 public:
 	static code::Signature static_signature();
+	static std::shared_ptr<Data> create();
 	code::Signature signature() const override;
 
 protected:

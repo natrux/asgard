@@ -1,6 +1,7 @@
 #include <asgard/data/Value.h>
 #include <asgard/io/TypeReader.h>
 #include <asgard/io/TypeWriter.h>
+#include <asgard/core/TypeRegistry.h>
 
 
 namespace asgard{
@@ -11,6 +12,11 @@ code::Signature Value::static_signature(){
 	code::Signature sig;
 	sig.name = "asgard.data.Value";
 	return sig;
+}
+
+
+std::shared_ptr<Value> Value::create(){
+	return std::make_shared<Value>();
 }
 
 
@@ -41,6 +47,9 @@ bool Value::try_read_member(io::TypeReader &/*reader*/, const std::string &/*nam
 bool Value::try_write_member(io::TypeWriter &/*writer*/, const std::string &/*name*/) const{
 	return false;
 }
+
+
+static core::register_type_t<Value> register_type;
 
 
 }

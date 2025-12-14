@@ -1,4 +1,5 @@
 #include <asgard/data/Data.hxx>
+#include <asgard/core/TypeRegistry.h>
 
 
 namespace asgard{
@@ -9,6 +10,11 @@ code::Signature Data::static_signature(){
 	auto sig = Super::static_signature();
 	sig.name = "asgard.data.Data";
 	return sig;
+}
+
+
+std::shared_ptr<Data> Data::create(){
+	return std::make_shared<Data>();
 }
 
 
@@ -31,6 +37,9 @@ bool Data::try_write_member(io::TypeWriter &writer, const std::string &name) con
 	}
 	return false;
 }
+
+
+static core::register_type_t<Data> register_type;
 
 
 }

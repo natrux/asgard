@@ -1,6 +1,7 @@
 #include <asgard/data/DataPacket.hxx>
 #include <asgard/io/TypeReader.h>
 #include <asgard/io/TypeWriter.h>
+#include <asgard/core/TypeRegistry.h>
 
 
 namespace asgard{
@@ -13,6 +14,11 @@ code::Signature DataPacket::static_signature(){
 	sig.members["time"] = code::get_typecode<decltype(time)>();
 	sig.members["payload"] = code::get_typecode<decltype(payload)>();
 	return sig;
+}
+
+
+std::shared_ptr<DataPacket> DataPacket::create(){
+	return std::make_shared<DataPacket>();
 }
 
 
@@ -57,6 +63,9 @@ bool DataPacket::try_write_member(io::TypeWriter &writer, const std::string &nam
 	}
 	return false;
 }
+
+
+static core::register_type_t<DataPacket> register_type;
 
 
 }

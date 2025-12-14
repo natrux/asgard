@@ -2,6 +2,8 @@
 
 #include <asgard/code/Signature.h>
 
+#include <memory>
+
 
 namespace asgard{
 
@@ -16,6 +18,7 @@ namespace data{
 class Value{
 public:
 	static code::Signature static_signature();
+	static std::shared_ptr<Value> create();
 
 	virtual ~Value() = default;
 	virtual code::Signature signature() const;
