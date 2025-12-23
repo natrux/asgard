@@ -35,33 +35,27 @@ bool DataPacket::operator==(const DataPacket &other) const{
 }
 
 
-bool DataPacket::try_read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
-	if(Super::try_read_member(reader, name, code)){
-		return true;
-	}
+void DataPacket::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
 	if(name == "time"){
 		reader.read_type(time, code);
-		return true;
+		return;
 	}else if(name == "payload"){
 		reader.read_type(payload, code);
-		return true;
+		return;
 	}
-	return false;
+	Super::read_member(reader, name, code);
 }
 
 
-bool DataPacket::try_write_member(io::TypeWriter &writer, const std::string &name) const{
-	if(Super::try_write_member(writer, name)){
-		return true;
-	}
+void DataPacket::write_member(io::TypeWriter &writer, const std::string &name) const{
 	if(name == "time"){
 		writer.write_value(time);
-		return true;
+		return;
 	}else if(name == "payload"){
 		writer.write_value(payload);
-		return true;
+		return;
 	}
-	return false;
+	Super::write_member(writer, name);
 }
 
 

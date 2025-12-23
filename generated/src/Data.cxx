@@ -23,19 +23,13 @@ code::Signature Data::signature() const{
 }
 
 
-bool Data::try_read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
-	if(Super::try_read_member(reader, name, code)){
-		return true;
-	}
-	return false;
+void Data::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
+	Super::read_member(reader, name, code);
 }
 
 
-bool Data::try_write_member(io::TypeWriter &writer, const std::string &name) const{
-	if(Super::try_write_member(writer, name)){
-		return true;
-	}
-	return false;
+void Data::write_member(io::TypeWriter &writer, const std::string &name) const{
+	Super::write_member(writer, name);
 }
 
 

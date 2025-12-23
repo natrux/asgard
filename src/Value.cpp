@@ -25,27 +25,13 @@ code::Signature Value::signature() const{
 }
 
 
-void Value::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
-	if(!try_read_member(reader, name, code)){
-		reader.skip(code);
-	}
+void Value::read_member(io::TypeReader &reader, const std::string &/*name*/, const code::Typecode &code){
+	reader.skip(code);
 }
 
 
-void Value::write_member(io::TypeWriter &writer, const std::string &name) const{
-	if(!try_write_member(writer, name)){
-		writer.write_value(nullptr);
-	}
-}
-
-
-bool Value::try_read_member(io::TypeReader &/*reader*/, const std::string &/*name*/, const code::Typecode &/*code*/){
-	return false;
-}
-
-
-bool Value::try_write_member(io::TypeWriter &/*writer*/, const std::string &/*name*/) const{
-	return false;
+void Value::write_member(io::TypeWriter &writer, const std::string &/*name*/) const{
+	writer.write_value(nullptr);
 }
 
 
