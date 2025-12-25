@@ -35,6 +35,7 @@ add_library(asgard
 	src/TypeRegistry.cpp
 	src/Value.cpp
 	src/Enum.cpp
+	src/Bin.cpp
 	src/InputSource.cpp
 	src/BufferedInput.cpp
 	src/TypeReader.cpp

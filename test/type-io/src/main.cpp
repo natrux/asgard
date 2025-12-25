@@ -2,6 +2,7 @@
 #include <asgard/io/TypeWriter.h>
 #include <asgard/io/VectorInputSource.h>
 #include <asgard/io/VectorOutputSource.h>
+#include <asgard/data/Bin.h>
 #include <asgard/time/time.h>
 #include <asgard/time/strtime.h>
 
@@ -146,6 +147,14 @@ void test(){
 			if(!p1 || !p1 || !(*p1 == *p2)){
 				throw std::runtime_error("Not equal");
 			}
+		}
+	}
+
+	{
+		const std::vector<std::string> letters = {"Alpha", "Beta", "Gamma", "Delta"};
+		asgard::data::Bin bin = letters;
+		if(!bin.is_list() || bin.to<std::vector<std::string>>() != letters){
+			throw std::runtime_error("Not equal");
 		}
 	}
 }
