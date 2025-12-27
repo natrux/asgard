@@ -1,4 +1,5 @@
 #include <asgard/io/TypeWriter.h>
+#include <asgard/data/Bin.h>
 
 #include <stdexcept>
 #include <cstring>
@@ -64,6 +65,13 @@ void TypeWriter::write_signature(const code::Signature &signature){
 		}
 		signatures.insert(id);
 	}
+}
+
+
+void TypeWriter::write_type(const data::Bin &value){
+	auto source = std::make_shared<io::VectorInputSource>(value.get_data());
+	TypeReader reader(source);
+	reader.copy(*this);
 }
 
 
@@ -173,6 +181,14 @@ void TypeWriter::write_value(const data::Value &value){
 
 void TypeWriter::write_value(const data::Enum &value){
 	write_value(value.to_string());
+}
+
+
+void TypeWriter::write_value(const data::Bin &value){
+	auto source = std::make_shared<io::VectorInputSource>(value.get_data());
+	TypeReader reader(source);
+	const auto type = reader.read_typecode();
+	reader.copy(*this, type);
 }
 
 

@@ -20,6 +20,12 @@
 
 
 namespace asgard{
+namespace data{
+class Bin;
+}
+}
+
+namespace asgard{
 namespace io{
 
 
@@ -72,6 +78,7 @@ public:
 	void read_type(data::Value &value, const code::Typecode &type);
 	void read_type(data::Value &value, const code::Signature &signature);
 	void read_type(data::Enum &value, const code::Typecode &type);
+	void read_type(data::Bin &value, const code::Typecode &type);
 
 	template<class T>
 	void read_type(std::vector<T> &value, const code::Typecode &type){
@@ -273,6 +280,9 @@ public:
 
 	void skip();
 	void skip(const code::Typecode &type);
+
+	void copy(TypeWriter &out);
+	void copy(TypeWriter &out, const code::Typecode &type);
 
 	template<class T>
 	T read_le(){

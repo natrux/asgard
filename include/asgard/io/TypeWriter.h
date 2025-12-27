@@ -21,6 +21,12 @@
 
 
 namespace asgard{
+namespace data{
+class Bin;
+}
+}
+
+namespace asgard{
 namespace io{
 
 
@@ -44,6 +50,8 @@ public:
 		write_type(tmp);
 	}
 
+	void write_type(const data::Bin &value);
+
 	void write_value(const std::nullptr_t &);
 	void write_value(const bool &value);
 	void write_value(const uint8_t &value);
@@ -63,6 +71,7 @@ public:
 	void write_value(const time::wall_time &value);
 	void write_value(const data::Value &value);
 	void write_value(const data::Enum &value);
+	void write_value(const data::Bin &value);
 
 	template<class T>
 	void write_value(const std::vector<T> &value){

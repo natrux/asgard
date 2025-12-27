@@ -64,7 +64,52 @@ void test_by_value(const T &data_out){
 	if(!equal){
 		throw std::runtime_error("Not equal");
 	}
-	std::cout << std::endl;
+}
+
+
+template<class T>
+void test_by_bin(const T &data_out){
+	asgard::data::Bin value = data_out;
+	typename std::remove_cv<typename std::remove_reference<T>::type>::type data_in;
+	value.to(data_in);
+	const bool equal = (data_in == data_out);
+	if(!equal){
+		throw std::runtime_error("Not equal");
+	}
+}
+
+
+template<class T>
+void test_by_bin_in(const T &data_out){
+	const auto vector = write_to_vector(data_out);
+	auto in = std::make_shared<asgard::io::VectorInputSource>(vector);
+	asgard::data::Bin value;
+	{
+		asgard::io::TypeReader reader(in);
+		reader.read_type(value);
+	}
+	typename std::remove_cv<typename std::remove_reference<T>::type>::type data_in;
+	value.to(data_in);
+	const bool equal = (data_in == data_out);
+	if(!equal){
+		throw std::runtime_error("Not equal");
+	}
+}
+
+
+template<class T>
+void test_by_bin_out(const T &data_out){
+	asgard::data::Bin value = data_out;
+	auto source = std::make_shared<asgard::io::VectorOutputSource>();
+	{
+		asgard::io::TypeWriter writer(source);
+		writer.write_type(value);
+	}
+	const auto data_in = read_from_vector<T>(source->get());
+	const bool equal = (data_in == data_out);
+	if(!equal){
+		throw std::runtime_error("Not equal");
+	}
 }
 
 
@@ -72,6 +117,9 @@ void test(){
 	{
 		const float number = 13.37;
 		test_by_value(number);
+		test_by_bin(number);
+		test_by_bin_in(number);
+		test_by_bin_out(number);
 	}
 
 	{
@@ -81,6 +129,9 @@ void test(){
 			{{"Foobar", -1337}, {-4.5, -1.9, 0, 1.9, 4.5}},
 		};
 		test_by_value(data);
+		test_by_bin(data);
+		test_by_bin_in(data);
+		test_by_bin_out(data);
 	}
 
 	{
@@ -88,6 +139,9 @@ void test(){
 			-42, {}, -23,
 		};
 		test_by_value(data);
+		test_by_bin(data);
+		test_by_bin_in(data);
+		test_by_bin_out(data);
 	}
 
 	{
@@ -98,6 +152,9 @@ void test(){
 			asgard::data::log_level_e::ERROR,
 		};
 		test_by_value(data);
+		test_by_bin(data);
+		test_by_bin_in(data);
+		test_by_bin_out(data);
 	}
 
 	{
@@ -111,6 +168,17 @@ void test(){
 			data[i] = packet;
 		}
 		test_by_value(data);
+		test_by_bin(data);
+		test_by_bin_in(data);
+		test_by_bin_out(data);
+	}
+
+	{
+		const std::vector<std::string> letters = {"Alpha", "Beta", "Gamma", "Delta"};
+		test_by_value(letters);
+		test_by_bin(letters);
+		test_by_bin_in(letters);
+		test_by_bin_out(letters);
 	}
 
 	{
@@ -147,14 +215,6 @@ void test(){
 			if(!p1 || !p1 || !(*p1 == *p2)){
 				throw std::runtime_error("Not equal");
 			}
-		}
-	}
-
-	{
-		const std::vector<std::string> letters = {"Alpha", "Beta", "Gamma", "Delta"};
-		asgard::data::Bin bin = letters;
-		if(!bin.is_list() || bin.to<std::vector<std::string>>() != letters){
-			throw std::runtime_error("Not equal");
 		}
 	}
 }

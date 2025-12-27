@@ -1,5 +1,7 @@
 #include <asgard/io/TypeReader.h>
+#include <asgard/io/TypeWriter.h>
 #include <asgard/core/TypeRegistry.h>
+#include <asgard/data/Bin.h>
 
 #include <stdexcept>
 
@@ -215,6 +217,18 @@ void TypeReader::read_type(data::Enum &value, const code::Typecode &type){
 }
 
 
+void TypeReader::read_type(data::Bin &value, const code::Typecode &type){
+	auto source = std::make_shared<io::VectorOutputSource>();
+	{
+		TypeWriter out(source);
+		out.write_typecode(type);
+		copy(out, type);
+	}
+	const auto data = source->get();
+	value.set_data(data);
+}
+
+
 void TypeReader::skip(){
 	const auto type = read_typecode();
 	skip(type);
@@ -222,73 +236,86 @@ void TypeReader::skip(){
 
 
 void TypeReader::skip(const code::Typecode &type){
+	TypeWriter out(nullptr);
+	copy(out, type);
+}
+
+
+void TypeReader::copy(TypeWriter &out){
+	const auto type = read_typecode();
+	out.write_typecode(type);
+	copy(out, type);
+}
+
+
+void TypeReader::copy(TypeWriter &out, const code::Typecode &type){
 	switch(type.code){
 	case code::Typecode::TYPE_NULL: break;
 	case code::Typecode::TYPE_BOOL:
 	case code::Typecode::TYPE_U8:
-	case code::Typecode::TYPE_I8: read(1); break;
+	case code::Typecode::TYPE_I8: out.write(read(1)); break;
 	case code::Typecode::TYPE_U16:
-	case code::Typecode::TYPE_I16: read(2); break;
+	case code::Typecode::TYPE_I16: out.write(read(2)); break;
 	case code::Typecode::TYPE_U32:
-	case code::Typecode::TYPE_I32: read(4); break;
+	case code::Typecode::TYPE_I32: out.write(read(4)); break;
 	case code::Typecode::TYPE_U64:
-	case code::Typecode::TYPE_I64: read(8); break;
-	case code::Typecode::TYPE_F32: read(4); break;
-	case code::Typecode::TYPE_F64: read(8); break;
+	case code::Typecode::TYPE_I64: out.write(read(8)); break;
+	case code::Typecode::TYPE_F32: out.write(read(4)); break;
+	case code::Typecode::TYPE_F64: out.write(read(8)); break;
 	case code::Typecode::TYPE_ENUM:
-	case code::Typecode::TYPE_STRING:{
-		const auto size = read_le<code::length_t>();
-		read(size);
-		break;
-	}
+	case code::Typecode::TYPE_STRING: out.write_value(read_string()); break;
 	case code::Typecode::TYPE_LIST:{
 		const auto size = read_le<code::length_t>();
+		out.write_value(size);
 		const auto &sub_type = type.sub_types.at(0);
 		for(size_t i=0; i<size; i++){
-			skip(sub_type);
+			copy(out, sub_type);
 		}
 		break;
 	}
 	case code::Typecode::TYPE_MAP:{
 		const auto size = read_le<code::length_t>();
+		out.write_value(size);
 		const auto &key_type = type.sub_types.at(0);
 		const auto &value_type = type.sub_types.at(1);
 		for(size_t i=0; i<size; i++){
-			skip(key_type);
-			skip(value_type);
+			copy(out, key_type);
+			copy(out, value_type);
 		}
 		break;
 	}
 	case code::Typecode::TYPE_PAIR:
-		skip(type.sub_types.at(0));
-		skip(type.sub_types.at(1));
+		copy(out, type.sub_types.at(0));
+		copy(out, type.sub_types.at(1));
 		break;
 	case code::Typecode::TYPE_TUPLE:{
 		const auto size = type.sub_types.size();
 		for(size_t i=0; i<size; i++){
-			skip(type.sub_types.at(i));
+			copy(out, type.sub_types.at(i));
 		}
 		break;
 	}
-	case code::Typecode::TYPE_DURATION: read(8); break;
+	case code::Typecode::TYPE_DURATION: out.write(read(8)); break;
 	case code::Typecode::TYPE_OPTIONAL:
 	case code::Typecode::TYPE_POINTER:{
 		const bool flag = read_bool();
+		out.write_value(flag);
 		if(flag){
-			skip(type.sub_types.at(0));
+			copy(out, type.sub_types.at(0));
 		}
 		break;
 	}
 	case code::Typecode::TYPE_VALUE:{
 		const auto signature = read_signature();
+		out.write_signature(signature);
 		for(const auto &entry : signature.members){
-			skip(entry.second);
+			copy(out, entry.second);
 		}
 		break;
 	}
 	default:
 		// suppress warning
-		throw std::runtime_error("attempt to skip unknown type");
+		throw std::runtime_error("attempt to copy unknown type");
 	}
 }
 
@@ -301,7 +328,7 @@ bool TypeReader::read_bool(){
 std::string TypeReader::read_string(){
 	const auto size = read_le<code::length_t>();
 	const auto chrs = read(size);
-	std::string value = "";
+	std::string value;
 	value.append(chrs.begin(), chrs.end());
 	return value;
 }
