@@ -2,10 +2,10 @@
 
 #include <asgard/code/Typecode.h>
 #include <asgard/code/get_typecode.h>
+#include <asgard/code/Signature.h>
 #include <asgard/io/BufferedOutput.h>
 #include <asgard/time/time.h>
 #include <asgard/core/ID.h>
-#include <asgard/data/Value.h>
 #include <asgard/data/Enum.h>
 #include <asgard/util/uintw_t.h>
 
@@ -23,6 +23,7 @@
 namespace asgard{
 namespace data{
 class Bin;
+class Value;
 }
 }
 
@@ -122,6 +123,8 @@ public:
 			write_value(*value);
 		}
 	}
+
+	void write_empty_value(const code::Typecode &type);
 
 	template<class T>
 	void write_le(const T &value){

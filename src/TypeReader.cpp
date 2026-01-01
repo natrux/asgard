@@ -1,6 +1,7 @@
 #include <asgard/io/TypeReader.h>
 #include <asgard/io/TypeWriter.h>
 #include <asgard/core/TypeRegistry.h>
+#include <asgard/data/Value.h>
 #include <asgard/data/Bin.h>
 
 #include <stdexcept>
@@ -346,8 +347,7 @@ std::shared_ptr<data::Value> TypeReader::read_type_value(const code::Typecode &t
 		// match
 		result = registry.create();
 	}else{
-		// TODO use better fallback type
-		result = data::Value::create();
+		result = data::Value::create_with(signature);
 	}
 	read_type(*result, signature);
 	return result;

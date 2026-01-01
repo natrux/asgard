@@ -2,9 +2,9 @@
 
 #include <asgard/io/BufferedInput.h>
 #include <asgard/code/Typecode.h>
+#include <asgard/code/Signature.h>
 #include <asgard/time/time.h>
 #include <asgard/core/ID.h>
-#include <asgard/data/Value.h>
 #include <asgard/data/Enum.h>
 #include <asgard/util/uintw_t.h>
 
@@ -22,6 +22,10 @@
 namespace asgard{
 namespace data{
 class Bin;
+class Value;
+}
+namespace io{
+class TypeWriter;
 }
 }
 

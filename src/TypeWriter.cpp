@@ -1,4 +1,5 @@
 #include <asgard/io/TypeWriter.h>
+#include <asgard/data/Value.h>
 #include <asgard/data/Bin.h>
 
 #include <stdexcept>
@@ -174,7 +175,11 @@ void TypeWriter::write_value(const data::Value &value){
 	const auto signature = value.signature();
 	write_signature(signature);
 	for(const auto &entry : signature.members){
-		value.write_member(*this, entry.first);
+		try{
+			value.write_member(*this, entry.first);
+		}catch(const std::logic_error &err){
+			write_empty_value(entry.second);
+		}
 	}
 }
 
@@ -189,6 +194,82 @@ void TypeWriter::write_value(const data::Bin &value){
 	TypeReader reader(source);
 	const auto type = reader.read_typecode();
 	reader.copy(*this, type);
+}
+
+
+void TypeWriter::write_empty_value(const code::Typecode &type){
+	switch(type.code){
+	case code::Typecode::TYPE_NULL:
+		break;
+	case code::Typecode::TYPE_BOOL:
+		write_value(false);
+		break;
+	case code::Typecode::TYPE_U8:
+		write_value(static_cast<uint8_t>(0));
+		break;
+	case code::Typecode::TYPE_I8:
+		write_value(static_cast<int8_t>(0));
+		break;
+	case code::Typecode::TYPE_U16:
+		write_value(static_cast<uint16_t>(0));
+		break;
+	case code::Typecode::TYPE_I16:
+		write_value(static_cast<int16_t>(0));
+		break;
+	case code::Typecode::TYPE_U32:
+		write_value(static_cast<uint32_t>(0));
+		break;
+	case code::Typecode::TYPE_I32:
+		write_value(static_cast<int32_t>(0));
+		break;
+	case code::Typecode::TYPE_U64:
+		write_value(static_cast<uint64_t>(0));
+		break;
+	case code::Typecode::TYPE_I64:
+		write_value(static_cast<int64_t>(0));
+		break;
+	case code::Typecode::TYPE_F32:
+		write_value(static_cast<float>(0));
+		break;
+	case code::Typecode::TYPE_F64:
+		write_value(static_cast<double>(0));
+		break;
+	case code::Typecode::TYPE_LIST:
+		write_value(std::vector<uint8_t>());
+		break;
+	case code::Typecode::TYPE_MAP:
+		write_value(std::map<uint8_t, uint8_t>());
+		break;
+	case code::Typecode::TYPE_PAIR:
+		write_empty_value(type.sub_types.at(0));
+		write_empty_value(type.sub_types.at(1));
+		break;
+	case code::Typecode::TYPE_TUPLE:
+		for(const auto &sub_type : type.sub_types){
+			write_empty_value(sub_type);
+		}
+		break;
+	case code::Typecode::TYPE_DURATION:
+		write_value(time::immediate());
+		break;
+	case code::Typecode::TYPE_STRING:
+		write_value("");
+		break;
+	case code::Typecode::TYPE_OPTIONAL:
+		write_value(std::optional<uint8_t>());
+		break;
+	case code::Typecode::TYPE_POINTER:
+		write_value(std::shared_ptr<const uint8_t>());
+		break;
+	case code::Typecode::TYPE_VALUE:
+		write_signature(code::Signature());
+		break;
+	case code::Typecode::TYPE_ENUM:
+		write_value("");
+		break;
+	default:
+		break;
+	}
 }
 
 
