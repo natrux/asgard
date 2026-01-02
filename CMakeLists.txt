@@ -26,7 +26,11 @@ else()
 endif()
 
 
-file(GLOB GENERATED_CXX generated/src/*.cxx)
+file(GLOB GENERATED_CXX
+	package/asgard/com/*.cxx
+	package/asgard/data/*.cxx
+	package/asgard/run/*.cxx
+)
 
 add_library(asgard
 	${GENERATED_CXX}
@@ -91,7 +95,7 @@ target_compile_options(asgard PRIVATE
 
 target_include_directories(asgard PUBLIC
 	include
-	generated/include
+	package
 )
 
 target_link_libraries(asgard
