@@ -69,10 +69,9 @@ code::Signature TypeReader::read_signature(){
 			const auto key = read_string();
 			signature.members[key] = read_typecode();
 		}
-		signature_map[signature.name] = signature;
+		signature_map[signature.hash()] = signature;
 	}else{
-		core::ID id;
-		id.set(read_le<uint64_t>());
+		const core::ID id(read_le<uint64_t>());
 		const auto find = signature_map.find(id);
 		if(find != signature_map.end()){
 			signature = find->second;

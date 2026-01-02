@@ -12,6 +12,7 @@ class ID{
 public:
 	ID();
 	ID(const std::string &str);
+	ID(uint64_t id_value);
 	ID(const ID &other) = default;
 	ID(ID &&other) = default;
 	ID &operator=(const ID &other) = default;

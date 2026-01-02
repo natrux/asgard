@@ -14,6 +14,8 @@ class Signature{
 public:
 	std::string name;
 	std::map<std::string, Typecode> members;
+
+	uint64_t hash() const;
 };
 
 

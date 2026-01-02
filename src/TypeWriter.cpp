@@ -50,7 +50,7 @@ void TypeWriter::write_typecode(const code::Typecode &type){
 
 
 void TypeWriter::write_signature(const code::Signature &signature){
-	const auto id = core::ID(signature.name);
+	const auto id = core::ID(signature.hash());
 	const bool written = (signatures.find(id) != signatures.end());
 
 	write_value(!written);
