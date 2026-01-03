@@ -58,12 +58,20 @@ void TypeWriter::write_signature(const code::Signature &signature){
 		write_value(static_cast<uint64_t>(id));
 	}else{
 		write_value(signature.name);
+
+		const code::length_t num_parents = signature.parents.size();
+		write_value(num_parents);
+		for(const auto &parent : signature.parents){
+			write_value(parent);
+		}
+
 		const code::length_t num_members = signature.members.size();
 		write_value(num_members);
 		for(const auto &entry : signature.members){
 			write_value(entry.first);
 			write_typecode(entry.second);
 		}
+
 		signatures.insert(id);
 	}
 }

@@ -8,6 +8,7 @@ namespace data{
 
 code::Signature Data::static_signature(){
 	auto sig = Super::static_signature();
+	sig.parents.push_back(sig.name);
 	sig.name = "asgard.data.Data";
 	return sig;
 }

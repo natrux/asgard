@@ -10,6 +10,7 @@ namespace data{
 
 code::Signature DataPacket::static_signature(){
 	auto sig = Super::static_signature();
+	sig.parents.push_back(sig.name);
 	sig.name = "asgard.data.DataPacket";
 	sig.members["time"] = code::get_typecode<decltype(time)>();
 	sig.members["payload"] = code::get_typecode<decltype(payload)>();

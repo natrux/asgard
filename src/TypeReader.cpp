@@ -64,11 +64,18 @@ code::Signature TypeReader::read_signature(){
 	code::Signature signature;
 	if(read_bool()){
 		signature.name = read_string();
+
+		const auto num_parents = read_le<code::length_t>();
+		for(code::length_t i=0; i<num_parents; i++){
+			signature.parents.push_back(read_string());
+		}
+
 		const auto num_members = read_le<code::length_t>();
 		for(code::length_t i=0; i<num_members; i++){
 			const auto key = read_string();
 			signature.members[key] = read_typecode();
 		}
+
 		signature_map[signature.hash()] = signature;
 	}else{
 		const core::ID id(read_le<uint64_t>());
@@ -340,12 +347,16 @@ std::shared_ptr<data::Value> TypeReader::read_type_value(const code::Typecode &t
 		return nullptr;
 	}
 	const auto signature = read_signature();
-	const auto registry = core::lookup_type(signature.name);
 	std::shared_ptr<data::Value> result;
-	if(registry.create){
-		// match
-		result = registry.create();
-	}else{
+	const auto chain = signature.lookup_chain();
+	for(const auto &name : chain){
+		const auto registry = core::lookup_type(name);
+		if(registry.create){
+			result = registry.create();
+			break;
+		}
+	}
+	if(!result){
 		result = data::Value::create();
 	}
 	result->set_signature(signature);
