@@ -22,8 +22,8 @@ std::shared_ptr<DataPacket> DataPacket::create(){
 }
 
 
-code::Signature DataPacket::signature() const{
-	return static_signature();
+DataPacket::DataPacket(){
+	set_signature(static_signature());
 }
 
 
@@ -35,27 +35,25 @@ bool DataPacket::operator==(const DataPacket &other) const{
 }
 
 
-void DataPacket::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
+void DataPacket::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type){
 	if(name == "time"){
-		reader.read_type(time, code);
-		return;
+		reader.read_type(time, type);
 	}else if(name == "payload"){
-		reader.read_type(payload, code);
-		return;
+		reader.read_type(payload, type);
+	}else{
+		Super::read_member(reader, name, type);
 	}
-	Super::read_member(reader, name, code);
 }
 
 
 void DataPacket::write_member(io::TypeWriter &writer, const std::string &name) const{
 	if(name == "time"){
 		writer.write_value(time);
-		return;
 	}else if(name == "payload"){
 		writer.write_value(payload);
-		return;
+	}else{
+		Super::write_member(writer, name);
 	}
-	Super::write_member(writer, name);
 }
 
 

@@ -12,8 +12,9 @@ class Data : public Value{
 public:
 	static code::Signature static_signature();
 	static std::shared_ptr<Data> create();
-	code::Signature signature() const override;
-	void read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code) override;
+
+	Data();
+	void read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type) override;
 	void write_member(io::TypeWriter &writer, const std::string &name) const override;
 };
 

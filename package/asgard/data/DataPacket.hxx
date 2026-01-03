@@ -20,9 +20,10 @@ public:
 
 	static code::Signature static_signature();
 	static std::shared_ptr<DataPacket> create();
-	code::Signature signature() const override;
+
+	DataPacket();
 	bool operator==(const DataPacket &other) const;
-	void read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code) override;
+	void read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type) override;
 	void write_member(io::TypeWriter &writer, const std::string &name) const override;
 };
 

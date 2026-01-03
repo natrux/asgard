@@ -18,13 +18,13 @@ std::shared_ptr<Data> Data::create(){
 }
 
 
-code::Signature Data::signature() const{
-	return static_signature();
+Data::Data(){
+	set_signature(static_signature());
 }
 
 
-void Data::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
-	Super::read_member(reader, name, code);
+void Data::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type){
+	Super::read_member(reader, name, type);
 }
 
 

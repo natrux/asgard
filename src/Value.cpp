@@ -23,24 +23,24 @@ std::shared_ptr<Value> Value::create(){
 }
 
 
-std::shared_ptr<Value> Value::create_with(const code::Signature &signature){
-	auto result = std::make_shared<Value>();
-	result->unknown_signature = signature;
-	return result;
+Value::Value(){
+	set_signature(static_signature());
 }
 
 
 code::Signature Value::signature() const{
-	if(!unknown_signature.name.empty()){
-		return unknown_signature;
-	}
-	return static_signature();
+	return dynamic_signature;
 }
 
 
-void Value::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &code){
+void Value::set_signature(const code::Signature &signature){
+	dynamic_signature = signature;
+}
+
+
+void Value::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type){
 	auto &bin = unknown_members[name];
-	reader.read_type(bin, code);
+	reader.read_type(bin, type);
 }
 
 

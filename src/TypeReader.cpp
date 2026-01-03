@@ -346,8 +346,9 @@ std::shared_ptr<data::Value> TypeReader::read_type_value(const code::Typecode &t
 		// match
 		result = registry.create();
 	}else{
-		result = data::Value::create_with(signature);
+		result = data::Value::create();
 	}
+	result->set_signature(signature);
 	read_type(*result, signature);
 	return result;
 }
