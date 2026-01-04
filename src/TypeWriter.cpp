@@ -53,10 +53,9 @@ void TypeWriter::write_signature(const code::Signature &signature){
 	const auto id = core::ID(signature.hash());
 	const bool written = (signatures.find(id) != signatures.end());
 
+	write_value(static_cast<uint64_t>(id));
 	write_value(!written);
-	if(written){
-		write_value(static_cast<uint64_t>(id));
-	}else{
+	if(!written){
 		write_value(signature.name);
 
 		const code::length_t num_parents = signature.parents.size();

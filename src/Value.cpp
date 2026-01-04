@@ -34,7 +34,12 @@ code::Signature Value::signature() const{
 
 
 void Value::set_signature(const code::Signature &signature){
-	dynamic_signature = signature;
+	auto new_signature = signature;
+	// add / overwrite members that are natively embedded
+	for(const auto &entry : dynamic_signature.members){
+		new_signature.members[entry.first] = entry.second;
+	}
+	dynamic_signature = new_signature;
 }
 
 

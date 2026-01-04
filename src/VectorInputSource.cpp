@@ -23,7 +23,7 @@ size_t VectorInputSource::read(void *data, size_t length){
 	const size_t available = buffer.size() - pos;
 	const size_t amount = std::min(length, available);
 	if(amount > 0){
-		memcpy(data, buffer.data(), amount);
+		memcpy(data, buffer.data()+pos, amount);
 		pos += amount;
 	}
 	return amount;
