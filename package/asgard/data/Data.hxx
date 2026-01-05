@@ -21,3 +21,20 @@ public:
 
 }
 }
+
+
+namespace asgard{
+namespace code{
+
+
+template<>
+struct get_typecode_t<asgard::data::Data>{
+	static Typecode value(){
+		static Typecode instance(Typecode::TYPE_VALUE);
+		return instance;
+	}
+};
+
+
+}
+}

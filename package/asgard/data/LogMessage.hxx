@@ -12,7 +12,15 @@ namespace data{
 
 
 class LogMessage : public Data{
+	using Super = Data;
 public:
+	static code::Signature static_signature();
+	static std::shared_ptr<LogMessage> create();
+
+	LogMessage();
+	void read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type) override;
+	void write_member(io::TypeWriter &writer, const std::string &name) const override;
+
 	time::time time;
 	log_level_e level;
 	std::string unit;

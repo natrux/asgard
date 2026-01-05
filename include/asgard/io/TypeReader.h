@@ -271,8 +271,9 @@ public:
 					// vip treatment
 					value = std::dynamic_pointer_cast<T>(read_type_value(sub_type));
 				}else{
-					value = std::make_shared<typename std::remove_const<T>::type>();
-					read_type(*value, sub_type);
+					auto new_value = std::make_shared<typename std::remove_const<T>::type>();
+					read_type(*new_value, sub_type);
+					value = new_value;
 				}
 			}
 		}else if(type.code == code::Typecode::TYPE_VALUE){
