@@ -6,6 +6,6 @@ string prompt = "> "
 void read_char(i8 character)
 void read_event(terminal_event_e event)
 
-processes(
+handles(
 	data.LogMessage
 )
