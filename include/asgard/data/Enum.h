@@ -1,5 +1,7 @@
 #pragma once
 
+#include <asgard/code/Typecode.h>
+
 #include <map>
 #include <string>
 
@@ -10,6 +12,7 @@ namespace data{
 
 class Enum{
 public:
+	static code::Typecode typecode();
 	virtual ~Enum() = default;
 
 	virtual void from_string(const std::string &str) = 0;

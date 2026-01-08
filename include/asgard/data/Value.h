@@ -20,6 +20,7 @@ namespace data{
 
 class Value{
 public:
+	static code::Typecode typecode();
 	static code::Signature static_signature();
 	static std::shared_ptr<Value> create();
 

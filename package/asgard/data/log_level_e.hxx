@@ -1,7 +1,6 @@
 #pragma once
 
 #include <asgard/data/Enum.h>
-#include <asgard/code/get_typecode.h>
 
 
 namespace asgard{
@@ -35,23 +34,6 @@ public:
 	log_level_e &operator=(const enum_e &v){ value = v; return *this; }
 
 	constexpr operator enum_e() const{ return value; }
-};
-
-
-}
-}
-
-
-namespace asgard{
-namespace code{
-
-
-template<>
-struct get_typecode_t<asgard::data::log_level_e>{
-	static Typecode value(){
-		static Typecode instance(Typecode::TYPE_ENUM);
-		return instance;
-	}
 };
 
 

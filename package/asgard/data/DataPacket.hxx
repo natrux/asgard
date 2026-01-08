@@ -2,7 +2,6 @@
 
 
 #include <asgard/data/Data.hxx>
-#include <asgard/code/get_typecode.h>
 #include <asgard/time/time.h>
 
 #include <vector>
@@ -25,23 +24,6 @@ public:
 	bool operator==(const DataPacket &other) const;
 	void read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type) override;
 	void write_member(io::TypeWriter &writer, const std::string &name) const override;
-};
-
-
-}
-}
-
-
-namespace asgard{
-namespace code{
-
-
-template<>
-struct get_typecode_t<asgard::data::DataPacket>{
-	static Typecode value(){
-		static Typecode instance(Typecode::TYPE_VALUE);
-		return instance;
-	}
 };
 
 

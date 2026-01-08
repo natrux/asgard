@@ -11,6 +11,11 @@ namespace asgard{
 namespace data{
 
 
+code::Typecode Value::typecode(){
+	return code::Typecode(code::Typecode::TYPE_VALUE);
+}
+
+
 code::Signature Value::static_signature(){
 	code::Signature sig;
 	sig.name = "asgard.data.Value";

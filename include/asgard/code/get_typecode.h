@@ -20,7 +20,10 @@ namespace code{
 
 template<class T>
 struct get_typecode_t{
-	static Typecode value();
+	static Typecode value(){
+		static Typecode instance = T::typecode();
+		return instance;
+	}
 };
 
 template<class T>
