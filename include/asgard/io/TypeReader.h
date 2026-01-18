@@ -3,6 +3,7 @@
 #include <asgard/io/BufferedInput.h>
 #include <asgard/code/Typecode.h>
 #include <asgard/code/Signature.h>
+#include <asgard/code/EnumMap.h>
 #include <asgard/time/time.h>
 #include <asgard/core/ID.h>
 #include <asgard/data/Enum.h>
@@ -43,6 +44,7 @@ public:
 
 	code::Typecode read_typecode();
 	code::Signature read_signature();
+	code::EnumMap read_enum_map();
 
 	template<class T>
 	T read_type(){
@@ -309,6 +311,7 @@ public:
 private:
 	time::time remote_epoch;
 	std::map<core::ID, code::Signature> signature_map;
+	std::map<core::ID, code::EnumMap> enum_maps;
 
 	template<class T>
 	void read_number(T &value, const code::Typecode &type){

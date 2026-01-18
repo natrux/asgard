@@ -3,6 +3,7 @@
 #include <asgard/code/Typecode.h>
 #include <asgard/code/get_typecode.h>
 #include <asgard/code/Signature.h>
+#include <asgard/code/EnumMap.h>
 #include <asgard/io/BufferedOutput.h>
 #include <asgard/time/time.h>
 #include <asgard/core/ID.h>
@@ -37,6 +38,7 @@ public:
 
 	void write_typecode(const code::Typecode &type);
 	void write_signature(const code::Signature &signature);
+	void write_enum_map(const code::EnumMap &map);
 
 	template<class T>
 	void write_type(const T &value){
@@ -139,6 +141,7 @@ public:
 
 private:
 	std::set<core::ID> signatures;
+	std::set<core::ID> enum_maps;
 
 	template<class T>
 	void write_list(const T &value){

@@ -37,6 +37,7 @@ add_library(asgard
 	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
 	src/Signature.cpp
+	src/EnumMap.cpp
 	src/TypeRegistry.cpp
 	src/Value.cpp
 	src/Enum.cpp

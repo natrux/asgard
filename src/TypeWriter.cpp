@@ -76,6 +76,27 @@ void TypeWriter::write_signature(const code::Signature &signature){
 }
 
 
+void TypeWriter::write_enum_map(const code::EnumMap &map){
+	const auto id = core::ID(map.hash());
+	const bool written = (enum_maps.find(id) != enum_maps.end());
+
+	write_value(static_cast<uint64_t>(id));
+	write_value(!written);
+	if(!written){
+		write_value(map.name);
+
+		const code::length_t num_values = map.enum_map.size();
+		write_value(num_values);
+		for(const auto &entry : map.enum_map){
+			write_value(entry.first);
+			write_value(entry.second);
+		}
+
+		enum_maps.insert(id);
+	}
+}
+
+
 void TypeWriter::write_type(const data::Bin &value){
 	auto source = std::make_shared<io::VectorInputSource>(value.get_data());
 	TypeReader reader(source);

@@ -88,6 +88,31 @@ code::Signature TypeReader::read_signature(){
 }
 
 
+code::EnumMap TypeReader::read_enum_map(){
+	const core::ID id(read_le<uint64_t>());
+	code::EnumMap map;
+	if(read_bool()){
+		map.name = read_string();
+
+		const auto num_values = read_le<code::length_t>();
+		for(code::length_t i=0; i<num_values; i++){
+			const auto name = read_string();
+			const auto value = read_le<code::enum_t>();
+			map.enum_map[name] = value;
+			map.reverse_enum_map[value] = name;
+		}
+
+		enum_maps[id] = map;
+	}else{
+		const auto find = enum_maps.find(id);
+		if(find != enum_maps.end()){
+			map = find->second;
+		}
+	}
+	return map;
+}
+
+
 void TypeReader::read_type(bool &value, const code::Typecode &type){
 	uint8_t byte = 0;
 	if(type.code == code::Typecode::TYPE_BOOL){

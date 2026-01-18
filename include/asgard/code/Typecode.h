@@ -11,6 +11,7 @@ namespace code{
 
 using typecode_e = uint8_t;
 using length_t = uint64_t;
+using enum_t = uint32_t;
 
 class Typecode{
 public:
