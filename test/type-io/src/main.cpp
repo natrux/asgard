@@ -68,7 +68,7 @@ void test_by_value(const T &data_out){
 
 
 template<class T>
-void test_by_bin(const T &data_out){
+void test_by_bin_io(const T &data_out){
 	asgard::data::Bin value = data_out;
 	typename std::remove_cv<typename std::remove_reference<T>::type>::type data_in;
 	value.to(data_in);
@@ -113,13 +113,20 @@ void test_by_bin_out(const T &data_out){
 }
 
 
+template<class T>
+void test_by_bin(const T &data_out){
+	test_by_bin_in(data_out);
+	test_by_bin_out(data_out);
+	test_by_bin_io(data_out);
+}
+
+
+
 void test(){
 	{
 		const float number = 13.37;
 		test_by_value(number);
 		test_by_bin(number);
-		test_by_bin_in(number);
-		test_by_bin_out(number);
 	}
 
 	{
@@ -130,8 +137,6 @@ void test(){
 		};
 		test_by_value(data);
 		test_by_bin(data);
-		test_by_bin_in(data);
-		test_by_bin_out(data);
 	}
 
 	{
@@ -140,8 +145,6 @@ void test(){
 		};
 		test_by_value(data);
 		test_by_bin(data);
-		test_by_bin_in(data);
-		test_by_bin_out(data);
 	}
 
 	{
@@ -153,8 +156,17 @@ void test(){
 		};
 		test_by_value(data);
 		test_by_bin(data);
-		test_by_bin_in(data);
-		test_by_bin_out(data);
+	}
+
+	{
+		const std::map<asgard::data::log_level_e, std::string> data = {
+			{asgard::data::log_level_e::DEBUG, "debug log message"},
+			{asgard::data::log_level_e::INFO, "informational log message"},
+			{asgard::data::log_level_e::WARN, "warning log message"},
+			{asgard::data::log_level_e::ERROR, "error log message"},
+		};
+		test_by_value(data);
+		test_by_bin(data);
 	}
 
 	{
@@ -169,16 +181,12 @@ void test(){
 		}
 		test_by_value(data);
 		test_by_bin(data);
-		test_by_bin_in(data);
-		test_by_bin_out(data);
 	}
 
 	{
 		const std::vector<std::string> letters = {"Alpha", "Beta", "Gamma", "Delta"};
 		test_by_value(letters);
 		test_by_bin(letters);
-		test_by_bin_in(letters);
-		test_by_bin_out(letters);
 	}
 
 	{
