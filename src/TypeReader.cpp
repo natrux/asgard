@@ -177,7 +177,10 @@ void TypeReader::read_type(double &value, const code::Typecode &type){
 void TypeReader::read_type(std::string &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_STRING){
 		value = read_string();
-	//}else if(code == code::Typecode::TYPE_ENUM){
+	}else if(type.code == code::Typecode::TYPE_ENUM){
+		const auto map = read_enum_map();
+		const auto v = read_le<code::enum_t>();
+		value = map.find(v);
 	}else{
 		skip(type);
 	}
@@ -240,9 +243,13 @@ void TypeReader::read_type(data::Value &value, const code::Signature &signature)
 
 
 void TypeReader::read_type(data::Enum &value, const code::Typecode &type){
-	if(type.code == code::Typecode::TYPE_ENUM || type.code == code::Typecode::TYPE_STRING){
-		const std::string field = read_string();
-		value.from_string(field);
+	if(type.code == code::Typecode::TYPE_ENUM){
+		read_enum_map();
+		const auto v = read_le<code::enum_t>();
+		value.from_int(v);
+	}else if(type.code == code::Typecode::TYPE_STRING){
+		const auto str = read_string();
+		value.from_string(str);
 	}else{
 		skip(type);
 	}
@@ -294,7 +301,7 @@ void TypeReader::copy(TypeWriter &out, const code::Typecode &type){
 	case code::Typecode::TYPE_I64: out.write(read(8)); break;
 	case code::Typecode::TYPE_F32: out.write(read(4)); break;
 	case code::Typecode::TYPE_F64: out.write(read(8)); break;
-	case code::Typecode::TYPE_ENUM:
+
 	case code::Typecode::TYPE_STRING: out.write_value(read_string()); break;
 	case code::Typecode::TYPE_LIST:{
 		const auto size = read_le<code::length_t>();
@@ -343,6 +350,13 @@ void TypeReader::copy(TypeWriter &out, const code::Typecode &type){
 		for(const auto &entry : signature.members){
 			copy(out, entry.second);
 		}
+		break;
+	}
+	case code::Typecode::TYPE_ENUM:{
+		const auto map = read_enum_map();
+		const auto v = read_le<code::enum_t>();
+		out.write_enum_map(map);
+		out.write_value(v);
 		break;
 	}
 	default:

@@ -213,7 +213,9 @@ void TypeWriter::write_value(const data::Value &value){
 
 
 void TypeWriter::write_value(const data::Enum &value){
-	write_value(value.to_string());
+	const auto map = value.enum_map();
+	write_enum_map(map);
+	write_value(value.to_int());
 }
 
 
@@ -293,7 +295,8 @@ void TypeWriter::write_empty_value(const code::Typecode &type){
 		write_signature(code::Signature());
 		break;
 	case code::Typecode::TYPE_ENUM:
-		write_value("");
+		write_enum_map(code::EnumMap());
+		write_value(static_cast<code::enum_t>(0));
 		break;
 	default:
 		break;
