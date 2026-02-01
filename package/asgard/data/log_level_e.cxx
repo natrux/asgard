@@ -7,7 +7,7 @@ namespace asgard{
 namespace data{
 
 
-const std::map<log_level_e::enum_e, std::string> log_level_e::enum_to_string = {
+const std::map<code::enum_t, std::string> log_level_e::_enum_map = {
 	{DEBUG, "DEBUG"},
 	{INFO, "INFO"},
 	{WARN, "WARN"},
@@ -15,28 +15,49 @@ const std::map<log_level_e::enum_e, std::string> log_level_e::enum_to_string = {
 };
 
 
-const std::map<std::string, log_level_e::enum_e> log_level_e::string_to_enum = {
-	{"DEBUG", DEBUG},
-	{"INFO", INFO},
-	{"WARN", WARN},
-	{"ERROR", ERROR},
-};
+code::EnumMap log_level_e::static_enum_map(){
+	code::EnumMap map;
+	map.name = "asgard.data.log_level_e";
+	map.enum_map = _enum_map;
+	map.fill_reverse();
+	return map;
+}
 
 
-void log_level_e::from_string(const std::string &str){
-	const auto find = string_to_enum.find(str);
-	if(find != string_to_enum.end()){
-		value = find->second;
+log_level_e::log_level_e(const enum_e &v):
+	value(v)
+{
+}
+
+
+log_level_e &log_level_e::operator=(const enum_e &v){
+	value = v;
+	return *this;
+}
+
+
+code::EnumMap log_level_e::enum_map() const{
+	return static_enum_map();
+}
+
+
+void log_level_e::from_int(const code::enum_t &v){
+	const auto find = _enum_map.find(v);
+	if(find == _enum_map.end()){
+		value = zero;
+	}else{
+		value = static_cast<enum_e>(v);
 	}
 }
 
 
-std::string log_level_e::to_string() const{
-	const auto find = enum_to_string.find(value);
-	if(find != enum_to_string.end()){
-		return find->second;
-	}
-	return "";
+code::enum_t log_level_e::to_int() const{
+	return value;
+}
+
+
+log_level_e::operator enum_e() const{
+	return value;
 }
 
 

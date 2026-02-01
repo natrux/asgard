@@ -8,32 +8,31 @@ namespace data{
 
 
 class log_level_e : public Enum{
-private:
-	enum class enum_e{
-		DEBUG,
-		INFO,
-		WARN,
-		ERROR,
-	};
-	enum_e value = static_cast<enum_e>(-1);
-
-	static const std::map<enum_e, std::string> enum_to_string;
-	static const std::map<std::string, enum_e> string_to_enum;
-
-	void from_string(const std::string &str) override;
-	std::string to_string() const override;
-
 public:
-	constexpr static enum_e DEBUG = enum_e::DEBUG;
-	constexpr static enum_e INFO = enum_e::INFO;
-	constexpr static enum_e WARN = enum_e::WARN;
-	constexpr static enum_e ERROR = enum_e::ERROR;
+	enum enum_e : code::enum_t{
+		DEBUG = 0x9bf18517,
+		INFO = 0xfd1cdce3,
+		WARN = 0x1f2f5cb1,
+		ERROR = 0xaa897ec1,
+	};
 
-	constexpr log_level_e() = default;
-	constexpr log_level_e(const enum_e &v) : value(v){}
-	log_level_e &operator=(const enum_e &v){ value = v; return *this; }
+	static code::EnumMap static_enum_map();
 
-	constexpr operator enum_e() const{ return value; }
+	log_level_e() = default;
+	log_level_e(const enum_e &v);
+	log_level_e &operator=(const log_level_e &other) = default;
+	log_level_e &operator=(const enum_e &v);
+
+	code::EnumMap enum_map() const override;
+	void from_int(const code::enum_t &v) override;
+	code::enum_t to_int() const override;
+
+	operator enum_e() const;
+
+private:
+	static const enum_e zero = static_cast<enum_e>(0);
+	static const std::map<code::enum_t, std::string> _enum_map;
+	enum_e value = zero;
 };
 
 

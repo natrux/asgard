@@ -14,5 +14,19 @@ code::Typecode Enum::typecode(){
 }
 
 
+void Enum::from_string(const std::string &str){
+	const auto map = enum_map();
+	const auto value = map.find(str);
+	from_int(value);
+}
+
+
+std::string Enum::to_string() const{
+	const auto map = enum_map();
+	const auto value = to_int();
+	return map.find(value);
+}
+
+
 }
 }

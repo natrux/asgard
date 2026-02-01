@@ -8,48 +8,39 @@ namespace run{
 
 
 class terminal_event_e : public data::Enum{
-private:
-	enum class enum_e{
-		ARROW_UP,
-		ARROW_DOWN,
-		ARROW_LEFT,
-		ARROW_RIGHT,
-		CR,
-		LF,
-		BACKSPACE,
-		DEL,
-		POS1,
-		END,
-		TAB,
-		END_OF_FILE,
-	};
-	enum_e value = static_cast<enum_e>(-1);
-
-	static const std::map<enum_e, std::string> enum_to_string;
-	static const std::map<std::string, enum_e> string_to_enum;
-
-	void from_string(const std::string &str) override;
-	std::string to_string() const override;
-
 public:
-	constexpr static enum_e ARROW_UP = enum_e::ARROW_UP;
-	constexpr static enum_e ARROW_DOWN = enum_e::ARROW_DOWN;
-	constexpr static enum_e ARROW_LEFT = enum_e::ARROW_LEFT;
-	constexpr static enum_e ARROW_RIGHT = enum_e::ARROW_RIGHT;
-	constexpr static enum_e CR = enum_e::CR;
-	constexpr static enum_e LF = enum_e::LF;
-	constexpr static enum_e BACKSPACE = enum_e::BACKSPACE;
-	constexpr static enum_e DEL = enum_e::DEL;
-	constexpr static enum_e POS1 = enum_e::POS1;
-	constexpr static enum_e END = enum_e::END;
-	constexpr static enum_e TAB = enum_e::TAB;
-	constexpr static enum_e END_OF_FILE = enum_e::END_OF_FILE;
+	enum enum_e : code::enum_t{
+		ARROW_UP = 0x32272593,
+		ARROW_DOWN = 0xcbf05ef5,
+		ARROW_LEFT = 0xad6829a6,
+		ARROW_RIGHT = 0xf3afb5a5,
+		CR = 0x1fe83ee1,
+		LF = 0x82aaf653,
+		BACKSPACE = 0xfb229c80,
+		DEL = 0x7ab64af5,
+		POS1 = 0x51c714ee,
+		END = 0x965b713b,
+		TAB = 0xe5440186,
+		END_OF_FILE = 0x9dc3070,
+	};
 
-	constexpr terminal_event_e() = default;
-	constexpr terminal_event_e(const enum_e &v) : value(v){}
-	terminal_event_e &operator=(const enum_e &v){ value = v; return *this; }
+	static code::EnumMap static_enum_map();
 
-	constexpr operator enum_e() const{ return value; }
+	terminal_event_e() = default;
+	terminal_event_e(const enum_e &v);
+	terminal_event_e &operator=(const terminal_event_e &other) = default;
+	terminal_event_e &operator=(const enum_e &v);
+
+	code::EnumMap enum_map() const override;
+	void from_int(const code::enum_t &v) override;
+	code::enum_t to_int() const override;
+
+	operator enum_e() const;
+
+private:
+	static const enum_e zero = static_cast<enum_e>(0);
+	static const std::map<code::enum_t, std::string> _enum_map;
+	enum_e value = zero;
 };
 
 

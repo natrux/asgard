@@ -96,10 +96,10 @@ code::EnumMap TypeReader::read_enum_map(){
 
 		const auto num_values = read_le<code::length_t>();
 		for(code::length_t i=0; i<num_values; i++){
-			const auto name = read_string();
 			const auto value = read_le<code::enum_t>();
-			map.enum_map[name] = value;
-			map.reverse_enum_map[value] = name;
+			const auto name = read_string();
+			map.enum_map[value] = name;
+			map.reverse_enum_map[name] = value;
 		}
 
 		enum_maps[id] = map;
