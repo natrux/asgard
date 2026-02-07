@@ -7,9 +7,9 @@ namespace asgard{
 namespace io{
 
 
-class FileOutputSource : public OutputSource{
+class PosixOutputSource : public OutputSource{
 public:
-	FileOutputSource(int fd);
+	PosixOutputSource(int fd);
 	size_t write(const void *data, size_t length) override;
 
 private:

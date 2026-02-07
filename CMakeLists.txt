@@ -47,8 +47,8 @@ add_library(asgard
 	src/TypeReader.cpp
 	src/Endpoint.cpp
 	src/Exception.cpp
-	src/FileInputSource.cpp
-	src/FileOutputSource.cpp
+	src/PosixInputSource.cpp
+	src/PosixOutputSource.cpp
 	src/Fifo.cpp
 	src/FifoInputSource.cpp
 	src/FifoOutputSource.cpp

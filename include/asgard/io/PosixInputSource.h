@@ -7,9 +7,9 @@ namespace asgard{
 namespace io{
 
 
-class FileInputSource : public InputSource{
+class PosixInputSource : public InputSource{
 public:
-	FileInputSource(int fd);
+	PosixInputSource(int fd);
 	size_t read(void *data, size_t length) override;
 
 private:
