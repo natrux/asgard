@@ -46,6 +46,7 @@ add_library(asgard
 	src/BufferedInput.cpp
 	src/TypeReader.cpp
 	src/Endpoint.cpp
+	src/File.cpp
 	src/Exception.cpp
 	src/FileInputSource.cpp
 	src/FileOutputSource.cpp
