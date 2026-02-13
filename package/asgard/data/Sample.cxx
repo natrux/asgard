@@ -1,6 +1,6 @@
 #include <asgard/data/Sample.hxx>
-#include <asgard/io/TypeReader.h>
-#include <asgard/io/TypeWriter.h>
+#include <asgard/type/TypeReader.h>
+#include <asgard/type/TypeWriter.h>
 #include <asgard/core/TypeRegistry.h>
 
 
@@ -29,7 +29,7 @@ Sample::Sample(){
 }
 
 
-void Sample::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void Sample::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
 	if(name == "time"){
 		reader.read_type(time, type);
 	}else if(name == "retained"){
@@ -42,7 +42,7 @@ void Sample::read_member(io::TypeReader &reader, const std::string &name, const 
 }
 
 
-void Sample::write_member(io::TypeWriter &writer, const std::string &name) const{
+void Sample::write_member(type::TypeWriter &writer, const std::string &name) const{
 	if(name == "time"){
 		writer.write_value(time);
 	}else if(name == "retained"){

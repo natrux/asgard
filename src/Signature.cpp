@@ -1,6 +1,6 @@
 #include <asgard/code/Signature.h>
 #include <asgard/util/crc_64_xz.h>
-#include <asgard/io/TypeWriter.h>
+#include <asgard/type/TypeWriter.h>
 #include <asgard/io/VectorOutputSource.h>
 
 #include <algorithm>
@@ -23,7 +23,7 @@ uint64_t Signature::hash() const{
 
 		auto source = std::make_shared<io::VectorOutputSource>();
 		{
-			io::TypeWriter writer(source);
+			type::TypeWriter writer(source);
 			writer.write_typecode(type);
 		}
 		const auto vector = source->get();

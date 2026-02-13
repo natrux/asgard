@@ -15,10 +15,10 @@ namespace mod{
 std::mutex Module::mutex_started_modules;
 std::condition_variable Module::cv_started_modules;
 std::set<core::ID> Module::started_modules;
-data::log_level_e Module::DEBUG = data::log_level_e::DEBUG;
-data::log_level_e Module::INFO = data::log_level_e::INFO;
-data::log_level_e Module::WARN = data::log_level_e::WARN;
-data::log_level_e Module::ERROR = data::log_level_e::ERROR;
+const data::log_level_e Module::DEBUG = data::log_level_e::DEBUG;
+const data::log_level_e Module::INFO = data::log_level_e::INFO;
+const data::log_level_e Module::WARN = data::log_level_e::WARN;
+const data::log_level_e Module::ERROR = data::log_level_e::ERROR;
 
 
 void Module::start_module(std::unique_ptr<Module> module){

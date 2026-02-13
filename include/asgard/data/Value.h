@@ -7,7 +7,7 @@
 
 
 namespace asgard{
-namespace io{
+namespace type{
 class TypeReader;
 class TypeWriter;
 }
@@ -29,8 +29,8 @@ public:
 	code::Signature signature() const;
 	void set_signature(const code::Signature &signature);
 
-	virtual void read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type);
-	virtual void write_member(io::TypeWriter &writer, const std::string &name) const;
+	virtual void read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type);
+	virtual void write_member(type::TypeWriter &writer, const std::string &name) const;
 
 private:
 	code::Signature dynamic_signature;

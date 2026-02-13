@@ -83,7 +83,7 @@ bool Bin::is_map() const{
 
 void Bin::update(){
 	auto input = std::make_shared<io::VectorInputSource>(data);
-	io::TypeReader reader(input);
+	type::TypeReader reader(input);
 	type = reader.read_typecode();
 	if(type.code == code::Typecode::TYPE_VALUE){
 		signature = reader.read_signature();

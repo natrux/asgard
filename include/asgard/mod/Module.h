@@ -33,10 +33,10 @@ public:
 	static void wait_for_shutdown();
 
 protected:
-	static data::log_level_e DEBUG;
-	static data::log_level_e INFO;
-	static data::log_level_e WARN;
-	static data::log_level_e ERROR;
+	static const data::log_level_e DEBUG;
+	static const data::log_level_e INFO;
+	static const data::log_level_e WARN;
+	static const data::log_level_e ERROR;
 
 	virtual void init(){ /* default empty */ };
 	virtual void main();

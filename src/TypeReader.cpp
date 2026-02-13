@@ -1,5 +1,5 @@
-#include <asgard/io/TypeReader.h>
-#include <asgard/io/TypeWriter.h>
+#include <asgard/type/TypeReader.h>
+#include <asgard/type/TypeWriter.h>
 #include <asgard/core/TypeRegistry.h>
 #include <asgard/data/Value.h>
 #include <asgard/data/Bin.h>
@@ -8,10 +8,10 @@
 
 
 namespace asgard{
-namespace io{
+namespace type{
 
 
-TypeReader::TypeReader(std::shared_ptr<InputSource> source):
+TypeReader::TypeReader(std::shared_ptr<io::InputSource> source):
 	BufferedInput(source)
 {
 }

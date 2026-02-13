@@ -25,18 +25,18 @@ namespace data{
 class Bin;
 class Value;
 }
-namespace io{
+namespace type{
 class TypeWriter;
 }
 }
 
 namespace asgard{
-namespace io{
+namespace type{
 
 
-class TypeReader : public BufferedInput{
+class TypeReader : public io::BufferedInput{
 public:
-	TypeReader(std::shared_ptr<InputSource> source);
+	TypeReader(std::shared_ptr<io::InputSource> source);
 
 	time::time get_remote_epoch() const;
 	void set_remote_epoch(const time::time &time);

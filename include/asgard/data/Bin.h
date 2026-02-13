@@ -1,7 +1,7 @@
 #pragma once
 
-#include <asgard/io/TypeReader.h>
-#include <asgard/io/TypeWriter.h>
+#include <asgard/type/TypeReader.h>
+#include <asgard/type/TypeWriter.h>
 #include <asgard/io/VectorInputSource.h>
 #include <asgard/io/VectorOutputSource.h>
 
@@ -23,7 +23,7 @@ public:
 	Bin &operator=(const T &value){
 		auto source = std::make_shared<io::VectorOutputSource>();
 		{
-			io::TypeWriter writer(source);
+			type::TypeWriter writer(source);
 			writer.write_type(value);
 		}
 		data = source->get();
@@ -37,7 +37,7 @@ public:
 	template<class T>
 	void to(T &value) const{
 		auto source = std::make_shared<io::VectorInputSource>(data);
-		io::TypeReader reader(source);
+		type::TypeReader reader(source);
 		reader.read_type(value);
 	}
 

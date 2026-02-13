@@ -29,12 +29,12 @@ class Value;
 }
 
 namespace asgard{
-namespace io{
+namespace type{
 
 
-class TypeWriter : public BufferedOutput{
+class TypeWriter : public io::BufferedOutput{
 public:
-	TypeWriter(std::shared_ptr<OutputSource> source);
+	TypeWriter(std::shared_ptr<io::OutputSource> source);
 
 	void write_typecode(const code::Typecode &type);
 	void write_signature(const code::Signature &signature);

@@ -14,8 +14,8 @@ public:
 	static std::shared_ptr<Message> create();
 
 	Message();
-	void read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type) override;
-	void write_member(io::TypeWriter &writer, const std::string &name) const override;
+	void read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type) override;
+	void write_member(type::TypeWriter &writer, const std::string &name) const override;
 };
 
 

@@ -24,12 +24,12 @@ Message::Message(){
 }
 
 
-void Message::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void Message::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
 	Super::read_member(reader, name, type);
 }
 
 
-void Message::write_member(io::TypeWriter &writer, const std::string &name) const{
+void Message::write_member(type::TypeWriter &writer, const std::string &name) const{
 	Super::write_member(writer, name);
 }
 

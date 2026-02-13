@@ -1,4 +1,4 @@
-#include <asgard/io/TypeWriter.h>
+#include <asgard/type/TypeWriter.h>
 #include <asgard/data/Value.h>
 #include <asgard/data/Bin.h>
 
@@ -7,10 +7,10 @@
 
 
 namespace asgard{
-namespace io{
+namespace type{
 
 
-TypeWriter::TypeWriter(std::shared_ptr<OutputSource> source):
+TypeWriter::TypeWriter(std::shared_ptr<io::OutputSource> source):
 	BufferedOutput(source)
 {
 }

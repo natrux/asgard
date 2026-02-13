@@ -1,6 +1,4 @@
 #include <asgard/data/log_level_e.hxx>
-#include <asgard/io/TypeReader.h>
-#include <asgard/io/TypeWriter.h>
 
 
 namespace asgard{

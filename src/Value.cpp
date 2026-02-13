@@ -1,7 +1,7 @@
 #include <asgard/data/Value.h>
 #include <asgard/data/Bin.h>
-#include <asgard/io/TypeReader.h>
-#include <asgard/io/TypeWriter.h>
+#include <asgard/type/TypeReader.h>
+#include <asgard/type/TypeWriter.h>
 #include <asgard/core/TypeRegistry.h>
 
 #include <stdexcept>
@@ -48,13 +48,13 @@ void Value::set_signature(const code::Signature &signature){
 }
 
 
-void Value::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void Value::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
 	auto &bin = unknown_members[name];
 	reader.read_type(bin, type);
 }
 
 
-void Value::write_member(io::TypeWriter &writer, const std::string &name) const{
+void Value::write_member(type::TypeWriter &writer, const std::string &name) const{
 	const auto find = unknown_members.find(name);
 	if(find != unknown_members.end()){
 		writer.write_value(find->second);

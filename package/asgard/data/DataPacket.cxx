@@ -1,6 +1,6 @@
 #include <asgard/data/DataPacket.hxx>
-#include <asgard/io/TypeReader.h>
-#include <asgard/io/TypeWriter.h>
+#include <asgard/type/TypeReader.h>
+#include <asgard/type/TypeWriter.h>
 #include <asgard/core/TypeRegistry.h>
 
 
@@ -36,7 +36,7 @@ bool DataPacket::operator==(const DataPacket &other) const{
 }
 
 
-void DataPacket::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void DataPacket::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
 	if(name == "time"){
 		reader.read_type(time, type);
 	}else if(name == "payload"){
@@ -47,7 +47,7 @@ void DataPacket::read_member(io::TypeReader &reader, const std::string &name, co
 }
 
 
-void DataPacket::write_member(io::TypeWriter &writer, const std::string &name) const{
+void DataPacket::write_member(type::TypeWriter &writer, const std::string &name) const{
 	if(name == "time"){
 		writer.write_value(time);
 	}else if(name == "payload"){

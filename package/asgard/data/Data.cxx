@@ -24,12 +24,12 @@ Data::Data(){
 }
 
 
-void Data::read_member(io::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void Data::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
 	Super::read_member(reader, name, type);
 }
 
 
-void Data::write_member(io::TypeWriter &writer, const std::string &name) const{
+void Data::write_member(type::TypeWriter &writer, const std::string &name) const{
 	Super::write_member(writer, name);
 }
 

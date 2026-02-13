@@ -1,5 +1,5 @@
-#include <asgard/io/TypeReader.h>
-#include <asgard/io/TypeWriter.h>
+#include <asgard/type/TypeReader.h>
+#include <asgard/type/TypeWriter.h>
 #include <asgard/io/VectorInputSource.h>
 #include <asgard/io/VectorOutputSource.h>
 #include <asgard/data/Bin.h>
@@ -90,7 +90,7 @@ void test_by_bin_in(const T &data_out){
 	auto in = std::make_shared<asgard::io::VectorInputSource>(vector);
 	asgard::data::Bin value;
 	{
-		asgard::io::TypeReader reader(in);
+		asgard::type::TypeReader reader(in);
 		reader.read_type(value);
 	}
 	typename std::remove_cv<typename std::remove_reference<T>::type>::type data_in;
@@ -107,7 +107,7 @@ void test_by_bin_out(const T &data_out){
 	asgard::data::Bin value = data_out;
 	auto source = std::make_shared<asgard::io::VectorOutputSource>();
 	{
-		asgard::io::TypeWriter writer(source);
+		asgard::type::TypeWriter writer(source);
 		writer.write_type(value);
 	}
 	const auto data_in = read_from_vector<T>(source->get());
