@@ -32,7 +32,7 @@ void NetworkStream::main(){
 }
 
 
-void NetworkStream::process(std::shared_ptr<const data::DataPacket> data){
+void NetworkStream::handle(std::shared_ptr<const data::DataPacket> data){
 	output_write(data->payload.data(), data->payload.size());
 }
 

@@ -26,11 +26,11 @@ protected:
 	virtual void read_event_sync(const terminal_event_e &event);
 	virtual void read_event_async(const terminal_event_e &event, core::ReturnMe<Terminal_read_event_return> &&return_me);
 
-	using Super::process;
-	void process(std::shared_ptr<const data::Request> request) override;
-	void process(std::shared_ptr<const data::Sample> sample) override;
-	virtual void process(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::LogMessage> data);
-	virtual void process(std::shared_ptr<const data::LogMessage> value);
+	using Super::handle;
+	void handle(std::shared_ptr<const data::Request> request) override;
+	void handle(std::shared_ptr<const data::Sample> sample) override;
+	virtual void handle(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::LogMessage> data);
+	virtual void handle(std::shared_ptr<const data::LogMessage> value);
 };
 
 

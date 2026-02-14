@@ -120,7 +120,7 @@ void Terminal::read_event_sync(const terminal_event_e &event){
 }
 
 
-void Terminal::process(std::shared_ptr<const data::LogMessage> value){
+void Terminal::handle(std::shared_ptr<const data::LogMessage> value){
 	if(state == terminal_state_e::INACTIVE){
 		write_log_message(value);
 	}

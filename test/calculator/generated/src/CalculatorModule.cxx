@@ -10,7 +10,7 @@ CalculatorModule::CalculatorModule(const std::string &name_):
 }
 
 
-void CalculatorModule::process(std::shared_ptr<const asgard::data::Request> request){
+void CalculatorModule::handle(std::shared_ptr<const asgard::data::Request> request){
 	if(auto plus_r = std::dynamic_pointer_cast<const Calculator_plus>(request)){
 		asgard::core::ReturnMe<Calculator_plus_return> return_me(request, make_pipe_in());
 		add_pending_request(request, return_me.get_future());
@@ -24,7 +24,7 @@ void CalculatorModule::process(std::shared_ptr<const asgard::data::Request> requ
 		add_pending_request(request, return_me.get_future());
 		wait_for_sum_async(wait_for_sum_r->sum, std::move(return_me));
 	}else{
-		Super::process(request);
+		Super::handle(request);
 	}
 }
 

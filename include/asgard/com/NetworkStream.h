@@ -16,7 +16,7 @@ public:
 protected:
 	void main() override;
 
-	void process(std::shared_ptr<const data::DataPacket> data) override;
+	void handle(std::shared_ptr<const data::DataPacket> data) override;
 
 private:
 	void keep_reading(std::unique_ptr<io::InputSource> input_source) override;

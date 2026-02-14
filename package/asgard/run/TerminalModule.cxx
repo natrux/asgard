@@ -43,7 +43,7 @@ void TerminalModule::read_event_async(const terminal_event_e &event, core::Retur
 }
 
 
-void TerminalModule::process(std::shared_ptr<const data::Request> request){
+void TerminalModule::handle(std::shared_ptr<const data::Request> request){
 	if(auto read_char_r = std::dynamic_pointer_cast<const Terminal_read_char>(request)){
 		core::ReturnMe<Terminal_read_char_return> return_me(request, make_pipe_in());
 		add_pending_request(request, return_me.get_future());
@@ -53,27 +53,27 @@ void TerminalModule::process(std::shared_ptr<const data::Request> request){
 		add_pending_request(request, return_me.get_future());
 		read_event_async(read_event_r->event, std::move(return_me));
 	}else{
-		Super::process(request);
+		Super::handle(request);
 	}
 }
 
 
-void TerminalModule::process(std::shared_ptr<const data::Sample> sample){
+void TerminalModule::handle(std::shared_ptr<const data::Sample> sample){
 	auto data = sample->data;
 	if(auto d = std::dynamic_pointer_cast<const data::LogMessage>(data)){
-		process(sample, d);
+		handle(sample, d);
 	}else{
-		Super::process(sample);
+		Super::handle(sample);
 	}
 }
 
 
-void TerminalModule::process(std::shared_ptr<const data::Sample> /*sample*/, std::shared_ptr<const data::LogMessage> data){
-	process(data);
+void TerminalModule::handle(std::shared_ptr<const data::Sample> /*sample*/, std::shared_ptr<const data::LogMessage> data){
+	handle(data);
 }
 
 
-void TerminalModule::process(std::shared_ptr<const data::LogMessage> /*data*/){
+void TerminalModule::handle(std::shared_ptr<const data::LogMessage> /*data*/){
 	throw std::logic_error("Not implemented");
 }
 

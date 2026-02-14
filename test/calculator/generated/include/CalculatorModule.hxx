@@ -18,7 +18,7 @@ public:
 protected:
 	asgard::time::duration stats_interval = 5s;
 
-	void process(std::shared_ptr<const asgard::data::Request> request) override;
+	void handle(std::shared_ptr<const asgard::data::Request> request) override;
 
 	virtual void plus_async(const int32_t &a, const int32_t &b, asgard::core::ReturnMe<Calculator_plus_return> &&return_me) const;
 	virtual int32_t plus_sync(const int32_t &a, const int32_t &b) const;

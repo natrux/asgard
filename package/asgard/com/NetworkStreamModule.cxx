@@ -11,22 +11,22 @@ NetworkStreamModule::NetworkStreamModule(const std::string &name_):
 }
 
 
-void NetworkStreamModule::process(std::shared_ptr<const data::Sample> sample){
+void NetworkStreamModule::handle(std::shared_ptr<const data::Sample> sample){
 	auto data = sample->data;
 	if(auto d = std::dynamic_pointer_cast<const data::DataPacket>(data)){
-		process(sample, d);
+		handle(sample, d);
 	}else{
-		Super::process(sample);
+		Super::handle(sample);
 	}
 }
 
 
-void NetworkStreamModule::process(std::shared_ptr<const data::Sample> /*sample*/, std::shared_ptr<const data::DataPacket> data){
-	process(data);
+void NetworkStreamModule::handle(std::shared_ptr<const data::Sample> /*sample*/, std::shared_ptr<const data::DataPacket> data){
+	handle(data);
 }
 
 
-void NetworkStreamModule::process(std::shared_ptr<const data::DataPacket> /*data*/){
+void NetworkStreamModule::handle(std::shared_ptr<const data::DataPacket> /*data*/){
 	throw std::logic_error("Not implemented");
 }
 

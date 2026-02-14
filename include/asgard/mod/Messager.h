@@ -36,15 +36,15 @@ protected:
 
 	std::shared_ptr<const data::Message> get_next();
 	std::shared_ptr<const data::Message> get_next(const time::duration &timeout);
-	bool process_next();
-	bool process_next(const time::duration &timeout);
+	bool handle_next();
+	bool handle_next(const time::duration &timeout);
 	void interrupt();
 
-	virtual void process(std::shared_ptr<const data::Message> message);
-	virtual void process(std::shared_ptr<const data::RPC> rpc);
-	virtual void process(std::shared_ptr<const data::Request> /*request*/){ /* default empty */ }
-	virtual void process(std::shared_ptr<const data::Return> /*retrn*/){ /* default empty */ }
-	virtual void process(std::shared_ptr<const data::Sample> /*sample*/){ /* default empty */ }
+	virtual void handle(std::shared_ptr<const data::Message> message);
+	virtual void handle(std::shared_ptr<const data::RPC> rpc);
+	virtual void handle(std::shared_ptr<const data::Request> /*request*/){ /* default empty */ }
+	virtual void handle(std::shared_ptr<const data::Return> /*retrn*/){ /* default empty */ }
+	virtual void handle(std::shared_ptr<const data::Sample> /*sample*/){ /* default empty */ }
 
 private:
 	const core::ID id;

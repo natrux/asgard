@@ -21,10 +21,10 @@ protected:
 	topic::TopicPtr output_data;
 	size_t read_buffer_size = 1024;
 
-	using Super::process;
-	void process(std::shared_ptr<const data::Sample> sample) override;
-	virtual void process(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::DataPacket> data);
-	virtual void process(std::shared_ptr<const data::DataPacket> vaue);
+	using Super::handle;
+	void handle(std::shared_ptr<const data::Sample> sample) override;
+	virtual void handle(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::DataPacket> data);
+	virtual void handle(std::shared_ptr<const data::DataPacket> vaue);
 };
 
 

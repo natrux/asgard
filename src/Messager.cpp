@@ -113,20 +113,20 @@ std::shared_ptr<const data::Message> Messager::get_next(const time::duration &ti
 }
 
 
-bool Messager::process_next(){
+bool Messager::handle_next(){
 	auto data = get_next();
 	if(data){
-		process(data);
+		handle(data);
 		return true;
 	}
 	return false;
 }
 
 
-bool Messager::process_next(const time::duration &timeout){
+bool Messager::handle_next(const time::duration &timeout){
 	auto data = get_next(timeout);
 	if(data){
-		process(data);
+		handle(data);
 		return true;
 	}
 	return false;
@@ -139,28 +139,28 @@ void Messager::interrupt(){
 }
 
 
-void Messager::process(std::shared_ptr<const data::Message> message){
+void Messager::handle(std::shared_ptr<const data::Message> message){
 	if(auto rpc = std::dynamic_pointer_cast<const data::RPC>(message)){
-		process(rpc);
+		handle(rpc);
 	}else if(std::dynamic_pointer_cast<const data::Interrupt>(message)){
 		// Nothing to do, but interrupted waiting
 	}else if(auto sample = std::dynamic_pointer_cast<const data::Sample>(message)){
-		process(sample);
+		handle(sample);
 	}
 }
 
 
-void Messager::process(std::shared_ptr<const data::RPC> rpc){
+void Messager::handle(std::shared_ptr<const data::RPC> rpc){
 	if(rpc->destination_address == 0 || rpc->destination_address == get_id()){
 		if(auto request = std::dynamic_pointer_cast<const data::Request>(rpc)){
-			process(request);
+			handle(request);
 		}else if(auto retrn = std::dynamic_pointer_cast<const data::Return>(rpc)){
-			process(retrn);
+			handle(retrn);
 		}
 	}else{
 		for(const auto &entry : other_ids){
 			if(rpc->destination_address == entry.first){
-				entry.second->process(rpc);
+				entry.second->handle(rpc);
 				break;
 			}
 		}
