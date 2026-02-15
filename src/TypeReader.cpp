@@ -114,13 +114,20 @@ code::EnumMap TypeReader::read_enum_map(){
 
 
 void TypeReader::read_type(bool &value, const code::Typecode &type){
-	uint8_t byte = 0;
 	if(type.code == code::Typecode::TYPE_BOOL){
+		uint8_t byte = 0;
 		read(byte);
+		value = (byte != 0);
+	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
+		}
 	}else{
+		uint8_t byte = value;
 		read_number(byte, type);
+		value = (byte != 0);
 	}
-	value = (byte != 0);
 }
 
 
@@ -181,6 +188,11 @@ void TypeReader::read_type(std::string &value, const code::Typecode &type){
 		const auto map = read_enum_map();
 		const auto v = read_le<code::enum_t>();
 		value = map.find(v);
+	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
+		}
 	}else{
 		skip(type);
 	}
@@ -192,6 +204,11 @@ void TypeReader::read_type(time::time &value, const code::Typecode &type){
 		int64_t ticks = 0;
 		read_number(ticks, type);
 		value = remote_epoch + time::resolution(ticks);
+	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
+		}
 	}else{
 		skip(type);
 	}
@@ -203,6 +220,11 @@ void TypeReader::read_type(time::wall_time &value, const code::Typecode &type){
 		int64_t ticks = 0;
 		read_number(ticks, type);
 		value = time::epoch_wall() + time::resolution(ticks);
+	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
+		}
 	}else{
 		skip(type);
 	}
@@ -214,6 +236,11 @@ void TypeReader::read_type(time::duration &value, const code::Typecode &type){
 		int64_t ticks = 0;
 		read_number(ticks, type);
 		value = time::resolution(ticks);
+	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
+		}
 	}else{
 		skip(type);
 	}
@@ -224,7 +251,7 @@ void TypeReader::read_type(data::Value &value, const code::Typecode &type){
 	if(type.code == code::Typecode::TYPE_VALUE){
 		const auto signature = read_signature();
 		read_type(value, signature);
-	}else if(type.code == code::Typecode::TYPE_POINTER){
+	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
 			read_type(value, type.sub_types.at(0));
@@ -250,6 +277,11 @@ void TypeReader::read_type(data::Enum &value, const code::Typecode &type){
 	}else if(type.code == code::Typecode::TYPE_STRING){
 		const auto str = read_string();
 		value.from_string(str);
+	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
+		}
 	}else{
 		skip(type);
 	}
