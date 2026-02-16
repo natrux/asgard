@@ -11,16 +11,10 @@ if(WIN32)
 		src/win32/Terminal.cpp
 		src/win32/ls.cpp
 	)
-	list(APPEND PLATFORM_CODEGEN_SOURCE_FILES
-		src/win32/ls.cpp
-	)
 else()
 	list(APPEND PLATFORM_SOURCE_FILES
 		src/linux/UnixEndpoint.cpp
 		src/linux/Terminal.cpp
-		src/linux/ls.cpp
-	)
-	list(APPEND PLATFORM_CODEGEN_SOURCE_FILES
 		src/linux/ls.cpp
 	)
 endif()
@@ -111,24 +105,5 @@ if(WIN32)
 		ws2_32
 	)
 endif()
-
-
-add_executable(asgard_codegen
-	${PLATFORM_CODEGEN_SOURCE_FILES}
-	src/ClassType.cpp
-	src/DataType.cpp
-	src/Declaration.cpp
-	src/Method.cpp
-	src/ModuleType.cpp
-	src/Namespace.cpp
-	src/packages.cpp
-	src/Token.cpp
-	src/Type.cpp
-	src/codegen.cpp
-)
-
-target_include_directories(asgard_codegen PUBLIC
-	include
-)
 
 add_subdirectory(test)
