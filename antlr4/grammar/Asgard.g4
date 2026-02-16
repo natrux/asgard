@@ -42,14 +42,16 @@ STRING: '"' (ESC | SAFECODEPOINT)* '"' ;
 fragment ESC : '\\' ["\\nt] ;
 fragment SAFECODEPOINT: ~ ["\\\u0000-\u001F] ;
 
-NATURAL
-	: '0'
-	| [1-9][0-9]*
-	;
+
 
 NUMBER
 	: '-'? NATURAL ('.' [0-9]+)?
 	| '0x' [0-9a-fA-F]+
+	;
+
+NATURAL
+	: '0'
+	| [1-9][0-9]*
 	;
 
 value

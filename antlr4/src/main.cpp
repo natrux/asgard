@@ -143,6 +143,9 @@ int main(int argc, char **argv){
 		std::cerr << "Opening file " << path << " failed" << std::endl;
 		return 1;
 	}
+
+	AsgardLexer::initialize();
+	AsgardParser::initialize();
 	antlr4::ANTLRInputStream input(stream);
 	ThrowingErrorListener error_listener;
 
