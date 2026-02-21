@@ -20,6 +20,16 @@ void Bin::set_data(const std::vector<uint8_t> &data_){
 }
 
 
+void Bin::set_data(std::vector<uint8_t> &&data_){
+	data = std::move(data_);
+}
+
+
+code::Typecode Bin::get_type() const{
+	return type;
+}
+
+
 bool Bin::is_empty() const{
 	return type.code == code::Typecode::TYPE_NULL;
 }
@@ -62,6 +72,11 @@ bool Bin::is_floating_point() const{
 }
 
 
+bool Bin::is_number() const{
+	return is_integer() || is_floating_point();
+}
+
+
 bool Bin::is_string() const{
 	return type.code == code::Typecode::TYPE_STRING;
 }
@@ -78,6 +93,21 @@ bool Bin::is_list() const{
 
 bool Bin::is_map() const{
 	return type.code == code::Typecode::TYPE_MAP;
+}
+
+
+bool Bin::is_pointer() const{
+	return type.code == code::Typecode::TYPE_POINTER;
+}
+
+
+bool Bin::is_value() const{
+	return type.code == code::Typecode::TYPE_VALUE;
+}
+
+
+bool Bin::is_enum() const{
+	return type.code == code::Typecode::TYPE_ENUM;
 }
 
 

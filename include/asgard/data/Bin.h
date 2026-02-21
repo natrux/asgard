@@ -33,6 +33,7 @@ public:
 
 	std::vector<uint8_t> get_data() const;
 	void set_data(const std::vector<uint8_t> &data);
+	void set_data(std::vector<uint8_t> &&data);
 
 	template<class T>
 	void to(T &value) const{
@@ -48,14 +49,20 @@ public:
 		return value;
 	}
 
+	code::Typecode get_type() const;
+
 	bool is_empty() const;
 	bool is_bool() const;
 	bool is_integer() const;
 	bool is_unsigned_integer() const;
 	bool is_floating_point() const;
+	bool is_number() const;
 	bool is_string() const;
 	bool is_list() const;
 	bool is_map() const;
+	bool is_pointer() const;
+	bool is_value() const;
+	bool is_enum() const;
 
 private:
 	std::vector<uint8_t> data;

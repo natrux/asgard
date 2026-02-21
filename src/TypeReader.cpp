@@ -295,8 +295,7 @@ void TypeReader::read_type(data::Bin &value, const code::Typecode &type){
 		out.write_typecode(type);
 		copy(out, type);
 	}
-	const auto data = source->get();
-	value.set_data(data);
+	value.set_data(source->get());
 }
 
 
