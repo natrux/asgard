@@ -13,6 +13,7 @@ code::Signature LogMessage::static_signature(){
 	sig.parents.push_back(sig.name);
 	sig.name = "asgard.data.LogMessage";
 	sig.members["time"] = code::get_typecode<decltype(time)>();
+	sig.members["wall_time"] = code::get_typecode<decltype(wall_time)>();
 	sig.members["level"] = code::get_typecode<decltype(level)>();
 	sig.members["unit"] = code::get_typecode<decltype(unit)>();
 	sig.members["message"] = code::get_typecode<decltype(message)>();
@@ -33,6 +34,8 @@ LogMessage::LogMessage(){
 void LogMessage::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
 	if(name == "time"){
 		reader.read_type(time, type);
+	}else if(name == "wall_time"){
+		reader.read_type(wall_time, type);
 	}else if(name == "level"){
 		reader.read_type(level, type);
 	}else if(name == "unit"){
@@ -48,6 +51,8 @@ void LogMessage::read_member(type::TypeReader &reader, const std::string &name, 
 void LogMessage::write_member(type::TypeWriter &writer, const std::string &name) const{
 	if(name == "time"){
 		writer.write_value(time);
+	}else if(name == "wall_time"){
+		writer.write_value(wall_time);
 	}else if(name == "level"){
 		writer.write_value(level);
 	}else if(name == "unit"){

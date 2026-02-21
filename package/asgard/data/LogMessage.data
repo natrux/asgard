@@ -1,6 +1,7 @@
 extends(Data)
 
 time.time time
+time.wall_time wall_time
 log_level_e level
 string unit
 string message

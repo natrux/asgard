@@ -22,6 +22,7 @@ public:
 	void write_member(type::TypeWriter &writer, const std::string &name) const override;
 
 	time::time time;
+	time::wall_time wall_time;
 	log_level_e level;
 	std::string unit;
 	std::string message;
