@@ -64,6 +64,20 @@ void Value::write_member(type::TypeWriter &writer, const std::string &name) cons
 }
 
 
+void Value::set_member(const std::string &name, const Bin &value){
+	unknown_members[name] = value;
+}
+
+
+Bin Value::get_member(const std::string &name) const{
+	const auto find = unknown_members.find(name);
+	if(find != unknown_members.end()){
+		return find->second;
+	}
+	throw std::logic_error("Unknown member: " + name);
+}
+
+
 static core::register_type_t<Value> register_type;
 
 

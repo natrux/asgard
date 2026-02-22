@@ -34,6 +34,16 @@ void Data::write_member(type::TypeWriter &writer, const std::string &name) const
 }
 
 
+void Data::set_member(const std::string &name, const Bin &value){
+	Super::set_member(name, value);
+}
+
+
+Bin Data::get_member(const std::string &name) const{
+	return Super::get_member(name);
+}
+
+
 static core::register_type_t<Data> register_type;
 
 

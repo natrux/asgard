@@ -65,6 +65,39 @@ void LogMessage::write_member(type::TypeWriter &writer, const std::string &name)
 }
 
 
+void LogMessage::set_member(const std::string &name, const Bin &value){
+	if(name == "time"){
+		value.to(time);
+	}else if(name == "wall_time"){
+		value.to(wall_time);
+	}else if(name == "level"){
+		value.to(level);
+	}else if(name == "unit"){
+		value.to(unit);
+	}else if(name == "message"){
+		value.to(message);
+	}else{
+		Super::set_member(name, value);
+	}
+}
+
+
+Bin LogMessage::get_member(const std::string &name) const{
+	if(name == "time"){
+		return time;
+	}else if(name == "wall_time"){
+		return wall_time;
+	}else if(name == "level"){
+		return level;
+	}else if(name == "unit"){
+		return unit;
+	}else if(name == "message"){
+		return message;
+	}
+	return Super::get_member(name);
+}
+
+
 static core::register_type_t<LogMessage> register_type;
 
 

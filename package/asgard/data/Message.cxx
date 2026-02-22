@@ -34,6 +34,16 @@ void Message::write_member(type::TypeWriter &writer, const std::string &name) co
 }
 
 
+void Message::set_member(const std::string &name, const Bin &value){
+	Super::set_member(name, value);
+}
+
+
+Bin Message::get_member(const std::string &name) const{
+	return Super::get_member(name);
+}
+
+
 static core::register_type_t<Message> register_type;
 
 

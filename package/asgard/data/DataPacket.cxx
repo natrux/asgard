@@ -58,6 +58,27 @@ void DataPacket::write_member(type::TypeWriter &writer, const std::string &name)
 }
 
 
+void DataPacket::set_member(const std::string &name, const Bin &value){
+	if(name == "time"){
+		value.to(time);
+	}else if(name == "payload"){
+		value.to(payload);
+	}else{
+		Super::set_member(name, value);
+	}
+}
+
+
+Bin DataPacket::get_member(const std::string &name) const{
+	if(name == "time"){
+		return time;
+	}else if(name == "payload"){
+		return payload;
+	}
+	return Super::get_member(name);
+}
+
+
 static core::register_type_t<DataPacket> register_type;
 
 

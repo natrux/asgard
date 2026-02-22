@@ -55,6 +55,31 @@ void Sample::write_member(type::TypeWriter &writer, const std::string &name) con
 }
 
 
+void Sample::set_member(const std::string &name, const Bin &value){
+	if(name == "time"){
+		value.to(time);
+	}else if(name == "retained"){
+		value.to(retained);
+	}else if(name == "data"){
+		value.to(data);
+	}else{
+		Super::set_member(name, value);
+	}
+}
+
+
+Bin Sample::get_member(const std::string &name) const{
+	if(name == "time"){
+		return time;
+	}else if(name == "retained"){
+		return retained;
+	}else if(name == "data"){
+		return data;
+	}
+	return Super::get_member(name);
+}
+
+
 static core::register_type_t<Sample> register_type;
 
 
