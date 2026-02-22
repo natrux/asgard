@@ -3,6 +3,7 @@
 #include <asgard/io/VectorInputSource.h>
 #include <asgard/io/VectorOutputSource.h>
 #include <asgard/data/Bin.h>
+#include <asgard/data/Sample.hxx>
 #include <asgard/time/time.h>
 #include <asgard/time/strtime.h>
 
@@ -24,10 +25,10 @@ std::vector<uint8_t> write_to_vector(const T &data_out){
 	const size_t max_output = 128;
 	for(size_t i=0; i<std::min<size_t>(vector.size(), max_output); i++){
 		const auto &byte = vector[i];
-		std::cout << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(byte) << std::dec << " ";
+		//std::cout << std::setw(2) << std::setfill('0') << std::hex << static_cast<unsigned int>(byte) << std::dec << " ";
 	}
 	if(vector.size() > max_output){
-		std::cout << "...";
+		//std::cout << "...";
 	}
 	std::cout << std::endl;
 	std::cout << vector.size() << " bytes written in " << asgard::time::strtime(d_w) << std::endl;
@@ -192,6 +193,30 @@ void test(){
 	{
 		const std::vector<std::string> letters = {"Alpha", "Beta", "Gamma", "Delta"};
 		test_by(letters);
+	}
+
+	{
+		auto data = asgard::data::DataPacket::create();
+		data->time = asgard::time::now();
+		data->payload = {0xfe, 0xed, 0xdc, 0xcb, 0xba, 0xa9, 0x98, 0x87, 0x76, 0x65, 0x54, 0x43, 0x32, 0x21, 0x10};
+		auto sample = asgard::data::Sample::create();
+		sample->time = asgard::time::now();
+		sample->data = data;
+
+		asgard::type::write_to_file(sample, "tmp.dat");
+		const auto result = asgard::type::read_from_file<std::shared_ptr<asgard::data::Value>>("tmp.dat");
+		auto read = std::dynamic_pointer_cast<asgard::data::Sample>(result);
+		if(!read){
+			throw std::runtime_error("Not equal");
+		}
+		if(sample->time != read->time){
+			throw std::runtime_error("Not equal");
+		}
+		auto p1 = std::dynamic_pointer_cast<const asgard::data::DataPacket>(sample->data);
+		auto p2 = std::dynamic_pointer_cast<const asgard::data::DataPacket>(read->data);
+		if(!p1 || !p2 || !(*p1 == *p2)){
+			throw std::runtime_error("Not Equal");
+		}
 	}
 
 	{
