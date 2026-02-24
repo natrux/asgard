@@ -1,6 +1,4 @@
 #include <asgard/run/Terminal.h>
-#include <asgard/run/Terminal_read_char.hxx>
-#include <asgard/run/Terminal_read_event.hxx>
 #include <asgard/run/TerminalClient.hxx>
 
 #include <sys/poll.h>

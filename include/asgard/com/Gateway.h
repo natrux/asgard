@@ -30,8 +30,8 @@ private:
 	std::mutex mutex_output;
 	std::unique_ptr<io::OutputSource> m_output;
 
-	void read_loop();
-	virtual void keep_reading(std::unique_ptr<io::InputSource> input_source);
+	void connect_loop();
+	virtual void read_loop(std::unique_ptr<io::InputSource> input_source);
 	virtual void on_connect(){ /* empty default */ }
 	virtual void on_disconnect(){ /* empty default */ }
 	virtual void on_hang_up(){ /* empty default */ }

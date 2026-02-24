@@ -16,7 +16,7 @@ public:
 	}
 
 private:
-	void keep_reading(std::unique_ptr<asgard::io::InputSource> input_source) override{
+	void read_loop(std::unique_ptr<asgard::io::InputSource> input_source) override{
 		asgard::io::BufferedInput input(std::move(input_source));
 
 		std::string current = "";

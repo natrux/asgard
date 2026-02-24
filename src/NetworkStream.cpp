@@ -37,7 +37,7 @@ void NetworkStream::handle(std::shared_ptr<const data::DataPacket> data){
 }
 
 
-void NetworkStream::keep_reading(std::unique_ptr<io::InputSource> input_source){
+void NetworkStream::read_loop(std::unique_ptr<io::InputSource> input_source){
 	while(true){
 		auto packet = std::make_shared<data::DataPacket>();
 		packet->payload.resize(read_buffer_size);
