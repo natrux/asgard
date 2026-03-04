@@ -27,13 +27,12 @@ LogPublisher::LogPublisher(LogPublisher &&other):
 LogPublisher::~LogPublisher(){
 	auto msg = std::make_shared<data::LogMessage>();
 	msg->time = time::now();
+	msg->wall_time = time::now_wall();
 	msg->level = level;
 	msg->unit = unit;
 	msg->message = str();
 	topic->publish(msg);
 }
-
-
 
 
 }

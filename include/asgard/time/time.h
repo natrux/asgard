@@ -15,6 +15,7 @@ using wall_clock = std::chrono::system_clock;
 using time = clock::time_point;
 using wall_time = wall_clock::time_point;
 
+using resolution = std::chrono::nanoseconds;
 using duration = std::common_type<
 	std::chrono::nanoseconds,
 	std::chrono::microseconds,
@@ -24,6 +25,14 @@ using duration = std::common_type<
 	std::chrono::hours
 >::type;
 
+
+inline time epoch(){
+	return time();
+}
+
+inline wall_time epoch_wall(){
+	return wall_time();
+}
 
 inline time now(){
 	return clock::now();

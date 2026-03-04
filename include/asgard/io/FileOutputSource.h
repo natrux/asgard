@@ -2,6 +2,9 @@
 
 #include <asgard/io/OutputSource.h>
 
+#include <string>
+#include <cstdio>
+
 
 namespace asgard{
 namespace io{
@@ -9,11 +12,15 @@ namespace io{
 
 class FileOutputSource : public OutputSource{
 public:
-	FileOutputSource(int fd);
+	FileOutputSource(const std::string &path, bool append=false);
+	FileOutputSource(const FileOutputSource &other) = delete;
+	~FileOutputSource();
+	FileOutputSource operator=(const FileOutputSource &other) = delete;
+
 	size_t write(const void *data, size_t length) override;
 
 private:
-	int m_fd;
+	std::FILE *stream;
 };
 
 

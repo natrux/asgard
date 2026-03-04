@@ -45,7 +45,7 @@ void Gateway::init(){
 
 
 void Gateway::main(){
-	std::thread read_thread(&Gateway::read_loop, this);
+	std::thread read_thread(&Gateway::connect_loop, this);
 
 	Super::main();
 
@@ -93,7 +93,7 @@ void Gateway::output_write(const void *data, size_t length){
 }
 
 
-void Gateway::read_loop(){
+void Gateway::connect_loop(){
 	bool connect_error = false;
 	while(node_should_run()){
 		if(connect_error){
@@ -142,7 +142,7 @@ void Gateway::read_loop(){
 
 		if(m_endpoint->is_connected()){
 			try{
-				keep_reading(m_endpoint->input_source());
+				read_loop(m_endpoint->input_source());
 			}catch(const std::underflow_error &err){
 				log(INFO) << err.what();
 			}catch(const std::exception &err){
@@ -165,11 +165,11 @@ void Gateway::read_loop(){
 }
 
 
-void Gateway::keep_reading(std::unique_ptr<io::InputSource> input_source){
+void Gateway::read_loop(std::unique_ptr<io::InputSource> input_source){
 	// Dummy implementation, overwrite in child class
 	io::BufferedInput input(std::move(input_source));
 	while(true){
-		input.read<char>();
+		input.read(1);
 	}
 }
 

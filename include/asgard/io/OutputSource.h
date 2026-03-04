@@ -14,6 +14,7 @@ public:
 	/**
 	 * Writes up to length bytes from the given buffer, possibly blocking.
 	 * Returns the number of written bytes.
+	 * Throws on errors.
 	 */
 	virtual size_t write(const void *data, size_t length) = 0;
 	/**

@@ -16,12 +16,13 @@ public:
 	}
 
 private:
-	void keep_reading(std::unique_ptr<asgard::io::InputSource> input_source) override{
+	void read_loop(std::unique_ptr<asgard::io::InputSource> input_source) override{
 		asgard::io::BufferedInput input(std::move(input_source));
 
 		std::string current = "";
 		while(true){
-			const char next_char = input.read<char>();
+			uint8_t next_char;
+			input.read(next_char);
 
 			if(next_char == '\n'){
 				log(INFO) << current;

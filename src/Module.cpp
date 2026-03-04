@@ -15,10 +15,10 @@ namespace mod{
 std::mutex Module::mutex_started_modules;
 std::condition_variable Module::cv_started_modules;
 std::set<core::ID> Module::started_modules;
-data::log_level_e Module::DEBUG = data::log_level_e::DEBUG;
-data::log_level_e Module::INFO = data::log_level_e::INFO;
-data::log_level_e Module::WARN = data::log_level_e::WARN;
-data::log_level_e Module::ERROR = data::log_level_e::ERROR;
+const data::log_level_e Module::DEBUG = data::log_level_e::DEBUG;
+const data::log_level_e Module::INFO = data::log_level_e::INFO;
+const data::log_level_e Module::WARN = data::log_level_e::WARN;
+const data::log_level_e Module::ERROR = data::log_level_e::ERROR;
 
 
 void Module::start_module(std::unique_ptr<Module> module){
@@ -71,30 +71,30 @@ void Module::main(){
 }
 
 
-void Module::process(std::shared_ptr<const data::Request> /* request */){
+void Module::handle(std::shared_ptr<const data::Request> /* request */){
 }
 
 
-void Module::process(std::shared_ptr<const data::Return> /* retrn */){
+void Module::handle(std::shared_ptr<const data::Return> /* retrn */){
 }
 
 
-void Module::process(std::shared_ptr<const data::Sample> sample){
+void Module::handle(std::shared_ptr<const data::Sample> sample){
 	auto data = sample->data;
 	if(auto d = std::dynamic_pointer_cast<const data::PleaseShutDown>(data)){
-		process(sample, d);
+		handle(sample, d);
 	}else{
-		Messager::process(sample);
+		Messager::handle(sample);
 	}
 }
 
 
-void Module::process(std::shared_ptr<const data::Sample> /*sample*/, std::shared_ptr<const data::PleaseShutDown> data){
-	process(data);
+void Module::handle(std::shared_ptr<const data::Sample> /*sample*/, std::shared_ptr<const data::PleaseShutDown> data){
+	handle(data);
 }
 
 
-void Module::process(std::shared_ptr<const data::PleaseShutDown> /* value */){
+void Module::handle(std::shared_ptr<const data::PleaseShutDown> /* value */){
 	node_exit();
 }
 
@@ -207,11 +207,11 @@ void Module::execute_timers(){
 void Module::receive_messages(){
 	try{
 		if(timers.empty()){
-			process_next();
+			handle_next();
 		}else{
 			const auto now = time::now();
 			const auto timeout = (*timers.begin())->remaining(now);
-			process_next(timeout);
+			handle_next(timeout);
 		}
 	}catch(const std::exception &err){
 		log(WARN) << err.what();

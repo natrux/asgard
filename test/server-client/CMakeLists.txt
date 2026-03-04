@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 
-file(GLOB GENERATED_CXX generated/src/*.cxx)
+file(GLOB GENERATED_CXX package/*.cxx)
 
 add_executable(server
 	${GENERATED_CXX}
@@ -10,7 +10,7 @@ add_executable(server
 
 target_include_directories(server PUBLIC
 	include
-	generated/include
+	package
 )
 
 target_link_libraries(server
@@ -26,7 +26,7 @@ add_executable(client
 
 target_include_directories(client PUBLIC
 	include
-	generated/include
+	package
 )
 
 target_link_libraries(client

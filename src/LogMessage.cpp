@@ -5,25 +5,24 @@ namespace asgard{
 namespace data{
 
 
-std::string LogMessage::format() const{
-	std::string level_string;
+std::string LogMessage::get_level() const{
 	switch(level){
 	case log_level_e::DEBUG:
-		level_string = "DEBUG";
-		break;
+		return "DEBUG";
 	case log_level_e::INFO:
-		level_string = "INFO";
-		break;
+		return "INFO";
 	case log_level_e::WARN:
-		level_string = "WARN";
-		break;
+		return "WARN";
 	case log_level_e::ERROR:
-		level_string = "ERROR";
-		break;
+		return "ERROR";
 	default:
-		level_string = "???";
+		return "???";
 	}
-	return "[" + unit + "] [" + level_string + "] " + message;
+}
+
+
+std::string LogMessage::format() const{
+	return "[" + unit + "] [" + get_level() + "] " + message;
 }
 
 

@@ -55,7 +55,7 @@ std::vector<uint8_t> Fifo::pop(size_t count){
 	}
 
 	const auto count_ = std::min(count, buffer.size());
-	result.resize(count_);
+	result.reserve(count_);
 	const auto end = advanced(buffer.begin(), count_);
 	result.insert(result.end(), buffer.begin(), end);
 	buffer.erase(buffer.begin(), end);

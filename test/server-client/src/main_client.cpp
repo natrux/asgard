@@ -25,7 +25,7 @@ protected:
 		Super::init();
 	}
 
-	void process(std::shared_ptr<const TextLine> data) override{
+	void handle(std::shared_ptr<const TextLine> data) override{
 		shout(data->line);
 	}
 

@@ -19,6 +19,11 @@ ID::ID(const std::string &str){
 }
 
 
+ID::ID(uint64_t id_value){
+	set(id_value);
+}
+
+
 void ID::set(const uint64_t &new_value){
 	value = new_value;
 

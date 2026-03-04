@@ -11,37 +11,51 @@ if(WIN32)
 		src/win32/Terminal.cpp
 		src/win32/ls.cpp
 	)
-	list(APPEND PLATFORM_CODEGEN_SOURCE_FILES
-		src/win32/ls.cpp
-	)
 else()
 	list(APPEND PLATFORM_SOURCE_FILES
 		src/linux/UnixEndpoint.cpp
 		src/linux/Terminal.cpp
 		src/linux/ls.cpp
 	)
-	list(APPEND PLATFORM_CODEGEN_SOURCE_FILES
-		src/linux/ls.cpp
-	)
 endif()
 
 
-file(GLOB GENERATED_CXX generated/src/*.cxx)
+file(GLOB GENERATED_CXX
+	package/asgard/com/*.cxx
+	package/asgard/data/*.cxx
+	package/asgard/run/*.cxx
+)
 
 add_library(asgard
 	${GENERATED_CXX}
 	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
+	src/Signature.cpp
+	src/EnumMap.cpp
+	src/TypeRegistry.cpp
+	src/Value.cpp
+	src/Enum.cpp
+	src/Bin.cpp
+	src/InputSource.cpp
 	src/BufferedInput.cpp
+	src/TypeReader.cpp
 	src/Endpoint.cpp
+	src/File.cpp
 	src/Exception.cpp
 	src/FileInputSource.cpp
 	src/FileOutputSource.cpp
+	src/PosixInputSource.cpp
+	src/PosixOutputSource.cpp
 	src/Fifo.cpp
 	src/FifoInputSource.cpp
+	src/FifoOutputSource.cpp
+	src/VectorInputSource.cpp
+	src/VectorOutputSource.cpp
 	src/Gateway.cpp
 	src/NamedEndpoint.cpp
 	src/OutputSource.cpp
+	src/BufferedOutput.cpp
+	src/TypeWriter.cpp
 	src/Server.cpp
 	src/SocketEndpoint.cpp
 	src/SocketInputSource.cpp
@@ -80,7 +94,7 @@ target_compile_options(asgard PRIVATE
 
 target_include_directories(asgard PUBLIC
 	include
-	generated/include
+	package
 )
 
 target_link_libraries(asgard
@@ -91,24 +105,5 @@ if(WIN32)
 		ws2_32
 	)
 endif()
-
-
-add_executable(asgard_codegen
-	${PLATFORM_CODEGEN_SOURCE_FILES}
-	src/ClassType.cpp
-	src/DataType.cpp
-	src/Declaration.cpp
-	src/Method.cpp
-	src/ModuleType.cpp
-	src/Namespace.cpp
-	src/packages.cpp
-	src/Token.cpp
-	src/Type.cpp
-	src/codegen.cpp
-)
-
-target_include_directories(asgard_codegen PUBLIC
-	include
-)
 
 add_subdirectory(test)

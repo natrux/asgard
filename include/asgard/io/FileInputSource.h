@@ -2,6 +2,9 @@
 
 #include <asgard/io/InputSource.h>
 
+#include <string>
+#include <cstdio>
+
 
 namespace asgard{
 namespace io{
@@ -9,11 +12,15 @@ namespace io{
 
 class FileInputSource : public InputSource{
 public:
-	FileInputSource(int fd);
+	FileInputSource(const std::string &path);
+	FileInputSource(const FileInputSource &other) = delete;
+	~FileInputSource();
+	FileInputSource &operator=(const FileInputSource &other) = delete;
+
 	size_t read(void *data, size_t length) override;
 
 private:
-	int m_fd;
+	std::FILE *stream;
 };
 
 

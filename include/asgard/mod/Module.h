@@ -33,10 +33,10 @@ public:
 	static void wait_for_shutdown();
 
 protected:
-	static data::log_level_e DEBUG;
-	static data::log_level_e INFO;
-	static data::log_level_e WARN;
-	static data::log_level_e ERROR;
+	static const data::log_level_e DEBUG;
+	static const data::log_level_e INFO;
+	static const data::log_level_e WARN;
+	static const data::log_level_e ERROR;
 
 	virtual void init(){ /* default empty */ };
 	virtual void main();
@@ -54,13 +54,13 @@ protected:
 	void execute_timers();
 	void receive_messages();
 
-	void process(std::shared_ptr<const data::Request> request) override;
-	void process(std::shared_ptr<const data::Return> retrn) override;
-	void process(std::shared_ptr<const data::Sample> sample) override;
+	void handle(std::shared_ptr<const data::Request> request) override;
+	void handle(std::shared_ptr<const data::Return> retrn) override;
+	void handle(std::shared_ptr<const data::Sample> sample) override;
 
-	using Messager::process;
-	void process(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::PleaseShutDown> data);
-	void process(std::shared_ptr<const data::PleaseShutDown> data);
+	using Messager::handle;
+	void handle(std::shared_ptr<const data::Sample> sample, std::shared_ptr<const data::PleaseShutDown> data);
+	void handle(std::shared_ptr<const data::PleaseShutDown> data);
 
 private:
 	static std::mutex mutex_started_modules;

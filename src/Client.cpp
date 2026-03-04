@@ -36,7 +36,7 @@ std::future<std::shared_ptr<const data::Return>> Client::call(std::shared_ptr<da
 }
 
 
-void Client::process(std::shared_ptr<const data::Return> ret){
+void Client::handle(std::shared_ptr<const data::Return> ret){
 	auto find = pending_requests.find(ret->message_id);
 	if(find != pending_requests.end()){
 		find->second.set_value(ret);
@@ -51,7 +51,7 @@ std::shared_ptr<const data::Return> Client::request(std::shared_ptr<data::Reques
 
 	bool has_return = false;
 	while(node_should_run() && !has_return){
-		process_next();
+		handle_next();
 		if(future.wait_for(time::immediate()) == std::future_status::ready){
 			has_return = true;
 		}

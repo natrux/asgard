@@ -46,25 +46,24 @@ std::string strtime(const duration &period, size_t terms){
 }
 
 
-std::string strtime(const time &t, size_t terms){
-	const auto n = now();
-	if(t > n){
-		return "in " + strtime(t - n, terms);
-	}else if(t < n){
-		return strtime(n - t, terms) + " ago";
+template<class T>
+static std::string strtime(const T &t, const T &now, size_t terms){
+	if(t > now){
+		return "in " + strtime(t - now, terms);
+	}else if(t < now){
+		return strtime(now - t, terms) + " ago";
 	}
 	return "now";
 }
 
 
+std::string strtime(const time &t, size_t terms){
+	return strtime(t, now(), terms);
+}
+
+
 std::string strtime(const wall_time &t, size_t terms){
-	const auto n = now_wall();
-	if(t > n){
-		return "in " + strtime(t - n, terms);
-	}else if(t < n){
-		return strtime(n - t, terms) + " ago";
-	}
-	return "now";
+	return strtime(t, now_wall(), terms);
 }
 
 

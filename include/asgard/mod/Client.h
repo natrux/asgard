@@ -18,7 +18,7 @@ public:
 	Client(pipe::PipeIn &&destination);
 
 protected:
-	void process(std::shared_ptr<const data::Return> ret) override;
+	void handle(std::shared_ptr<const data::Return> ret) override;
 
 	template<class R, class... Args>
 	std::future<std::shared_ptr<const data::Return>> call(Args&&... args){
