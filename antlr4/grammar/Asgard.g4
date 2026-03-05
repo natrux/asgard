@@ -28,10 +28,13 @@ MINUTES: 'm' ;
 HOURS: 'h' ;
 WHITESPACE: [ \t\n\r\f]+ -> skip ;
 
-TYPE_SIZE_T: 'size_t' ;
 TYPE_U8: 'u8' ;
 TYPE_I8: 'i8' ;
+TYPE_U16: 'u16' ;
+TYPE_I16: 'i16' ;
+TYPE_U32: 'u32' ;
 TYPE_I32: 'i32' ;
+TYPE_U64: 'u64' ;
 TYPE_I64: 'i64' ;
 TYPE_STRING: 'string' ;
 
@@ -88,13 +91,15 @@ type
 	;
 
 primitive_type
-	: TYPE_SIZE_T
-	| TYPE_U8
+	: TYPE_U8
 	| TYPE_I8
+	| TYPE_U16
+	| TYPE_I16
+	| TYPE_U32
 	| TYPE_I32
+	| TYPE_U64
 	| TYPE_I64
 	| TYPE_STRING
-	// etc
 	;
 
 return_type
@@ -119,8 +124,8 @@ extends: 'extends' '(' class_path ')' ;
 handles: 'handles' '(' class_path* ')' ;
 
 
-module: extends (module_member | function | method)* handles? EOF;
-class: extends (static_member | member | function | method)* EOF;
-enum: ID* EOF;
+moduledef: extends (module_member | function | method)* handles? EOF;
+classdef: extends (static_member | member | function | method)* EOF;
+enumdef: ID* EOF;
 
 

@@ -3,10 +3,13 @@
 
 
 const static std::map<std::string, std::string> primitive_types = {
-	{"size_t", "std::size_t"},
 	{"u8", "std::uint8_t"},
 	{"i8", "std::int8_t"},
+	{"u16", "std::uint16_t"},
+	{"i16", "std::int16_t"},
+	{"u32", "std::uint32_t"},
 	{"i32", "std::int32_t"},
+	{"u64", "std::uint64_t"},
 	{"i64", "std::int64_t"},
 	{"string", "std::string"},
 };
@@ -130,10 +133,30 @@ static std::string get_parameters(const std::vector<AsgardParser::DeclarationCon
 	return result;
 }
 
+static std::string get_function(AsgardParser::FunctionContext *function){
+	return "static " + get_return_type(function->return_type()) + " " + function->ID()->getSymbol()->getText() + "(" + get_parameters(function->parameters()->declaration()) + ")";
+}
+
+static std::string get_method(AsgardParser::MethodContext *method){
+	std::string result = get_return_type(method->return_type()) + " " + method->ID()->getSymbol()->getText() + "(" + get_parameters(method->parameters()->declaration()) + ")";
+	if(method->CONST()){
+		result += " const";
+	}
+	return result;
+}
+
+static std::string get_declaration(AsgardParser::DeclarationContext *declaration){
+	std::string result = get_type(declaration->type(), false) + " " + declaration->ID()->getSymbol()->getText();
+	if(auto *value = declaration->value()){
+		result += " = " + get_value(value);
+	}
+	return result;
+}
+
 
 int main(int argc, char **argv){
 	if(argc != 2){
-		std::cerr << "Usage: " << argv[0] << " module_file" << std::endl;
+		std::cerr << "Usage: " << argv[0] << " file" << std::endl;
 		return 1;
 	}
 
@@ -163,55 +186,63 @@ int main(int argc, char **argv){
 	AsgardParser parser(&tokens);
 	parser.removeErrorListeners();
 	parser.addErrorListener(&error_listener);
-	AsgardParser::ModuleContext *module;
+	AsgardParser::ClassdefContext *classdef = nullptr;
+	AsgardParser::ModuledefContext *moduledef = nullptr;
+	AsgardParser::EnumdefContext *enumdef = nullptr;
 	try{
-		module = parser.module();
+		std::string extension;
+		const auto find_dot = path.rfind('.');
+		if(find_dot != std::string::npos){
+			extension = path.substr(find_dot+1);
+		}
+		if(extension == "data"){
+			classdef = parser.classdef();
+		}else if(extension == "module"){
+			moduledef = parser.moduledef();
+		}else if(extension == "enum"){
+			enumdef = parser.enumdef();
+		}
 	}catch(const std::exception &err){
 		std::cerr << "Parsing failed with: " << err.what() << std::endl;
 		return 1;
 	}
 
-	std::cout << "extends " << get_class_path(module->extends()->class_path()) << std::endl;
-	for(auto *member : module->module_member()){
-		auto *declaration = member->declaration();
-		std::cout << get_type(declaration->type(), false) << " " << declaration->ID()->getSymbol()->getText();
-		if(auto *value = declaration->value()){
-			std::cout << " = " << get_value(value);
-		}
-		std::cout << std::endl;
-		if(member->MUTABLE()){
-			// TODO
+	if(classdef || moduledef){
+		auto class_path = classdef ? classdef->extends()->class_path() : moduledef->extends()->class_path();
+		std::cout << "extends " << get_class_path(class_path) << std::endl;
+	}
+	if(classdef){
+		for(auto *member : classdef->member()){
+			std::cout << get_declaration(member->declaration()) << std::endl;
 		}
 	}
-	for(auto *function : module->function()){
-		std::cout
-			<< "static "
-			<< get_return_type(function->return_type())
-			<< " "
-			<< function->ID()->getSymbol()->getText()
-			<< "("
-			<< get_parameters(function->parameters()->declaration())
-			<< ")"
-		;
-		std::cout << std::endl;
-	}
-	for(auto *method : module->method()){
-		std::cout
-			<< get_return_type(method->return_type())
-			<< " "
-			<< method->ID()->getSymbol()->getText()
-			<< "("
-			<< get_parameters(method->parameters()->declaration())
-			<< ")"
-		;
-		if(method->CONST()){
-			std::cout << " const";
+	if(moduledef){
+		for(auto *member : moduledef->module_member()){
+			auto *declaration = member->declaration();
+			std::cout << get_declaration(declaration) << std::endl;
+			if(member->MUTABLE()){
+				std::cout << "virtual void mutate_" << declaration->ID()->getSymbol()->getText() << "(" << get_type(declaration->type(), true) << " new_value) = 0;" << std::endl;
+			}
 		}
-		std::cout << std::endl;
 	}
-	if(auto *handles = module->handles()){
-		for(auto *class_path : handles->class_path()){
-			std::cout << "void handle(std::shared_ptr<const " << get_class_path(class_path) << "> sample)" << std::endl;
+	if(classdef || moduledef){
+		for(auto *function : classdef ? classdef->function() : moduledef->function()){
+			std::cout << get_function(function) << std::endl;
+		}
+		for(auto *method : classdef ? classdef->method() : moduledef->method()){
+			std::cout << get_method(method) << std::endl;
+		}
+	}
+	if(moduledef){
+		if(auto *handles = moduledef->handles()){
+			for(auto *class_path : handles->class_path()){
+				std::cout << "void handle(std::shared_ptr<const " << get_class_path(class_path) << "> sample)" << std::endl;
+			}
+		}
+	}
+	if(enumdef){
+		for(auto *id : enumdef->ID()){
+			std::cout << id->getSymbol()->getText() << "," << std::endl;
 		}
 	}
 
