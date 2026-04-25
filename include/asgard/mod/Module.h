@@ -28,7 +28,11 @@ public:
 	Module(const std::string &name);
 
 	static void start_module(std::unique_ptr<Module> module);
-	template<class T, class... Args> static void start_module(Args&&... args);
+	template<class T, class... Args>
+	static void start_module(Args&&... args){
+		auto mod = std::make_unique<T>(std::forward<Args>(args)...);
+		start_module(std::move(mod));
+	}
 	static void shutdown_all();
 	static void wait_for_shutdown();
 
@@ -78,14 +82,6 @@ private:
 	void start(std::unique_ptr<Module> self_ptr);
 	void module_thread();
 };
-
-
-template<class T, class... Args>
-void Module::start_module(Args&&... args){
-	auto mod = std::make_unique<T>(std::forward<Args>(args)...);
-	start_module(std::move(mod));
-}
-
 
 
 }

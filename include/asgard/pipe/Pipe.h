@@ -6,7 +6,7 @@
 #include <asgard/data/Message.hxx>
 #include <asgard/util/UniqueQueue.h>
 
-#include <map>
+#include <unordered_map>
 #include <queue>
 #include <mutex>
 #include <condition_variable>
@@ -39,7 +39,7 @@ private:
 	size_t id_counter = 0;
 	size_t max_size;
 	bool opened = true;
-	std::map<size_t, std::queue<std::shared_ptr<const data::Message>>> data;
+	std::unordered_map<size_t, std::queue<std::shared_ptr<const data::Message>>> data;
 	util::UniqueQueue<size_t> pending;
 };
 
