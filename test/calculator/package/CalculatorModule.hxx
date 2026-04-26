@@ -27,6 +27,6 @@ protected:
 	virtual double divide_sync(const int32_t &a, const int32_t &b) const;
 
 	virtual void wait_for_sum_async(const int32_t &sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const;
-	virtual int32_t wait_for_sum_sync(const int32_t &sum) const;
+	virtual std::pair<int32_t, int32_t> wait_for_sum_sync(const int32_t &sum) const;
 };
 

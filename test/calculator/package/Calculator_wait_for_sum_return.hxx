@@ -5,7 +5,7 @@
 
 class Calculator_wait_for_sum_return : public asgard::data::Return{
 public:
-	Calculator_wait_for_sum_return(int result_);
+	Calculator_wait_for_sum_return(const std::pair<int32_t, int32_t> &result_);
 
-	int result;
+	std::pair<int32_t, int32_t> result;
 };

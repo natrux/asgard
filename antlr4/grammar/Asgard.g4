@@ -36,6 +36,8 @@ TYPE_U32: 'u32' ;
 TYPE_I32: 'i32' ;
 TYPE_U64: 'u64' ;
 TYPE_I64: 'i64' ;
+TYPE_F32: 'f32' ;
+TYPE_F64: 'f64' ;
 TYPE_STRING: 'string' ;
 
 
@@ -88,6 +90,7 @@ type
 	| type '{' '}'                                      // ordered set
 	| type '(' type ')'                                 // unordered map
 	| type '(' ')'                                      // unordered set
+	| LESS_THAN type (',' type)* GREATER_THAN           // pair/tuple
 	;
 
 primitive_type
@@ -99,6 +102,8 @@ primitive_type
 	| TYPE_I32
 	| TYPE_U64
 	| TYPE_I64
+	| TYPE_F32
+	| TYPE_F64
 	| TYPE_STRING
 	;
 

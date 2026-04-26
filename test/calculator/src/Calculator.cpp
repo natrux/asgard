@@ -22,7 +22,7 @@ int32_t Calculator::plus_sync(const int32_t &a, const int32_t &b) const{
 		const auto find = waiting_for_sum.find(sum);
 		if(find != waiting_for_sum.end()){
 			for(auto &r : find->second){
-				r.retrn(a);
+				r.retrn(std::make_pair(a, b));
 			}
 			waiting_for_sum.erase(find);
 		}

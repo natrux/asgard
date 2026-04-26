@@ -11,6 +11,8 @@ const static std::map<std::string, std::string> primitive_types = {
 	{"i32", "std::int32_t"},
 	{"u64", "std::uint64_t"},
 	{"i64", "std::int64_t"},
+	{"f32", "float"},
+	{"f64", "double"},
 	{"string", "std::string"},
 };
 
@@ -79,6 +81,22 @@ static std::string get_type(AsgardParser::TypeContext *context, bool const_ref){
 			throw std::logic_error("Primitive type '" + type_name + "' not found");
 		}
 		name = find->second;
+	}else if(context->LESS_THAN()){
+		const auto types = context->type();
+		if(types.size() == 2){
+			name = "std::pair<" + get_type(types[0], false) + ", " + get_type(types[1], false) + ">";
+		}else{
+			name = "std::tuple<";
+			bool first = true;
+			for(auto type : types){
+				if(!first){
+					name += ", ";
+				}
+				name += get_type(type, false);
+				first = false;
+			}
+			name += ">";
+		}
 	}else{
 		name = get_class_path(context->class_path());
 	}
