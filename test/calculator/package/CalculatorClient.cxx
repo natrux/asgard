@@ -61,7 +61,7 @@ std::future<double> CalculatorClient::divide_(const int32_t &a, const int32_t &b
 }
 
 
-int32_t CalculatorClient::wait_for_sum(const int32_t &sum){
+std::pair<int32_t, int32_t> CalculatorClient::wait_for_sum(const int32_t &sum){
 	auto ret_ = request<Calculator_wait_for_sum>(sum);
 	if(auto ret = std::dynamic_pointer_cast<const Calculator_wait_for_sum_return>(ret_)){
 		return ret->result;
@@ -72,7 +72,7 @@ int32_t CalculatorClient::wait_for_sum(const int32_t &sum){
 }
 
 
-std::future<int32_t> CalculatorClient::wait_for_sum_(const int32_t &sum){
+std::future<std::pair<int32_t, int32_t>> CalculatorClient::wait_for_sum_(const int32_t &sum){
 	call<Calculator_wait_for_sum>(sum);
 	return pending_requests_wait_for_sum[last_request_id()].get_future();
 }

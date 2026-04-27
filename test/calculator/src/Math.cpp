@@ -26,7 +26,7 @@ void Math::calculate_something(){
 	if(wait_for_zero.wait_for(asgard::time::immediate()) == std::future_status::ready){
 		try{
 			const auto result = wait_for_zero.get();
-			log(INFO) << "Oh look, " << result << " + " << (-result) << " = 0";
+			log(INFO) << "Oh look, " << result.first << " + " << result.second << " = 0";
 		}catch(const std::exception &err){
 			log(WARN) << err.what();
 		}

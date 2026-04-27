@@ -61,7 +61,7 @@ double CalculatorModule::divide_sync(const int32_t &/*a*/, const int32_t &/*b*/)
 
 void CalculatorModule::wait_for_sum_async(const int32_t &sum, asgard::core::ReturnMe<Calculator_wait_for_sum_return> &&return_me) const{
 	try{
-		const int32_t result = wait_for_sum_sync(sum);
+		const auto result = wait_for_sum_sync(sum);
 		return_me.retrn(result);
 	}catch(const std::exception &err){
 		return_me.except(err);
@@ -69,7 +69,7 @@ void CalculatorModule::wait_for_sum_async(const int32_t &sum, asgard::core::Retu
 }
 
 
-int32_t CalculatorModule::wait_for_sum_sync(const int32_t &/*sum*/) const{
+std::pair<int32_t, int32_t> CalculatorModule::wait_for_sum_sync(const int32_t &/*sum*/) const{
 	throw std::logic_error("Not implemented");
 }
 

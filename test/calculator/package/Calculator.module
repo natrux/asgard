@@ -4,4 +4,4 @@ asgard.time.duration stats_interval = 5s
 
 const i32 plus(i32 a, i32 b)
 const f64 divide(i32 a, i32 b)
-const i32 wait_for_sum(i32 sum)
+const <i32, i32> wait_for_sum(i32 sum)

@@ -22,10 +22,6 @@ const data::log_level_e Module::ERROR = data::log_level_e::ERROR;
 
 
 void Module::start_module(std::unique_ptr<Module> module){
-	{
-		std::lock_guard<std::mutex> lock(mutex_started_modules);
-		started_modules.insert(module->get_id());
-	}
 	module->start(std::move(module));
 }
 
@@ -220,23 +216,19 @@ void Module::receive_messages(){
 
 
 void Module::module_thread(){
-	bool error = false;
+	{
+		std::lock_guard<std::mutex> lock(mutex_started_modules);
+		started_modules.insert(get_id());
+	}
+
 	try{
 		log(DEBUG) << "Init";
 		init();
+		log(DEBUG) << "Start of Main";
+		main();
+		log(DEBUG) << "End of Main";
 	}catch(const std::exception &err){
 		log(ERROR) << err.what();
-		error = true;
-	}
-	if(!error){
-		try{
-			log(DEBUG) << "Start of Main";
-			main();
-			log(DEBUG) << "End of Main";
-		}catch(const std::exception &err){
-			log(ERROR) << err.what();
-			error = true;
-		}
 	}
 
 	unsubscribe_all();
