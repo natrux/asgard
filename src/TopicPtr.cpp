@@ -86,8 +86,18 @@ std::shared_ptr<Topic> TopicPtr::operator->() const{
 }
 
 
-bool TopicPtr::Compare::operator()(const TopicPtr &a, const TopicPtr &b) const{
-	return is_less(a.topic, b.topic);
+bool TopicPtr::operator==(const TopicPtr &other) const{
+	return topic == other.topic;
+}
+
+
+bool TopicPtr::operator!=(const TopicPtr &other) const{
+	return topic != other.topic;
+}
+
+
+bool TopicPtr::operator<(const TopicPtr &other) const{
+	return topic < other.topic;
 }
 
 

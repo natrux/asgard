@@ -15,6 +15,7 @@ namespace topic{
 
 
 class TopicPtr{
+	friend class std::hash<TopicPtr>;
 public:
 	static std::vector<TopicPtr> get_all_topics();
 
@@ -31,11 +32,9 @@ public:
 	TopicPtr &operator=(const char *topic_name);
 	TopicPtr &operator=(const std::nullptr_t &);
 	std::shared_ptr<Topic> operator->() const;
-
-	struct Compare{
-		std::less<const std::shared_ptr<Topic> &> is_less;
-		bool operator()(const TopicPtr &a, const TopicPtr &b) const;
-	};
+	bool operator==(const TopicPtr &other) const;
+	bool operator!=(const TopicPtr &other) const;
+	bool operator<(const TopicPtr &other) const;
 
 private:
 	static std::mutex mutex_topic_map;
@@ -48,10 +47,14 @@ private:
 };
 
 
-
 }
 }
 
 
-
+template<>
+struct std::hash<asgard::topic::TopicPtr>{
+	std::size_t operator()(const asgard::topic::TopicPtr &value) const noexcept{
+		return std::hash<std::shared_ptr<asgard::topic::Topic>>{}(value.topic);
+	}
+};
 

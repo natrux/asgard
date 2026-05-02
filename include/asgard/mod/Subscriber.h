@@ -21,7 +21,7 @@ protected:
 	void publish(std::shared_ptr<const data::Data> data, topic::TopicPtr topic) const;
 
 private:
-	std::set<topic::TopicPtr, topic::TopicPtr::Compare> subscriptions;
+	std::set<topic::TopicPtr> subscriptions;
 };
 
 
