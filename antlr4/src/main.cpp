@@ -172,17 +172,10 @@ static std::string get_declaration(AsgardParser::DeclarationContext *declaration
 }
 
 
-int main(int argc, char **argv){
-	if(argc != 2){
-		std::cerr << "Usage: " << argv[0] << " file" << std::endl;
-		return 1;
-	}
-
-	const std::string path = argv[1];
+void parse_file(const std::string &path){
 	std::ifstream stream(path);
 	if(!stream){
-		std::cerr << "Opening file " << path << " failed" << std::endl;
-		return 1;
+		throw std::runtime_error("Opening file " + path + " failed");
 	}
 
 	AsgardLexer::initialize();
@@ -197,8 +190,7 @@ int main(int argc, char **argv){
 	try{
 		tokens.fill();
 	}catch(const std::exception &err){
-		std::cerr << "Lexing failed with: " << err.what() << std::endl;
-		return 1;
+		throw std::runtime_error("Lexing failed with: " + std::string(err.what()));
 	}
 
 	AsgardParser parser(&tokens);
@@ -221,8 +213,7 @@ int main(int argc, char **argv){
 			enumdef = parser.enumdef();
 		}
 	}catch(const std::exception &err){
-		std::cerr << "Parsing failed with: " << err.what() << std::endl;
-		return 1;
+		throw std::runtime_error("Parsing failed with: " + std::string(err.what()));
 	}
 
 	if(classdef || moduledef){
@@ -261,6 +252,20 @@ int main(int argc, char **argv){
 	if(enumdef){
 		for(auto *id : enumdef->ID()){
 			std::cout << id->getSymbol()->getText() << "," << std::endl;
+		}
+	}
+}
+
+
+int main(int argc, char **argv){
+	for(int i=1; i<argc; i++){
+		const std::string path = argv[i];
+		std::cout << "=== " << path << " ===" << std::endl;
+
+		try{
+			parse_file(path);
+		}catch(const std::exception &err){
+			std::cerr << err.what() << std::endl;
 		}
 	}
 
