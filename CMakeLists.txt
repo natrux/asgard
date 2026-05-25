@@ -5,21 +5,6 @@ option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
 
 find_package(Threads)
 
-
-if(WIN32)
-	list(APPEND PLATFORM_SOURCE_FILES
-		src/win32/Terminal.cpp
-		src/win32/ls.cpp
-	)
-else()
-	list(APPEND PLATFORM_SOURCE_FILES
-		src/linux/UnixEndpoint.cpp
-		src/linux/Terminal.cpp
-		src/linux/ls.cpp
-	)
-endif()
-
-
 file(GLOB GENERATED_CXX
 	package/asgard/com/*.cxx
 	package/asgard/data/*.cxx
@@ -28,7 +13,6 @@ file(GLOB GENERATED_CXX
 
 add_library(asgard
 	${GENERATED_CXX}
-	${PLATFORM_SOURCE_FILES}
 	src/ID.cpp
 	src/Signature.cpp
 	src/EnumMap.cpp
@@ -79,6 +63,18 @@ add_library(asgard
 	src/LogPublisher.cpp
 	src/crc_64_xz.cpp
 )
+if(WIN32)
+	target_sources(asgard PRIVATE
+		src/win32/Terminal.cpp
+		src/win32/ls.cpp
+	)
+else()
+	target_sources(asgard PRIVATE
+		src/linux/UnixEndpoint.cpp
+		src/linux/Terminal.cpp
+		src/linux/ls.cpp
+	)
+endif()
 
 target_compile_features(asgard PUBLIC cxx_std_17)
 target_compile_options(asgard PRIVATE
