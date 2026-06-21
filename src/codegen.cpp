@@ -1,5 +1,9 @@
-#include "AsgardParser.h"
-#include "AsgardLexer.h"
+#include <asgard/code/AsgardParser.h>
+#include <asgard/code/AsgardLexer.h>
+
+
+namespace asgard{
+namespace code{
 
 
 const static std::map<std::string, std::string> primitive_types = {
@@ -257,13 +261,17 @@ void parse_file(const std::string &path){
 }
 
 
+}
+}
+
+
 int main(int argc, char **argv){
 	for(int i=1; i<argc; i++){
 		const std::string path = argv[i];
 		std::cout << "=== " << path << " ===" << std::endl;
 
 		try{
-			parse_file(path);
+			asgard::code::parse_file(path);
 		}catch(const std::exception &err){
 			std::cerr << err.what() << std::endl;
 		}

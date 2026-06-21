@@ -2,8 +2,30 @@ cmake_minimum_required(VERSION 3.10)
 project(asgard CXX)
 
 option(BUILD_SHARED_LIBS "Build using shared libraries" ON)
+option(BUILD_CODEGEN "Build code generator" ON)
 
-find_package(Threads)
+find_package(Threads REQUIRED)
+
+
+if(BUILD_CODEGEN)
+	find_package(antlr4-runtime REQUIRED)
+
+	add_executable(asgard_codegen
+		grammar/asgard/code/AsgardLexer.cpp
+		grammar/asgard/code/AsgardParser.cpp
+		src/codegen.cpp
+	)
+
+	target_include_directories(asgard_codegen PUBLIC
+		${ANTLR4_INCLUDE_DIR}
+		grammar
+	)
+
+	target_link_libraries(asgard_codegen
+		antlr4-runtime
+	)
+endif()
+
 
 file(GLOB GENERATED_CXX
 	package/asgard/com/*.cxx
