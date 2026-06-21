@@ -8,13 +8,13 @@ namespace asgard{
 namespace data{
 
 
-code::Signature Sample::static_signature(){
+type::Signature Sample::static_signature(){
 	auto sig = Super::static_signature();
 	sig.parents.push_back(sig.name);
 	sig.name = "asgard.data.Sample";
-	sig.members["time"] = code::get_typecode<decltype(time)>();
-	sig.members["retained"] = code::get_typecode<decltype(retained)>();
-	sig.members["data"] = code::get_typecode<decltype(data)>();
+	sig.members["time"] = type::get_typecode<decltype(time)>();
+	sig.members["retained"] = type::get_typecode<decltype(retained)>();
+	sig.members["data"] = type::get_typecode<decltype(data)>();
 	return sig;
 }
 
@@ -29,7 +29,7 @@ Sample::Sample(){
 }
 
 
-void Sample::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void Sample::read_member(type::TypeReader &reader, const std::string &name, const type::Typecode &type){
 	if(name == "time"){
 		reader.read_type(time, type);
 	}else if(name == "retained"){

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <asgard/code/Signature.h>
+#include <asgard/type/Signature.h>
 #include <asgard/data/Value.h>
 #include <asgard/core/ID.h>
 
@@ -12,7 +12,7 @@ namespace core{
 
 
 struct type_register_t{
-	code::Signature signature;
+	type::Signature signature;
 	std::function<std::shared_ptr<data::Value>()> create;
 };
 

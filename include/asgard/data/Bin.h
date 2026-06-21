@@ -49,7 +49,7 @@ public:
 		return value;
 	}
 
-	code::Typecode get_type() const;
+	type::Typecode get_type() const;
 
 	bool is_empty() const;
 	bool is_bool() const;
@@ -66,8 +66,8 @@ public:
 
 private:
 	std::vector<uint8_t> data;
-	code::Typecode type;
-	code::Signature signature;
+	type::Typecode type;
+	type::Signature signature;
 
 	void update();
 };

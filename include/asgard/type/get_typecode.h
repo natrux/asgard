@@ -1,6 +1,6 @@
 #pragma once
 
-#include <asgard/code/Typecode.h>
+#include <asgard/type/Typecode.h>
 #include <asgard/time/time.h>
 
 #include <string>
@@ -15,7 +15,7 @@
 
 
 namespace asgard{
-namespace code{
+namespace type{
 
 
 template<class T>

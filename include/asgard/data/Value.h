@@ -1,6 +1,6 @@
 #pragma once
 
-#include <asgard/code/Signature.h>
+#include <asgard/type/Signature.h>
 #include <asgard/data/Bin.h>
 
 #include <memory>
@@ -20,22 +20,22 @@ namespace data{
 
 class Value{
 public:
-	static code::Typecode typecode();
-	static code::Signature static_signature();
+	static type::Typecode typecode();
+	static type::Signature static_signature();
 	static std::shared_ptr<Value> create();
 
 	Value();
 	virtual ~Value() = default;
-	code::Signature signature() const;
-	void set_signature(const code::Signature &signature);
+	type::Signature signature() const;
+	void set_signature(const type::Signature &signature);
 
-	virtual void read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type);
+	virtual void read_member(type::TypeReader &reader, const std::string &name, const type::Typecode &type);
 	virtual void write_member(type::TypeWriter &writer, const std::string &name) const;
 	virtual void set_member(const std::string &name, const Bin &value);
 	virtual Bin get_member(const std::string &name) const;
 
 private:
-	code::Signature dynamic_signature;
+	type::Signature dynamic_signature;
 	std::map<std::string, Bin> unknown_members;
 };
 

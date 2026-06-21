@@ -1,4 +1,4 @@
-#include <asgard/code/Signature.h>
+#include <asgard/type/Signature.h>
 #include <asgard/util/crc_64_xz.h>
 #include <asgard/type/TypeWriter.h>
 #include <asgard/io/VectorOutputSource.h>
@@ -7,7 +7,7 @@
 
 
 namespace asgard{
-namespace code{
+namespace type{
 
 
 uint64_t Signature::hash() const{

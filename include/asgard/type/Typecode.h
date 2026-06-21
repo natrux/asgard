@@ -6,7 +6,7 @@
 
 
 namespace asgard{
-namespace code{
+namespace type{
 
 
 using typecode_e = uint8_t;
@@ -44,7 +44,7 @@ public:
 		TYPE_ENUM = 0x61,
 	};
 
-	typecode_e code;
+	typecode_e code = TYPE_NULL;
 	std::vector<Typecode> sub_types;
 
 	Typecode() = default;

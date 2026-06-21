@@ -11,13 +11,13 @@ namespace asgard{
 namespace data{
 
 
-code::Typecode Value::typecode(){
-	return code::Typecode(code::Typecode::TYPE_VALUE);
+type::Typecode Value::typecode(){
+	return type::Typecode(type::Typecode::TYPE_VALUE);
 }
 
 
-code::Signature Value::static_signature(){
-	code::Signature sig;
+type::Signature Value::static_signature(){
+	type::Signature sig;
 	sig.name = "asgard.data.Value";
 	return sig;
 }
@@ -33,12 +33,12 @@ Value::Value(){
 }
 
 
-code::Signature Value::signature() const{
+type::Signature Value::signature() const{
 	return dynamic_signature;
 }
 
 
-void Value::set_signature(const code::Signature &signature){
+void Value::set_signature(const type::Signature &signature){
 	auto new_signature = signature;
 	// add / overwrite members that are natively embedded
 	for(const auto &entry : dynamic_signature.members){
@@ -48,7 +48,7 @@ void Value::set_signature(const code::Signature &signature){
 }
 
 
-void Value::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void Value::read_member(type::TypeReader &reader, const std::string &name, const type::Typecode &type){
 	auto &bin = unknown_members[name];
 	reader.read_type(bin, type);
 }

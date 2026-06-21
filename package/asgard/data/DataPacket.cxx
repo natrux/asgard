@@ -8,12 +8,12 @@ namespace asgard{
 namespace data{
 
 
-code::Signature DataPacket::static_signature(){
+type::Signature DataPacket::static_signature(){
 	auto sig = Super::static_signature();
 	sig.parents.push_back(sig.name);
 	sig.name = "asgard.data.DataPacket";
-	sig.members["time"] = code::get_typecode<decltype(time)>();
-	sig.members["payload"] = code::get_typecode<decltype(payload)>();
+	sig.members["time"] = type::get_typecode<decltype(time)>();
+	sig.members["payload"] = type::get_typecode<decltype(payload)>();
 	return sig;
 }
 
@@ -36,7 +36,7 @@ bool DataPacket::operator==(const DataPacket &other) const{
 }
 
 
-void DataPacket::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void DataPacket::read_member(type::TypeReader &reader, const std::string &name, const type::Typecode &type){
 	if(name == "time"){
 		reader.read_type(time, type);
 	}else if(name == "payload"){

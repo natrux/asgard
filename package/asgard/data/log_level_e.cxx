@@ -5,7 +5,7 @@ namespace asgard{
 namespace data{
 
 
-const std::map<code::enum_t, std::string> log_level_e::_enum_map = {
+const std::map<type::enum_t, std::string> log_level_e::_enum_map = {
 	{DEBUG, "DEBUG"},
 	{INFO, "INFO"},
 	{WARN, "WARN"},
@@ -13,8 +13,8 @@ const std::map<code::enum_t, std::string> log_level_e::_enum_map = {
 };
 
 
-code::EnumMap log_level_e::static_enum_map(){
-	code::EnumMap map;
+type::EnumMap log_level_e::static_enum_map(){
+	type::EnumMap map;
 	map.name = "asgard.data.log_level_e";
 	map.enum_map = _enum_map;
 	map.fill_reverse();
@@ -34,12 +34,12 @@ log_level_e &log_level_e::operator=(const enum_e &v){
 }
 
 
-code::EnumMap log_level_e::enum_map() const{
+type::EnumMap log_level_e::enum_map() const{
 	return static_enum_map();
 }
 
 
-void log_level_e::from_int(const code::enum_t &v){
+void log_level_e::from_int(const type::enum_t &v){
 	const auto find = _enum_map.find(v);
 	if(find == _enum_map.end()){
 		value = zero;
@@ -49,7 +49,7 @@ void log_level_e::from_int(const code::enum_t &v){
 }
 
 
-code::enum_t log_level_e::to_int() const{
+type::enum_t log_level_e::to_int() const{
 	return value;
 }
 

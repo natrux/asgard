@@ -17,12 +17,12 @@ public:
 	time::time time;
 	std::vector<uint8_t> payload;
 
-	static code::Signature static_signature();
+	static type::Signature static_signature();
 	static std::shared_ptr<DataPacket> create();
 
 	DataPacket();
 	bool operator==(const DataPacket &other) const;
-	void read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type) override;
+	void read_member(type::TypeReader &reader, const std::string &name, const type::Typecode &type) override;
 	void write_member(type::TypeWriter &writer, const std::string &name) const override;
 	void set_member(const std::string &name, const Bin &value) override;
 	Bin get_member(const std::string &name) const override;

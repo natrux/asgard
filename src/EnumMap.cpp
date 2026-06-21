@@ -1,9 +1,9 @@
-#include <asgard/code/EnumMap.h>
+#include <asgard/type/EnumMap.h>
 #include <asgard/util/crc_64_xz.h>
 
 
 namespace asgard{
-namespace code{
+namespace type{
 
 
 void EnumMap::fill_reverse(){

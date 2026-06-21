@@ -1,13 +1,13 @@
 #pragma once
 
-#include <asgard/code/Typecode.h>
+#include <asgard/type/Typecode.h>
 
 #include <string>
 #include <map>
 
 
 namespace asgard{
-namespace code{
+namespace type{
 
 
 class Signature{

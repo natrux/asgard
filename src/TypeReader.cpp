@@ -32,22 +32,22 @@ void TypeReader::set_remote_since_epoch(const time::duration &since){
 }
 
 
-code::Typecode TypeReader::read_typecode(){
-	code::Typecode result;
-	result.code = read_le<code::typecode_e>();
+Typecode TypeReader::read_typecode(){
+	Typecode result;
+	result.code = read_le<typecode_e>();
 	switch(result.code){
-	case code::Typecode::TYPE_LIST:
-	case code::Typecode::TYPE_OPTIONAL:
-	case code::Typecode::TYPE_POINTER:
+	case Typecode::TYPE_LIST:
+	case Typecode::TYPE_OPTIONAL:
+	case Typecode::TYPE_POINTER:
 		result.sub_types.push_back(read_typecode());
 		break;
-	case code::Typecode::TYPE_MAP:
-	case code::Typecode::TYPE_PAIR:
+	case Typecode::TYPE_MAP:
+	case Typecode::TYPE_PAIR:
 		result.sub_types.push_back(read_typecode());
 		result.sub_types.push_back(read_typecode());
 		break;
-	case code::Typecode::TYPE_TUPLE:{
-		const auto size = read_le<code::length_t>();
+	case Typecode::TYPE_TUPLE:{
+		const auto size = read_le<length_t>();
 		for(size_t i=0; i<size; i++){
 			result.sub_types.push_back(read_typecode());
 		}
@@ -60,19 +60,19 @@ code::Typecode TypeReader::read_typecode(){
 }
 
 
-code::Signature TypeReader::read_signature(){
+Signature TypeReader::read_signature(){
 	const core::ID id(read_le<uint64_t>());
-	code::Signature signature;
+	Signature signature;
 	if(read_bool()){
 		signature.name = read_string();
 
-		const auto num_parents = read_le<code::length_t>();
-		for(code::length_t i=0; i<num_parents; i++){
+		const auto num_parents = read_le<length_t>();
+		for(length_t i=0; i<num_parents; i++){
 			signature.parents.push_back(read_string());
 		}
 
-		const auto num_members = read_le<code::length_t>();
-		for(code::length_t i=0; i<num_members; i++){
+		const auto num_members = read_le<length_t>();
+		for(length_t i=0; i<num_members; i++){
 			const auto key = read_string();
 			signature.members[key] = read_typecode();
 		}
@@ -88,15 +88,15 @@ code::Signature TypeReader::read_signature(){
 }
 
 
-code::EnumMap TypeReader::read_enum_map(){
+EnumMap TypeReader::read_enum_map(){
 	const core::ID id(read_le<uint64_t>());
-	code::EnumMap map;
+	EnumMap map;
 	if(read_bool()){
 		map.name = read_string();
 
-		const auto num_values = read_le<code::length_t>();
-		for(code::length_t i=0; i<num_values; i++){
-			const auto value = read_le<code::enum_t>();
+		const auto num_values = read_le<length_t>();
+		for(length_t i=0; i<num_values; i++){
+			const auto value = read_le<enum_t>();
 			const auto name = read_string();
 			map.enum_map[value] = name;
 			map.reverse_enum_map[name] = value;
@@ -113,12 +113,12 @@ code::EnumMap TypeReader::read_enum_map(){
 }
 
 
-void TypeReader::read_type(bool &value, const code::Typecode &type){
-	if(type.code == code::Typecode::TYPE_BOOL){
+void TypeReader::read_type(bool &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_BOOL){
 		uint8_t byte = 0;
 		read(byte);
 		value = (byte != 0);
-	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
 			read_type(value, type.sub_types.at(0));
@@ -131,64 +131,64 @@ void TypeReader::read_type(bool &value, const code::Typecode &type){
 }
 
 
-void TypeReader::read_type(uint8_t &value, const code::Typecode &type){
+void TypeReader::read_type(uint8_t &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(int8_t &value, const code::Typecode &type){
+void TypeReader::read_type(int8_t &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(uint16_t &value, const code::Typecode &type){
+void TypeReader::read_type(uint16_t &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(int16_t &value, const code::Typecode &type){
+void TypeReader::read_type(int16_t &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(uint32_t &value, const code::Typecode &type){
+void TypeReader::read_type(uint32_t &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(int32_t &value, const code::Typecode &type){
+void TypeReader::read_type(int32_t &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(uint64_t &value, const code::Typecode &type){
+void TypeReader::read_type(uint64_t &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(int64_t &value, const code::Typecode &type){
+void TypeReader::read_type(int64_t &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(float &value, const code::Typecode &type){
+void TypeReader::read_type(float &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(double &value, const code::Typecode &type){
+void TypeReader::read_type(double &value, const Typecode &type){
 	read_number(value, type);
 }
 
 
-void TypeReader::read_type(std::string &value, const code::Typecode &type){
-	if(type.code == code::Typecode::TYPE_STRING){
+void TypeReader::read_type(std::string &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_STRING){
 		value = read_string();
-	}else if(type.code == code::Typecode::TYPE_ENUM){
+	}else if(type.code == Typecode::TYPE_ENUM){
 		const auto map = read_enum_map();
-		const auto v = read_le<code::enum_t>();
+		const auto v = read_le<enum_t>();
 		value = map.find(v);
-	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
 			read_type(value, type.sub_types.at(0));
@@ -199,12 +199,12 @@ void TypeReader::read_type(std::string &value, const code::Typecode &type){
 }
 
 
-void TypeReader::read_type(time::time &value, const code::Typecode &type){
-	if(type.code == code::Typecode::TYPE_DURATION){
+void TypeReader::read_type(time::time &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_DURATION){
 		int64_t ticks = 0;
 		read_number(ticks, type);
 		value = remote_epoch + time::resolution(ticks);
-	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
 			read_type(value, type.sub_types.at(0));
@@ -215,12 +215,12 @@ void TypeReader::read_type(time::time &value, const code::Typecode &type){
 }
 
 
-void TypeReader::read_type(time::wall_time &value, const code::Typecode &type){
-	if(type.code == code::Typecode::TYPE_DURATION){
+void TypeReader::read_type(time::wall_time &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_DURATION){
 		int64_t ticks = 0;
 		read_number(ticks, type);
 		value = time::epoch_wall() + time::resolution(ticks);
-	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
 			read_type(value, type.sub_types.at(0));
@@ -231,12 +231,12 @@ void TypeReader::read_type(time::wall_time &value, const code::Typecode &type){
 }
 
 
-void TypeReader::read_type(time::duration &value, const code::Typecode &type){
-	if(type.code == code::Typecode::TYPE_DURATION){
+void TypeReader::read_type(time::duration &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_DURATION){
 		int64_t ticks = 0;
 		read_number(ticks, type);
 		value = time::resolution(ticks);
-	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
 			read_type(value, type.sub_types.at(0));
@@ -247,11 +247,11 @@ void TypeReader::read_type(time::duration &value, const code::Typecode &type){
 }
 
 
-void TypeReader::read_type(data::Value &value, const code::Typecode &type){
-	if(type.code == code::Typecode::TYPE_VALUE){
+void TypeReader::read_type(data::Value &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_VALUE){
 		const auto signature = read_signature();
 		read_type(value, signature);
-	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
 			read_type(value, type.sub_types.at(0));
@@ -262,22 +262,22 @@ void TypeReader::read_type(data::Value &value, const code::Typecode &type){
 }
 
 
-void TypeReader::read_type(data::Value &value, const code::Signature &signature){
+void TypeReader::read_type(data::Value &value, const Signature &signature){
 	for(const auto &entry : signature.members){
 		value.read_member(*this, entry.first, entry.second);
 	}
 }
 
 
-void TypeReader::read_type(data::Enum &value, const code::Typecode &type){
-	if(type.code == code::Typecode::TYPE_ENUM){
+void TypeReader::read_type(data::Enum &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_ENUM){
 		read_enum_map();
-		const auto v = read_le<code::enum_t>();
+		const auto v = read_le<enum_t>();
 		value.from_int(v);
-	}else if(type.code == code::Typecode::TYPE_STRING){
+	}else if(type.code == Typecode::TYPE_STRING){
 		const auto str = read_string();
 		value.from_string(str);
-	}else if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 		const bool flag = read_bool();
 		if(flag){
 			read_type(value, type.sub_types.at(0));
@@ -288,7 +288,7 @@ void TypeReader::read_type(data::Enum &value, const code::Typecode &type){
 }
 
 
-void TypeReader::read_type(data::Bin &value, const code::Typecode &type){
+void TypeReader::read_type(data::Bin &value, const Typecode &type){
 	auto source = std::make_shared<io::VectorOutputSource>();
 	{
 		TypeWriter out(source);
@@ -305,7 +305,7 @@ void TypeReader::skip(){
 }
 
 
-void TypeReader::skip(const code::Typecode &type){
+void TypeReader::skip(const Typecode &type){
 	TypeWriter out(nullptr);
 	copy(out, type);
 }
@@ -318,24 +318,24 @@ void TypeReader::copy(TypeWriter &out){
 }
 
 
-void TypeReader::copy(TypeWriter &out, const code::Typecode &type){
+void TypeReader::copy(TypeWriter &out, const Typecode &type){
 	switch(type.code){
-	case code::Typecode::TYPE_NULL: break;
-	case code::Typecode::TYPE_BOOL:
-	case code::Typecode::TYPE_U8:
-	case code::Typecode::TYPE_I8: out.write(read(1)); break;
-	case code::Typecode::TYPE_U16:
-	case code::Typecode::TYPE_I16: out.write(read(2)); break;
-	case code::Typecode::TYPE_U32:
-	case code::Typecode::TYPE_I32: out.write(read(4)); break;
-	case code::Typecode::TYPE_U64:
-	case code::Typecode::TYPE_I64: out.write(read(8)); break;
-	case code::Typecode::TYPE_F32: out.write(read(4)); break;
-	case code::Typecode::TYPE_F64: out.write(read(8)); break;
+	case Typecode::TYPE_NULL: break;
+	case Typecode::TYPE_BOOL:
+	case Typecode::TYPE_U8:
+	case Typecode::TYPE_I8: out.write(read(1)); break;
+	case Typecode::TYPE_U16:
+	case Typecode::TYPE_I16: out.write(read(2)); break;
+	case Typecode::TYPE_U32:
+	case Typecode::TYPE_I32: out.write(read(4)); break;
+	case Typecode::TYPE_U64:
+	case Typecode::TYPE_I64: out.write(read(8)); break;
+	case Typecode::TYPE_F32: out.write(read(4)); break;
+	case Typecode::TYPE_F64: out.write(read(8)); break;
 
-	case code::Typecode::TYPE_STRING: out.write_value(read_string()); break;
-	case code::Typecode::TYPE_LIST:{
-		const auto size = read_le<code::length_t>();
+	case Typecode::TYPE_STRING: out.write_value(read_string()); break;
+	case Typecode::TYPE_LIST:{
+		const auto size = read_le<length_t>();
 		out.write_value(size);
 		const auto &sub_type = type.sub_types.at(0);
 		for(size_t i=0; i<size; i++){
@@ -343,8 +343,8 @@ void TypeReader::copy(TypeWriter &out, const code::Typecode &type){
 		}
 		break;
 	}
-	case code::Typecode::TYPE_MAP:{
-		const auto size = read_le<code::length_t>();
+	case Typecode::TYPE_MAP:{
+		const auto size = read_le<length_t>();
 		out.write_value(size);
 		const auto &key_type = type.sub_types.at(0);
 		const auto &value_type = type.sub_types.at(1);
@@ -354,20 +354,20 @@ void TypeReader::copy(TypeWriter &out, const code::Typecode &type){
 		}
 		break;
 	}
-	case code::Typecode::TYPE_PAIR:
+	case Typecode::TYPE_PAIR:
 		copy(out, type.sub_types.at(0));
 		copy(out, type.sub_types.at(1));
 		break;
-	case code::Typecode::TYPE_TUPLE:{
+	case Typecode::TYPE_TUPLE:{
 		const auto size = type.sub_types.size();
 		for(size_t i=0; i<size; i++){
 			copy(out, type.sub_types.at(i));
 		}
 		break;
 	}
-	case code::Typecode::TYPE_DURATION: out.write(read(8)); break;
-	case code::Typecode::TYPE_OPTIONAL:
-	case code::Typecode::TYPE_POINTER:{
+	case Typecode::TYPE_DURATION: out.write(read(8)); break;
+	case Typecode::TYPE_OPTIONAL:
+	case Typecode::TYPE_POINTER:{
 		const bool flag = read_bool();
 		out.write_value(flag);
 		if(flag){
@@ -375,7 +375,7 @@ void TypeReader::copy(TypeWriter &out, const code::Typecode &type){
 		}
 		break;
 	}
-	case code::Typecode::TYPE_VALUE:{
+	case Typecode::TYPE_VALUE:{
 		const auto signature = read_signature();
 		out.write_signature(signature);
 		for(const auto &entry : signature.members){
@@ -383,9 +383,9 @@ void TypeReader::copy(TypeWriter &out, const code::Typecode &type){
 		}
 		break;
 	}
-	case code::Typecode::TYPE_ENUM:{
+	case Typecode::TYPE_ENUM:{
 		const auto map = read_enum_map();
-		const auto v = read_le<code::enum_t>();
+		const auto v = read_le<type::enum_t>();
 		out.write_enum_map(map);
 		out.write_value(v);
 		break;
@@ -403,7 +403,7 @@ bool TypeReader::read_bool(){
 
 
 std::string TypeReader::read_string(){
-	const auto size = read_le<code::length_t>();
+	const auto size = read_le<length_t>();
 	const auto chrs = read(size);
 	std::string value;
 	value.append(chrs.begin(), chrs.end());
@@ -411,8 +411,8 @@ std::string TypeReader::read_string(){
 }
 
 
-std::shared_ptr<data::Value> TypeReader::read_type_value(const code::Typecode &type){
-	if(type.code != code::Typecode::TYPE_VALUE){
+std::shared_ptr<data::Value> TypeReader::read_type_value(const Typecode &type){
+	if(type.code != Typecode::TYPE_VALUE){
 		skip(type);
 		return nullptr;
 	}

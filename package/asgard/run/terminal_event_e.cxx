@@ -5,7 +5,7 @@ namespace asgard{
 namespace run{
 
 
-const std::map<code::enum_t, std::string> terminal_event_e::_enum_map = {
+const std::map<type::enum_t, std::string> terminal_event_e::_enum_map = {
 	{ARROW_UP, "ARROW_UP"},
 	{ARROW_DOWN, "ARROW_DOWN"},
 	{ARROW_LEFT, "ARROW_LEFT"},
@@ -21,8 +21,8 @@ const std::map<code::enum_t, std::string> terminal_event_e::_enum_map = {
 };
 
 
-code::EnumMap terminal_event_e::static_enum_map(){
-	code::EnumMap map;
+type::EnumMap terminal_event_e::static_enum_map(){
+	type::EnumMap map;
 	map.name = "asgard.run.terminal_event_e";
 	map.enum_map = _enum_map;
 	map.fill_reverse();
@@ -42,12 +42,12 @@ terminal_event_e &terminal_event_e::operator=(const enum_e &v){
 }
 
 
-code::EnumMap terminal_event_e::enum_map() const{
+type::EnumMap terminal_event_e::enum_map() const{
 	return static_enum_map();
 }
 
 
-void terminal_event_e::from_int(const code::enum_t &v){
+void terminal_event_e::from_int(const type::enum_t &v){
 	const auto find = _enum_map.find(v);
 	if(find == _enum_map.end()){
 		value = zero;
@@ -57,7 +57,7 @@ void terminal_event_e::from_int(const code::enum_t &v){
 }
 
 
-code::enum_t terminal_event_e::to_int() const{
+type::enum_t terminal_event_e::to_int() const{
 	return value;
 }
 

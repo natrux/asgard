@@ -8,15 +8,15 @@ namespace asgard{
 namespace data{
 
 
-code::Signature LogMessage::static_signature(){
+type::Signature LogMessage::static_signature(){
 	auto sig = Super::static_signature();
 	sig.parents.push_back(sig.name);
 	sig.name = "asgard.data.LogMessage";
-	sig.members["time"] = code::get_typecode<decltype(time)>();
-	sig.members["wall_time"] = code::get_typecode<decltype(wall_time)>();
-	sig.members["level"] = code::get_typecode<decltype(level)>();
-	sig.members["unit"] = code::get_typecode<decltype(unit)>();
-	sig.members["message"] = code::get_typecode<decltype(message)>();
+	sig.members["time"] = type::get_typecode<decltype(time)>();
+	sig.members["wall_time"] = type::get_typecode<decltype(wall_time)>();
+	sig.members["level"] = type::get_typecode<decltype(level)>();
+	sig.members["unit"] = type::get_typecode<decltype(unit)>();
+	sig.members["message"] = type::get_typecode<decltype(message)>();
 	return sig;
 }
 
@@ -31,7 +31,7 @@ LogMessage::LogMessage(){
 }
 
 
-void LogMessage::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void LogMessage::read_member(type::TypeReader &reader, const std::string &name, const type::Typecode &type){
 	if(name == "time"){
 		reader.read_type(time, type);
 	}else if(name == "wall_time"){

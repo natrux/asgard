@@ -1,9 +1,9 @@
 #pragma once
 
 #include <asgard/io/BufferedInput.h>
-#include <asgard/code/Typecode.h>
-#include <asgard/code/Signature.h>
-#include <asgard/code/EnumMap.h>
+#include <asgard/type/Typecode.h>
+#include <asgard/type/Signature.h>
+#include <asgard/type/EnumMap.h>
 #include <asgard/time/time.h>
 #include <asgard/core/ID.h>
 #include <asgard/data/Enum.h>
@@ -42,9 +42,9 @@ public:
 	void set_remote_epoch(const time::time &time);
 	void set_remote_since_epoch(const time::duration &since);
 
-	code::Typecode read_typecode();
-	code::Signature read_signature();
-	code::EnumMap read_enum_map();
+	Typecode read_typecode();
+	Signature read_signature();
+	EnumMap read_enum_map();
 
 	template<class T>
 	T read_type(){
@@ -60,49 +60,49 @@ public:
 	}
 
 	template<class T>
-	T read_type(const code::Typecode &type){
+	T read_type(const Typecode &type){
 		T value;
 		read_type(value, type);
 		return value;
 	}
 
-	void read_type(bool &value, const code::Typecode &type);
-	void read_type(uint8_t &value, const code::Typecode &type);
-	void read_type(int8_t &value, const code::Typecode &type);
-	void read_type(uint16_t &value, const code::Typecode &type);
-	void read_type(int16_t &value, const code::Typecode &type);
-	void read_type(uint32_t &value, const code::Typecode &type);
-	void read_type(int32_t &value, const code::Typecode &type);
-	void read_type(uint64_t &value, const code::Typecode &type);
-	void read_type(int64_t &value, const code::Typecode &type);
-	void read_type(float &value, const code::Typecode &type);
-	void read_type(double &value, const code::Typecode &type);
-	void read_type(std::string &value, const code::Typecode &type);
-	void read_type(time::time &value, const code::Typecode &type);
-	void read_type(time::wall_time &value, const code::Typecode &type);
-	void read_type(time::duration &value, const code::Typecode &type);
-	void read_type(data::Value &value, const code::Typecode &type);
-	void read_type(data::Value &value, const code::Signature &signature);
-	void read_type(data::Enum &value, const code::Typecode &type);
-	void read_type(data::Bin &value, const code::Typecode &type);
+	void read_type(bool &value, const Typecode &type);
+	void read_type(uint8_t &value, const Typecode &type);
+	void read_type(int8_t &value, const Typecode &type);
+	void read_type(uint16_t &value, const Typecode &type);
+	void read_type(int16_t &value, const Typecode &type);
+	void read_type(uint32_t &value, const Typecode &type);
+	void read_type(int32_t &value, const Typecode &type);
+	void read_type(uint64_t &value, const Typecode &type);
+	void read_type(int64_t &value, const Typecode &type);
+	void read_type(float &value, const Typecode &type);
+	void read_type(double &value, const Typecode &type);
+	void read_type(std::string &value, const Typecode &type);
+	void read_type(time::time &value, const Typecode &type);
+	void read_type(time::wall_time &value, const Typecode &type);
+	void read_type(time::duration &value, const Typecode &type);
+	void read_type(data::Value &value, const Typecode &type);
+	void read_type(data::Value &value, const Signature &signature);
+	void read_type(data::Enum &value, const Typecode &type);
+	void read_type(data::Bin &value, const Typecode &type);
 
 	template<class T>
-	void read_type(std::vector<T> &value, const code::Typecode &type){
-		if(type.code == code::Typecode::TYPE_LIST){
-			const auto size = read_le<code::length_t>();
+	void read_type(std::vector<T> &value, const Typecode &type){
+		if(type.code == Typecode::TYPE_LIST){
+			const auto size = read_le<length_t>();
 			const auto &sub_type = type.sub_types.at(0);
 			for(size_t i=0; i<size; i++){
 				value.push_back(read_type<T>(sub_type));
 			}
-		}else if(type.code == code::Typecode::TYPE_PAIR){
+		}else if(type.code == Typecode::TYPE_PAIR){
 			value.push_back(read_type<T>(type.sub_types.at(0)));
 			value.push_back(read_type<T>(type.sub_types.at(1)));
-		}else if(type.code == code::Typecode::TYPE_TUPLE){
+		}else if(type.code == Typecode::TYPE_TUPLE){
 			const auto size = type.sub_types.size();
 			for(size_t i=0; i<size; i++){
 				value.push_back(read_type<T>(type.sub_types.at(i)));
 			}
-		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+		}else if(type.code == Typecode::TYPE_POINTER || type.code == Typecode::TYPE_OPTIONAL){
 			const bool flag = read_bool();
 			if(flag){
 				read_type(value, type.sub_types.at(0));
@@ -113,10 +113,10 @@ public:
 	}
 
 	template<class T, size_t N>
-	void read_type(std::array<T, N> &value, const code::Typecode &type){
-		if(type.code == code::Typecode::TYPE_LIST){
+	void read_type(std::array<T, N> &value, const Typecode &type){
+		if(type.code == Typecode::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<code::length_t>();
+			const auto size = read_le<length_t>();
 			for(size_t i=0; i<size; i++){
 				if(i < N){
 					value[i] = read_type<T>(sub_type);
@@ -124,7 +124,7 @@ public:
 					skip(sub_type);
 				}
 			}
-		}else if(type.code == code::Typecode::TYPE_PAIR){
+		}else if(type.code == Typecode::TYPE_PAIR){
 			const auto &sub_type_1 = type.sub_types.at(0);
 			const auto &sub_type_2 = type.sub_types.at(1);
 			if(N >= 2){
@@ -137,7 +137,7 @@ public:
 				skip(sub_type_1);
 				skip(sub_type_2);
 			}
-		}else if(type.code == code::Typecode::TYPE_TUPLE){
+		}else if(type.code == Typecode::TYPE_TUPLE){
 			const auto size = type.sub_types.size();
 			for(size_t i=0; i<size; i++){
 				const auto &sub_type = type.sub_types.at(i);
@@ -147,7 +147,7 @@ public:
 					skip(sub_type);
 				}
 			}
-		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+		}else if(type.code == Typecode::TYPE_POINTER || type.code == Typecode::TYPE_OPTIONAL){
 			const bool flag = read_bool();
 			if(flag){
 				read_type(value, type.sub_types.at(0));
@@ -158,31 +158,31 @@ public:
 	}
 
 	template<class T>
-	void read_type(std::set<T> &value, const code::Typecode &type){
+	void read_type(std::set<T> &value, const Typecode &type){
 		read_set(value, type);
 	}
 
 	template<class T>
-	void read_type(std::unordered_set<T> &value, const code::Typecode &type){
+	void read_type(std::unordered_set<T> &value, const Typecode &type){
 		read_set(value, type);
 	}
 
 	template<class K, class V>
-	void read_type(std::map<K, V> &value, const code::Typecode &type){
+	void read_type(std::map<K, V> &value, const Typecode &type){
 		read_map(value, type);
 	}
 
 	template<class K, class V>
-	void read_type(std::unordered_map<K, V> &value, const code::Typecode &type){
+	void read_type(std::unordered_map<K, V> &value, const Typecode &type){
 		read_map(value, type);
 	}
 
 	template<class T, class U>
-	void read_type(std::pair<T, U> &value, const code::Typecode &type){
-		if(type.code == code::Typecode::TYPE_PAIR){
+	void read_type(std::pair<T, U> &value, const Typecode &type){
+		if(type.code == Typecode::TYPE_PAIR){
 			value.first = read_type<T>(type.sub_types.at(0));
 			value.second = read_type<U>(type.sub_types.at(1));
-		}else if(type.code == code::Typecode::TYPE_TUPLE){
+		}else if(type.code == Typecode::TYPE_TUPLE){
 			const auto size = type.sub_types.size();
 			if(size >= 1){
 				value.first = read_type<T>(type.sub_types.at(0));
@@ -193,9 +193,9 @@ public:
 			for(size_t i=2; i<size; i++){
 				skip(type.sub_types.at(i));
 			}
-		}else if(type.code == code::Typecode::TYPE_LIST){
+		}else if(type.code == Typecode::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<code::length_t>();
+			const auto size = read_le<length_t>();
 			if(size >= 1){
 				value.first = read_type<T>(sub_type);
 			}
@@ -205,7 +205,7 @@ public:
 			for(size_t i=2; i<size; i++){
 				skip(sub_type);
 			}
-		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+		}else if(type.code == Typecode::TYPE_POINTER || type.code == Typecode::TYPE_OPTIONAL){
 			const bool flag = read_bool();
 			if(flag){
 				read_type(value, type.sub_types.at(0));
@@ -216,23 +216,23 @@ public:
 	}
 
 	template<class... Ts>
-	void read_type(std::tuple<Ts...> &value, const code::Typecode &type){
+	void read_type(std::tuple<Ts...> &value, const Typecode &type){
 		constexpr size_t N = sizeof...(Ts);
-		if(type.code == code::Typecode::TYPE_TUPLE){
+		if(type.code == Typecode::TYPE_TUPLE){
 			const auto size = type.sub_types.size();
 			read_tuple_elements<N>(value, size, type.sub_types);
 			for(size_t i=N; i<size; i++){
 				skip(type.sub_types.at(i));
 			}
-		}else if(type.code == code::Typecode::TYPE_PAIR){
+		}else if(type.code == Typecode::TYPE_PAIR){
 			read_tuple_elements<N>(value, 2, type.sub_types);
 			for(size_t i=N; i<2; i++){
 				skip(type.sub_types.at(i));
 			}
-		}else if(type.code == code::Typecode::TYPE_LIST){
+		}else if(type.code == Typecode::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<code::length_t>();
-			std::vector<code::Typecode> sub_typecodes;
+			const auto size = read_le<length_t>();
+			std::vector<Typecode> sub_typecodes;
 			for(size_t i=0; i<size; i++){
 				sub_typecodes.push_back(sub_type);
 			}
@@ -240,7 +240,7 @@ public:
 			for(size_t i=N; i<size; i++){
 				skip(sub_type);
 			}
-		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+		}else if(type.code == Typecode::TYPE_POINTER || type.code == Typecode::TYPE_OPTIONAL){
 			const bool flag = read_bool();
 			if(flag){
 				read_type(value, type.sub_types.at(0));
@@ -251,8 +251,8 @@ public:
 	}
 
 	template<class T>
-	void read_type(std::optional<T> &value, const code::Typecode &type){
-		if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	void read_type(std::optional<T> &value, const Typecode &type){
+		if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 			const bool flag = read_le<uint8_t>();
 			if(flag){
 				value = read_type<T>(type.sub_types.at(0));
@@ -264,12 +264,12 @@ public:
 	}
 
 	template<class T>
-	void read_type(std::shared_ptr<T> &value, const code::Typecode &type){
-		if(type.code == code::Typecode::TYPE_OPTIONAL || type.code == code::Typecode::TYPE_POINTER){
+	void read_type(std::shared_ptr<T> &value, const Typecode &type){
+		if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
 			const bool flag = read_le<uint8_t>();
 			const auto &sub_type = type.sub_types.at(0);
 			if(flag){
-				if(sub_type.code == code::Typecode::TYPE_VALUE){
+				if(sub_type.code == Typecode::TYPE_VALUE){
 					// vip treatment
 					value = std::dynamic_pointer_cast<T>(read_type_value(sub_type));
 				}else{
@@ -278,7 +278,7 @@ public:
 					value = new_value;
 				}
 			}
-		}else if(type.code == code::Typecode::TYPE_VALUE){
+		}else if(type.code == Typecode::TYPE_VALUE){
 			value = std::dynamic_pointer_cast<T>(read_type_value(type));
 		}else{
 			skip(type);
@@ -286,10 +286,10 @@ public:
 	}
 
 	void skip();
-	void skip(const code::Typecode &type);
+	void skip(const Typecode &type);
 
 	void copy(TypeWriter &out);
-	void copy(TypeWriter &out, const code::Typecode &type);
+	void copy(TypeWriter &out, const Typecode &type);
 
 	template<class T>
 	T read_le(){
@@ -310,27 +310,27 @@ public:
 
 private:
 	time::time remote_epoch;
-	std::map<core::ID, code::Signature> signature_map;
-	std::map<core::ID, code::EnumMap> enum_maps;
+	std::map<core::ID, Signature> signature_map;
+	std::map<core::ID, EnumMap> enum_maps;
 
 	template<class T>
-	void read_number(T &value, const code::Typecode &type){
+	void read_number(T &value, const Typecode &type){
 		switch(type.code){
-		case code::Typecode::TYPE_NULL: value = 0; break;
-		case code::Typecode::TYPE_BOOL:
-		case code::Typecode::TYPE_U8: value = static_cast<T>(read_le<uint8_t>()); break;
-		case code::Typecode::TYPE_I8: value = static_cast<T>(read_le<int8_t>()); break;
-		case code::Typecode::TYPE_U16: value = static_cast<T>(read_le<uint16_t>()); break;
-		case code::Typecode::TYPE_I16: value = static_cast<T>(read_le<int16_t>()); break;
-		case code::Typecode::TYPE_U32: value = static_cast<T>(read_le<uint32_t>()); break;
-		case code::Typecode::TYPE_I32: value = static_cast<T>(read_le<int32_t>()); break;
-		case code::Typecode::TYPE_U64: value = static_cast<T>(read_le<uint64_t>()); break;
-		case code::Typecode::TYPE_I64:
-		case code::Typecode::TYPE_DURATION: value = static_cast<T>(read_le<int64_t>()); break;
-		case code::Typecode::TYPE_F32: value = static_cast<T>(read_le<float>()); break;
-		case code::Typecode::TYPE_F64: value = static_cast<T>(read_le<double>()); break;
-		case code::Typecode::TYPE_POINTER:
-		case code::Typecode::TYPE_OPTIONAL:{
+		case Typecode::TYPE_NULL: value = 0; break;
+		case Typecode::TYPE_BOOL:
+		case Typecode::TYPE_U8: value = static_cast<T>(read_le<uint8_t>()); break;
+		case Typecode::TYPE_I8: value = static_cast<T>(read_le<int8_t>()); break;
+		case Typecode::TYPE_U16: value = static_cast<T>(read_le<uint16_t>()); break;
+		case Typecode::TYPE_I16: value = static_cast<T>(read_le<int16_t>()); break;
+		case Typecode::TYPE_U32: value = static_cast<T>(read_le<uint32_t>()); break;
+		case Typecode::TYPE_I32: value = static_cast<T>(read_le<int32_t>()); break;
+		case Typecode::TYPE_U64: value = static_cast<T>(read_le<uint64_t>()); break;
+		case Typecode::TYPE_I64:
+		case Typecode::TYPE_DURATION: value = static_cast<T>(read_le<int64_t>()); break;
+		case Typecode::TYPE_F32: value = static_cast<T>(read_le<float>()); break;
+		case Typecode::TYPE_F64: value = static_cast<T>(read_le<double>()); break;
+		case Typecode::TYPE_POINTER:
+		case Typecode::TYPE_OPTIONAL:{
 			const bool flag = read_bool();
 			if(flag){
 				read_number(value, type.sub_types.at(0));
@@ -345,23 +345,23 @@ private:
 	}
 
 	template<class T>
-	void read_set(T &value, const code::Typecode &type){
+	void read_set(T &value, const Typecode &type){
 		using K = typename T::key_type;
-		if(type.code == code::Typecode::TYPE_LIST){
+		if(type.code == Typecode::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<code::length_t>();
+			const auto size = read_le<length_t>();
 			for(size_t i=0; i<size; i++){
 				value.insert(read_type<K>(sub_type));
 			}
-		}else if(type.code == code::Typecode::TYPE_PAIR){
+		}else if(type.code == Typecode::TYPE_PAIR){
 			value.insert(read_type<K>(type.sub_types.at(0)));
 			value.insert(read_type<K>(type.sub_types.at(1)));
-		}else if(type.code == code::Typecode::TYPE_TUPLE){
+		}else if(type.code == Typecode::TYPE_TUPLE){
 			const auto size = type.sub_types.size();
 			for(size_t i=0; i<size; i++){
 				value.insert(read_type<K>(type.sub_types.at(i)));
 			}
-		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+		}else if(type.code == Typecode::TYPE_POINTER || type.code == Typecode::TYPE_OPTIONAL){
 			const bool flag = read_bool();
 			if(flag){
 				read_set(value, type.sub_types.at(0));
@@ -372,27 +372,27 @@ private:
 	}
 
 	template<class T>
-	void read_map(T &value, const code::Typecode &type){
+	void read_map(T &value, const Typecode &type){
 		using K = typename T::key_type;
 		using V = typename T::mapped_type;
-		if(type.code == code::Typecode::TYPE_MAP){
+		if(type.code == Typecode::TYPE_MAP){
 			const auto &key_type = type.sub_types.at(0);
 			const auto &value_type = type.sub_types.at(1);
-			const auto size = read_le<code::length_t>();
+			const auto size = read_le<length_t>();
 			for(size_t i=0; i<size; i++){
 				const auto k = read_type<K>(key_type);
 				const auto v = read_type<V>(value_type);
 				value[k] = v;
 			}
-		}else if(type.code == code::Typecode::TYPE_LIST){
+		}else if(type.code == Typecode::TYPE_LIST){
 			const auto &sub_type = type.sub_types.at(0);
-			const auto size = read_le<code::length_t>();
+			const auto size = read_le<length_t>();
 			for(size_t i=0; i<size; i++){
 				std::pair<K, V> item;
 				read_type(item, sub_type);
 				value[item.first] = item.second;
 			}
-		}else if(type.code == code::Typecode::TYPE_POINTER || type.code == code::Typecode::TYPE_OPTIONAL){
+		}else if(type.code == Typecode::TYPE_POINTER || type.code == Typecode::TYPE_OPTIONAL){
 			const bool flag = read_bool();
 			if(flag){
 				read_map(value, type.sub_types.at(0));
@@ -404,7 +404,7 @@ private:
 
 	// N = remaining elements
 	template<size_t N, class... Ts>
-	typename std::enable_if<(N>0)>::type read_tuple_elements(std::tuple<Ts...> &value, size_t size, const std::vector<code::Typecode> &sub_types){
+	typename std::enable_if<(N>0)>::type read_tuple_elements(std::tuple<Ts...> &value, size_t size, const std::vector<Typecode> &sub_types){
 		constexpr size_t I = sizeof...(Ts) - N;
 		if(I < size){
 			read_type(std::get<I>(value), sub_types.at(I));
@@ -412,10 +412,10 @@ private:
 		}
 	}
 	template<size_t N, class... Ts>
-	typename std::enable_if<(N==0)>::type read_tuple_elements(std::tuple<Ts...> &value, size_t size, const std::vector<code::Typecode> &sub_types){
+	typename std::enable_if<(N==0)>::type read_tuple_elements(std::tuple<Ts...> &value, size_t size, const std::vector<Typecode> &sub_types){
 	}
 
-	std::shared_ptr<data::Value> read_type_value(const code::Typecode &type);
+	std::shared_ptr<data::Value> read_type_value(const Typecode &type);
 };
 
 

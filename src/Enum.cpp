@@ -9,8 +9,8 @@ namespace asgard{
 namespace data{
 
 
-code::Typecode Enum::typecode(){
-	return code::Typecode(code::Typecode::TYPE_ENUM);
+type::Typecode Enum::typecode(){
+	return type::Typecode(type::Typecode::TYPE_ENUM);
 }
 
 

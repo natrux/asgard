@@ -1,9 +1,9 @@
 #pragma once
 
-#include <asgard/code/Typecode.h>
-#include <asgard/code/get_typecode.h>
-#include <asgard/code/Signature.h>
-#include <asgard/code/EnumMap.h>
+#include <asgard/type/Typecode.h>
+#include <asgard/type/get_typecode.h>
+#include <asgard/type/Signature.h>
+#include <asgard/type/EnumMap.h>
 #include <asgard/io/BufferedOutput.h>
 #include <asgard/time/time.h>
 #include <asgard/core/ID.h>
@@ -36,13 +36,13 @@ class TypeWriter : public io::BufferedOutput{
 public:
 	TypeWriter(std::shared_ptr<io::OutputSource> source);
 
-	void write_typecode(const code::Typecode &type);
-	void write_signature(const code::Signature &signature);
-	void write_enum_map(const code::EnumMap &map);
+	void write_typecode(const Typecode &type);
+	void write_signature(const Signature &signature);
+	void write_enum_map(const EnumMap &map);
 
 	template<class T>
 	void write_type(const T &value){
-		const auto type = code::get_typecode<T>();
+		const auto type = get_typecode<T>();
 		write_typecode(type);
 		write_value(value);
 	}
@@ -126,7 +126,7 @@ public:
 		}
 	}
 
-	void write_empty_value(const code::Typecode &type);
+	void write_empty_value(const Typecode &type);
 
 	template<class T>
 	void write_le(const T &value){
@@ -145,7 +145,7 @@ private:
 
 	template<class T>
 	void write_list(const T &value){
-		const code::length_t size = value.size();
+		const length_t size = value.size();
 		write_le(size);
 		for(const auto &entry : value){
 			write_value(entry);
@@ -154,7 +154,7 @@ private:
 
 	template<class T>
 	void write_map(const T &value){
-		const code::length_t size = value.size();
+		const length_t size = value.size();
 		write_le(size);
 		for(const auto &entry : value){
 			write_value(entry.first);

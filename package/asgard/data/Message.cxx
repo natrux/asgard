@@ -6,7 +6,7 @@ namespace asgard{
 namespace data{
 
 
-code::Signature Message::static_signature(){
+type::Signature Message::static_signature(){
 	auto sig = Super::static_signature();
 	sig.parents.push_back(sig.name);
 	sig.name = "asgard.data.Message";
@@ -24,7 +24,7 @@ Message::Message(){
 }
 
 
-void Message::read_member(type::TypeReader &reader, const std::string &name, const code::Typecode &type){
+void Message::read_member(type::TypeReader &reader, const std::string &name, const type::Typecode &type){
 	Super::read_member(reader, name, type);
 }
 
