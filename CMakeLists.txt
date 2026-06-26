@@ -14,10 +14,21 @@ if(BUILD_CODEGEN)
 		grammar/asgard/code/AsgardLexer.cpp
 		grammar/asgard/code/AsgardParser.cpp
 		src/codegen.cpp
+		src/crc_32_iso_hdlc.cpp
 	)
+	if(WIN32)
+		target_sources(asgard_codegen PRIVATE
+			src/win32/ls.cpp
+		)
+	else()
+		target_sources(asgard_codegen PRIVATE
+			src/linux/ls.cpp
+		)
+	endif()
 
 	target_include_directories(asgard_codegen PUBLIC
 		${ANTLR4_INCLUDE_DIR}
+		include
 		grammar
 	)
 

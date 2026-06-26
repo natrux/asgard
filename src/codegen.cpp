@@ -1,5 +1,8 @@
 #include <asgard/code/AsgardParser.h>
 #include <asgard/code/AsgardLexer.h>
+#include <asgard/util/ls.h>
+#include <asgard/util/crc_32_iso_hdlc.h>
+#include <asgard/util/crc_64_xz.h>
 
 
 namespace asgard{
@@ -176,11 +179,81 @@ static std::string get_declaration(AsgardParser::DeclarationContext *declaration
 }
 
 
-void parse_file(const std::string &path){
+class Namespace{
+	public:
+	Namespace &get(const std::string &name){
+		auto &sub = subs[name];
+		if(sub.trace.empty()){
+			sub.trace = trace;
+			sub.trace.push_back(name);
+		}
+		return sub;
+	}
+
+	const Namespace &get(const std::string &name) const{
+		const auto find = subs.find(name);
+		if(find == subs.end()){
+			throw std::logic_error("No such namespace");
+		}
+		return find->second;
+	}
+
+	std::string to_string(const std::string &sep) const{
+		std::string result;
+		for(const auto &name : trace){
+			if(!result.empty()){
+				result.append(sep);
+			}
+			result.append(name);
+		}
+		return result;
+	}
+
+	std::string to_string(const std::string &sep, const std::string &name) const{
+		std::string result = to_string(sep);
+		if(!result.empty()){
+			result.append(sep);
+		}
+		result.append(name);
+		return result;
+	}
+
+private:
+	std::vector<std::string> trace;
+	std::map<std::string, Namespace> subs;
+};
+
+
+void parse_file(Namespace &ns, const std::string &path){
 	std::ifstream stream(path);
 	if(!stream){
 		throw std::runtime_error("Opening file " + path + " failed");
 	}
+
+	const auto find_slash = path.rfind('/');
+	const auto find_dot = path.rfind('.');
+	const std::string name = path.substr(
+		find_slash==std::string::npos ? 0 : find_slash+1,
+		(find_dot==std::string::npos ? path.length() : find_dot) - (find_slash==std::string::npos ? 0 : find_slash) - 1
+	);
+	std::string extension;
+	if(find_dot != std::string::npos){
+		extension = path.substr(find_dot+1);
+	}
+
+	bool is_class = false;
+	bool is_module = false;
+	bool is_enum = false;
+	if(extension == "data"){
+		is_class = true;
+	}else if(extension == "module"){
+		is_module = true;
+	}else if(extension == "enum"){
+		is_enum = true;
+	}else{
+		throw std::logic_error("No file format recognized");
+	}
+
 
 	AsgardLexer::initialize();
 	AsgardParser::initialize();
@@ -204,21 +277,60 @@ void parse_file(const std::string &path){
 	AsgardParser::ModuledefContext *moduledef = nullptr;
 	AsgardParser::EnumdefContext *enumdef = nullptr;
 	try{
-		std::string extension;
-		const auto find_dot = path.rfind('.');
-		if(find_dot != std::string::npos){
-			extension = path.substr(find_dot+1);
-		}
-		if(extension == "data"){
+		if(is_class){
 			classdef = parser.classdef();
-		}else if(extension == "module"){
+		}else if(is_module){
 			moduledef = parser.moduledef();
-		}else if(extension == "enum"){
+		}else if(is_enum){
 			enumdef = parser.enumdef();
 		}
 	}catch(const std::exception &err){
 		throw std::runtime_error("Parsing failed with: " + std::string(err.what()));
 	}
+
+	std::cout << "#pragma once" << std::endl;
+	if(is_class || is_module){
+	}else if(is_enum){
+		std::cout << "#include <asgard/data/Enum.h>" << std::endl;
+	}
+	std::cout << "namespace " << ns.to_string("::") << "{" << std::endl;
+
+	if(is_class || is_module){
+		std::cout << ns.to_string("::", name) << std::endl;
+	}else if(is_enum){
+		std::cout <<
+			"class " << name << " : public asgard::data::Enum{" << std::endl <<
+			"public:" << std::endl <<
+			"\tenum enum_e : asgard::type::enum_t{" << std::endl
+		;
+		for(auto *id : enumdef->ID()){
+			const auto text = id->getSymbol()->getText();
+			std::cout << "\t\t" << text << " = 0x" << std::hex << util::CRC_32_ISO_HDLC::compute(text.c_str(), text.length()) << std::dec << "," << std::endl;
+		}
+		std::cout << "\t};" << std::endl;
+		std::cout <<
+			"\tstatic asgard::type::EnumMap static_enum_map();" << std::endl <<
+			"\t" << name << "() = default;" << std::endl <<
+			"\t" << name << "(const enum_e &v);" << std::endl <<
+			"\t" << name << " &operator=(const " << name << " &other) = default;" << std::endl <<
+			"\t" << name << " &operator=(const enum_e &v);" << std::endl <<
+			std::endl <<
+			"\tasgard::type::EnumMap enum_map() const override;" << std::endl <<
+			"\tvoid from_int(const asgard::type::enum_t &v) override;" << std::endl <<
+			"\ttype::enum_t to_int() const override;" << std::endl <<
+			std::endl <<
+			"\toperator enum_e() const;" << std::endl <<
+		std::endl;
+		std::cout << "private:" << std::endl;
+		std::cout <<
+			"\tstatic const enum_e zero = static_cast<enum_e>(0);" << std::endl <<
+			"\tstatic const std::map<asgard::type::enum_t, std::string> _enum_map;" << std::endl <<
+			"\tenum_e value = zero;" << std::endl <<
+		std::endl;
+
+		std::cout << "};" << std::endl;
+	}
+
 
 	if(classdef || moduledef){
 		auto class_path = classdef ? classdef->extends()->class_path() : moduledef->extends()->class_path();
@@ -253,10 +365,106 @@ void parse_file(const std::string &path){
 			}
 		}
 	}
-	if(enumdef){
+
+	std::cout << "}" << std::endl;
+
+	std::cout << "#include <" << ns.to_string("/", name) << ".hxx>" << std::endl;
+	std::cout << "namespace " << ns.to_string("::") << "{" << std::endl;
+
+	if(is_class || is_module){
+	}else if(is_enum){
+		std::cout << "const std::map<type::enum_t, std::string> " << name << "::_enum_map = {" << std::endl;
 		for(auto *id : enumdef->ID()){
-			std::cout << id->getSymbol()->getText() << "," << std::endl;
+			const auto text = id->getSymbol()->getText();
+			std::cout << "\t{" << text << ", \"" << text << "\"}," << std::endl;
 		}
+		std::cout << "};" << std::endl;
+
+		std::cout <<
+			"type::EnumMap " << name << "::static_enum_map(){" << std::endl <<
+			"\ttype::EnumMap map;" << std::endl <<
+			"\tmap.name = \"" << ns.to_string(".", name) << "\";" << std::endl <<
+			"\tmap.enum_map = _enum_map;" << std::endl <<
+			"\tmap.fill_reverse();" << std::endl <<
+			"\treturn map;" << std::endl <<
+			"}" << std::endl <<
+		std::endl;
+
+		std::cout <<
+			name << "::" << name << "(const enum_e &v):" << std::endl <<
+			"\tvalue(v)" << std::endl <<
+			"{" << std::endl <<
+			"}" << std::endl <<
+		std::endl;
+
+		std::cout <<
+			name << " &" << name << "::operator=(const enum_e &v){" << std::endl <<
+			"\tvalue = v;" << std::endl <<
+			"\treturn *this;" << std::endl <<
+			"}" << std::endl <<
+		std::endl;
+
+		std::cout <<
+			"type::EnumMap " << name << "::enum_map() const{" << std::endl <<
+			"\treturn static_enum_map();" << std::endl <<
+			"}" << std::endl <<
+		std::endl;
+
+		std::cout <<
+			"void " << name << "::from_int(const type::enum_t &v){" << std::endl <<
+			"\tconst auto find = _enum_map.find(v);" << std::endl <<
+			"\tif(find == _enum_map.end()){" << std::endl <<
+			"\t\tvalue = zero;" << std::endl <<
+			"\t}else{" << std::endl <<
+			"\t\tvalue = static_cast<enum_e>(v);" << std::endl <<
+			"\t}" << std::endl <<
+			"}" << std::endl <<
+		std::endl;
+
+		std::cout <<
+			"type::enum_t " << name << "::to_int() const{" << std::endl <<
+			"\treturn value;" << std::endl <<
+			"}" << std::endl <<
+		std::endl;
+
+		std::cout <<
+			name << "::operator enum_e() const{" << std::endl <<
+			"\treturn value;" << std::endl <<
+			"}" << std::endl <<
+		std::endl;
+	}
+
+	std::cout << "}" << std::endl;
+}
+
+
+
+
+
+void parse_directory(Namespace &ns, const std::string &path){
+	std::vector<std::string> files;
+	std::vector<std::string> directories;
+	util::ls(path, files, directories);
+	for(const auto &file : files){
+		const std::string full_path = path + "/" + file;
+		std::cout << "=== " << full_path << " ===" << std::endl;
+		try{
+			asgard::code::parse_file(ns, full_path);
+		}catch(const std::exception &err){
+			std::cerr << err.what() << std::endl;
+		}
+	}
+	for(const auto &dir : directories){
+		const std::string subdir = path + "/" + dir;
+		parse_directory(ns.get(dir), subdir);
+	}
+}
+
+
+void parse_packages(const std::vector<std::string> &paths){
+	Namespace root;
+	for(const auto &path : paths){
+		parse_directory(root, path);
 	}
 }
 
@@ -266,16 +474,11 @@ void parse_file(const std::string &path){
 
 
 int main(int argc, char **argv){
+	std::vector<std::string> paths;
 	for(int i=1; i<argc; i++){
-		const std::string path = argv[i];
-		std::cout << "=== " << path << " ===" << std::endl;
-
-		try{
-			asgard::code::parse_file(path);
-		}catch(const std::exception &err){
-			std::cerr << err.what() << std::endl;
-		}
+		paths.push_back(argv[i]);
 	}
+	asgard::code::parse_packages(paths);
 
 	return 0;
 }
