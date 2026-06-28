@@ -180,7 +180,7 @@ static std::string get_declaration(AsgardParser::DeclarationContext *declaration
 
 
 class Namespace{
-	public:
+public:
 	Namespace &get(const std::string &name){
 		auto &sub = subs[name];
 		if(sub.trace.empty()){
@@ -295,7 +295,29 @@ void parse_file(Namespace &ns, const std::string &path){
 	}
 	std::cout << "namespace " << ns.to_string("::") << "{" << std::endl;
 
-	if(is_class || is_module){
+	if(is_class){
+		const auto extends = get_class_path(classdef ? classdef->extends()->class_path() : moduledef->extends()->class_path());
+		std::cout << "class " << name << " : public " << extends << "{" << std::endl;
+		std::cout << "\tusing Super = " << extends << ";" << std::endl;
+		std::cout << "public:" << std::endl;
+		for(auto *member : classdef->member()){
+			std::cout << "\t" << get_declaration(member->declaration()) << ";" << std::endl;
+		}
+		for(auto *function : classdef->function()){
+			std::cout << "\t" << get_function(function) << std::endl;
+		}
+		for(auto *method : classdef->method()){
+			std::cout << "\t" << get_method(method) << std::endl;
+		}
+		std::cout << "\tstatic asgard::type::Signature static_signature();" << std::endl;
+		std::cout << "\tstatic std::shared_ptr<" << name << "> create();" << std::endl;
+		std::cout << "\t" << name << "();" << std::endl;
+		std::cout << "\tvoid read_member(asgard::type::TypeReader &reader, const std::string &name, const asgard::type::Typecode &type) override;" << std::endl;
+		std::cout << "\tvoid write_member(asgard::type::TypeWriter &writer, const std::string &name) const override;" << std::endl;
+		std::cout << "\tvoid set_member(const std::string &name, const asgard::data::Bin &value) override;" << std::endl;
+		std::cout << "\tasgard::data::Bin get_member(const std::string &name) const override;" << std::endl;
+		std::cout << "};" << std::endl;
+	}else if(is_module){
 		std::cout << ns.to_string("::", name) << std::endl;
 	}else if(is_enum){
 		std::cout <<
@@ -331,15 +353,9 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::cout << "};" << std::endl;
 	}
 
-
-	if(classdef || moduledef){
+	if(moduledef){
 		auto class_path = classdef ? classdef->extends()->class_path() : moduledef->extends()->class_path();
 		std::cout << "extends " << get_class_path(class_path) << std::endl;
-	}
-	if(classdef){
-		for(auto *member : classdef->member()){
-			std::cout << get_declaration(member->declaration()) << std::endl;
-		}
 	}
 	if(moduledef){
 		for(auto *member : moduledef->module_member()){
@@ -350,7 +366,7 @@ void parse_file(Namespace &ns, const std::string &path){
 			}
 		}
 	}
-	if(classdef || moduledef){
+	if(moduledef){
 		for(auto *function : classdef ? classdef->function() : moduledef->function()){
 			std::cout << get_function(function) << std::endl;
 		}
@@ -371,7 +387,69 @@ void parse_file(Namespace &ns, const std::string &path){
 	std::cout << "#include <" << ns.to_string("/", name) << ".hxx>" << std::endl;
 	std::cout << "namespace " << ns.to_string("::") << "{" << std::endl;
 
-	if(is_class || is_module){
+	if(is_class){
+		std::vector<std::string> members;
+		for(auto *member : classdef->member()){
+			const std::string name = member->declaration()->ID()->getSymbol()->getText();
+			members.push_back(name);
+		}
+		std::cout << "asgard::type::Signature " << name << "::static_signature(){" << std::endl;
+		std::cout << "\tauto sig = Super::static_signature();" << std::endl;
+		std::cout << "\tsig.parents.push_back(sig.name);" << std::endl;
+		std::cout << "\tsig.name = \"" << ns.to_string(".", name) << "\";" << std::endl;
+		for(const auto &member : members){
+			std::cout << "\tsig.members[\"" << member << "\"] = type::get_typecode<decltype(" << member << ")>();" << std::endl;
+		}
+		std::cout << "\treturn sig;" << std::endl;
+		std::cout << "}" << std::endl;
+		std::cout << "std::shared_ptr<" << name << "> " << name << "::create(){" << std::endl;
+		std::cout << "\treturn std::make_shared<" << name << ">();" << std::endl;
+		std::cout << "}" << std::endl;
+		std::cout << name << "::" << name << "(){" << std::endl;
+		std::cout << "\tset_signature(static_signature());" << std::endl;
+		std::cout << "}" << std::endl;
+		std::cout << "void " << name << "::read_member(asgard::type::TypeReader &reader, const std::string &name, const asgard::type::Typecode &type){" << std::endl;
+		std::cout << "\tif(false){" << std::endl;
+		for(const auto &member : members){
+			std::cout << "\t}else if(name == \"" << member << "\"){" << std::endl;
+			std::cout << "\t\treader.read_type(" << member << ", type);" << std::endl;
+		}
+		std::cout << "\t}else{" << std::endl;
+		std::cout << "\t\tSuper::read_member(reader, name, type);" << std::endl;
+		std::cout << "\t}" << std::endl;
+		std::cout << "}" << std::endl;
+		std::cout << "void " << name << "::write_member(asgard::type::TypeWriter &writer, const std::string &name) const{" << std::endl;
+		std::cout << "\tif(false){" << std::endl;
+		for(const auto &member : members){
+			std::cout << "\t}else if(name == \"" << member << "\"){" << std::endl;
+			std::cout << "\t\twriter.write_value(" << member << ");" << std::endl;
+		}
+		std::cout << "\t}else{" << std::endl;
+		std::cout << "\t\tSuper::write_member(writer, name);" << std::endl;
+		std::cout << "\t}" << std::endl;
+		std::cout << "}" << std::endl;
+		std::cout << "void " << name << "::set_member(const std::string &name, const asgard::data::Bin &value){" << std::endl;
+		std::cout << "\tif(false){" << std::endl;
+		for(const auto &member : members){
+			std::cout << "\t}else if(name == \"" << member << "\"){" << std::endl;
+			std::cout << "\t\tvalue.to(" << member << ");" << std::endl;
+		}
+		std::cout << "\t}else{" << std::endl;
+		std::cout << "\t\tSuper::set_member(name, value);" << std::endl;
+		std::cout << "\t}" << std::endl;
+		std::cout << "}" << std::endl;
+		std::cout << "asgard::data::Bin " << name << "::get_member(const std::string &name) const{" << std::endl;
+		std::cout << "\tif(false){" << std::endl;
+		for(const auto &member : members){
+			std::cout << "\t}else if(name == \"" << member << "\"){" << std::endl;
+			std::cout << "\t\treturn " << member << ";" << std::endl;
+		}
+		std::cout << "\t}else{" << std::endl;
+		std::cout << "\t\treturn Super::get_member(name);" << std::endl;
+		std::cout << "\t}" << std::endl;
+		std::cout << "}" << std::endl;
+		std::cout << "static asgard::core::register_type_t<" << name << "> register_type;" << std::endl;
+	}if(is_module){
 	}else if(is_enum){
 		std::cout << "const std::map<type::enum_t, std::string> " << name << "::_enum_map = {" << std::endl;
 		for(auto *id : enumdef->ID()){
