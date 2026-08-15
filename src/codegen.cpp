@@ -179,23 +179,114 @@ static std::string get_declaration(AsgardParser::DeclarationContext *declaration
 }
 
 
+class Namespace;
+
+class Type{
+public:
+	std::string name;
+	std::weak_ptr<Namespace> ns;
+
+	bool is_class = false;
+	bool is_module = false;
+	bool is_enum = false;
+	bool is_extern = false;
+
+	virtual ~Type() = default;
+	virtual std::string get_include_path() const = 0;
+};
+
+class Generated : public Type{
+public:
+	std::string def_file;
+
+	std::string get_include_path() const override;
+};
+
+class Class : public Generated{
+public:
+	Class(){ is_class = true; }
+};
+
+class Module : public Generated{
+public:
+	Module(){ is_module = true; }
+};
+
+class Enum : public Generated{
+public:
+	Enum(){ is_enum = true; }
+};
+
+class Extern : public Type{
+public:
+	std::string include_file;
+
+	Extern(){ is_extern = true; }
+
+	std::string get_include_path() const override;
+};
+
 class Namespace{
 public:
-	Namespace &get(const std::string &name){
-		auto &sub = subs[name];
-		if(sub.trace.empty()){
-			sub.trace = trace;
-			sub.trace.push_back(name);
-		}
-		return sub;
+	static std::shared_ptr<Namespace> create(){
+		auto ptr = std::make_shared<Namespace>();
+		ptr->self = ptr;
+		return ptr;
 	}
 
-	const Namespace &get(const std::string &name) const{
-		const auto find = subs.find(name);
-		if(find == subs.end()){
-			throw std::logic_error("No such namespace");
+	void add(std::shared_ptr<Type> type){
+		types[type->name] = type;
+		type->ns = self;
+	}
+
+	std::shared_ptr<Type> find(const std::string &name, const std::vector<std::string> &ns) const{
+		std::shared_ptr<Type> result;
+		if(ns.empty()){
+			const auto find = types.find(name);
+			if(find != types.end()){
+				result = find->second;
+			}
+		}else{
+			const auto found = subnames.find(ns.front());
+			if(found != subnames.end()){
+				auto sub = found->second;
+				const std::vector<std::string> ns_tail(++ns.begin(), ns.end());
+				result = sub->find(name, ns_tail);
+			}
 		}
-		return find->second;
+		if(!result){
+			if(auto p = parent.lock()){
+				result = p->find(name, ns);
+			}
+		}
+		return result;
+	}
+
+	std::shared_ptr<Type> find(const std::string &name){
+		return find(name, {});
+	}
+
+	std::vector<std::shared_ptr<Type>> get_all() const{
+		std::vector<std::shared_ptr<Type>> result;
+		for(const auto &entry : types){
+			result.push_back(entry.second);
+		}
+		for(const auto &entry : subnames){
+			const auto ts = entry.second->get_all();
+			result.insert(result.end(), ts.begin(), ts.end());
+		}
+		return result;
+	}
+
+	std::shared_ptr<Namespace> sub(const std::string &name){
+		auto &sub = subnames[name];
+		if(!sub){
+			sub = create();
+			sub->parent = self.lock();
+			sub->trace = trace;
+			sub->trace.push_back(name);
+		}
+		return sub;
 	}
 
 	std::string to_string(const std::string &sep) const{
@@ -219,41 +310,36 @@ public:
 	}
 
 private:
+	std::weak_ptr<Namespace> self;
+	std::weak_ptr<Namespace> parent;
 	std::vector<std::string> trace;
-	std::map<std::string, Namespace> subs;
+	std::map<std::string, std::shared_ptr<Type>> types;
+	std::map<std::string, std::shared_ptr<Namespace>> subnames;
 };
 
 
-void parse_file(Namespace &ns, const std::string &path){
-	std::ifstream stream(path);
+std::string Generated::get_include_path() const{
+	return ns.lock()->to_string("/", name+".hxx");
+}
+
+std::string Extern::get_include_path() const{
+	return ns.lock()->to_string("/", include_file);
+}
+
+
+
+
+
+
+void parse_file(const Generated &type){
+	auto ns = type.ns.lock();
+	if(!ns){
+		throw std::logic_error("Type has no namespace");
+	}
+	std::ifstream stream(type.def_file);
 	if(!stream){
-		throw std::runtime_error("Opening file " + path + " failed");
+		throw std::runtime_error("Opening file " + type.def_file + " failed");
 	}
-
-	const auto find_slash = path.rfind('/');
-	const auto find_dot = path.rfind('.');
-	const std::string name = path.substr(
-		find_slash==std::string::npos ? 0 : find_slash+1,
-		(find_dot==std::string::npos ? path.length() : find_dot) - (find_slash==std::string::npos ? 0 : find_slash) - 1
-	);
-	std::string extension;
-	if(find_dot != std::string::npos){
-		extension = path.substr(find_dot+1);
-	}
-
-	bool is_class = false;
-	bool is_module = false;
-	bool is_enum = false;
-	if(extension == "data"){
-		is_class = true;
-	}else if(extension == "module"){
-		is_module = true;
-	}else if(extension == "enum"){
-		is_enum = true;
-	}else{
-		throw std::logic_error("No file format recognized");
-	}
-
 
 	AsgardLexer::initialize();
 	AsgardParser::initialize();
@@ -277,11 +363,11 @@ void parse_file(Namespace &ns, const std::string &path){
 	AsgardParser::ModuledefContext *moduledef = nullptr;
 	AsgardParser::EnumdefContext *enumdef = nullptr;
 	try{
-		if(is_class){
+		if(type.is_class){
 			classdef = parser.classdef();
-		}else if(is_module){
+		}else if(type.is_module){
 			moduledef = parser.moduledef();
-		}else if(is_enum){
+		}else if(type.is_enum){
 			enumdef = parser.enumdef();
 		}
 	}catch(const std::exception &err){
@@ -289,15 +375,15 @@ void parse_file(Namespace &ns, const std::string &path){
 	}
 
 	std::cout << "#pragma once" << std::endl;
-	if(is_class || is_module){
-	}else if(is_enum){
+	if(type.is_class || type.is_module){
+	}else if(type.is_enum){
 		std::cout << "#include <asgard/data/Enum.h>" << std::endl;
 	}
-	std::cout << "namespace " << ns.to_string("::") << "{" << std::endl;
+	std::cout << "namespace " << ns->to_string("::") << "{" << std::endl;
 
-	if(is_class){
+	if(type.is_class){
 		const auto extends = get_class_path(classdef ? classdef->extends()->class_path() : moduledef->extends()->class_path());
-		std::cout << "class " << name << " : public " << extends << "{" << std::endl;
+		std::cout << "class " << type.name << " : public " << extends << "{" << std::endl;
 		std::cout << "\tusing Super = " << extends << ";" << std::endl;
 		std::cout << "public:" << std::endl;
 		for(auto *member : classdef->member()){
@@ -310,18 +396,18 @@ void parse_file(Namespace &ns, const std::string &path){
 			std::cout << "\t" << get_method(method) << std::endl;
 		}
 		std::cout << "\tstatic asgard::type::Signature static_signature();" << std::endl;
-		std::cout << "\tstatic std::shared_ptr<" << name << "> create();" << std::endl;
-		std::cout << "\t" << name << "();" << std::endl;
+		std::cout << "\tstatic std::shared_ptr<" << type.name << "> create();" << std::endl;
+		std::cout << "\t" << type.name << "();" << std::endl;
 		std::cout << "\tvoid read_member(asgard::type::TypeReader &reader, const std::string &name, const asgard::type::Typecode &type) override;" << std::endl;
 		std::cout << "\tvoid write_member(asgard::type::TypeWriter &writer, const std::string &name) const override;" << std::endl;
 		std::cout << "\tvoid set_member(const std::string &name, const asgard::data::Bin &value) override;" << std::endl;
 		std::cout << "\tasgard::data::Bin get_member(const std::string &name) const override;" << std::endl;
 		std::cout << "};" << std::endl;
-	}else if(is_module){
-		std::cout << ns.to_string("::", name) << std::endl;
-	}else if(is_enum){
+	}else if(type.is_module){
+		std::cout << ns->to_string("::", type.name) << std::endl;
+	}else if(type.is_enum){
 		std::cout <<
-			"class " << name << " : public asgard::data::Enum{" << std::endl <<
+			"class " << type.name << " : public asgard::data::Enum{" << std::endl <<
 			"public:" << std::endl <<
 			"\tenum enum_e : asgard::type::enum_t{" << std::endl
 		;
@@ -332,14 +418,14 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::cout << "\t};" << std::endl;
 		std::cout <<
 			"\tstatic asgard::type::EnumMap static_enum_map();" << std::endl <<
-			"\t" << name << "() = default;" << std::endl <<
-			"\t" << name << "(const enum_e &v);" << std::endl <<
-			"\t" << name << " &operator=(const " << name << " &other) = default;" << std::endl <<
-			"\t" << name << " &operator=(const enum_e &v);" << std::endl <<
+			"\t" << type.name << "() = default;" << std::endl <<
+			"\t" << type.name << "(const enum_e &v);" << std::endl <<
+			"\t" << type.name << " &operator=(const " << type.name << " &other) = default;" << std::endl <<
+			"\t" << type.name << " &operator=(const enum_e &v);" << std::endl <<
 			std::endl <<
 			"\tasgard::type::EnumMap enum_map() const override;" << std::endl <<
 			"\tvoid from_int(const asgard::type::enum_t &v) override;" << std::endl <<
-			"\ttype::enum_t to_int() const override;" << std::endl <<
+			"\tasgard::type::enum_t to_int() const override;" << std::endl <<
 			std::endl <<
 			"\toperator enum_e() const;" << std::endl <<
 		std::endl;
@@ -384,31 +470,31 @@ void parse_file(Namespace &ns, const std::string &path){
 
 	std::cout << "}" << std::endl;
 
-	std::cout << "#include <" << ns.to_string("/", name) << ".hxx>" << std::endl;
-	std::cout << "namespace " << ns.to_string("::") << "{" << std::endl;
+	std::cout << "#include <" << type.get_include_path() << ">" << std::endl;
+	std::cout << "namespace " << ns->to_string("::") << "{" << std::endl;
 
-	if(is_class){
+	if(type.is_class){
 		std::vector<std::string> members;
 		for(auto *member : classdef->member()){
 			const std::string name = member->declaration()->ID()->getSymbol()->getText();
 			members.push_back(name);
 		}
-		std::cout << "asgard::type::Signature " << name << "::static_signature(){" << std::endl;
+		std::cout << "asgard::type::Signature " << type.name << "::static_signature(){" << std::endl;
 		std::cout << "\tauto sig = Super::static_signature();" << std::endl;
 		std::cout << "\tsig.parents.push_back(sig.name);" << std::endl;
-		std::cout << "\tsig.name = \"" << ns.to_string(".", name) << "\";" << std::endl;
+		std::cout << "\tsig.name = \"" << ns->to_string(".", type.name) << "\";" << std::endl;
 		for(const auto &member : members){
 			std::cout << "\tsig.members[\"" << member << "\"] = type::get_typecode<decltype(" << member << ")>();" << std::endl;
 		}
 		std::cout << "\treturn sig;" << std::endl;
 		std::cout << "}" << std::endl;
-		std::cout << "std::shared_ptr<" << name << "> " << name << "::create(){" << std::endl;
-		std::cout << "\treturn std::make_shared<" << name << ">();" << std::endl;
+		std::cout << "std::shared_ptr<" << type.name << "> " << type.name << "::create(){" << std::endl;
+		std::cout << "\treturn std::make_shared<" << type.name << ">();" << std::endl;
 		std::cout << "}" << std::endl;
-		std::cout << name << "::" << name << "(){" << std::endl;
+		std::cout << type.name << "::" << type.name << "(){" << std::endl;
 		std::cout << "\tset_signature(static_signature());" << std::endl;
 		std::cout << "}" << std::endl;
-		std::cout << "void " << name << "::read_member(asgard::type::TypeReader &reader, const std::string &name, const asgard::type::Typecode &type){" << std::endl;
+		std::cout << "void " << type.name << "::read_member(asgard::type::TypeReader &reader, const std::string &name, const asgard::type::Typecode &type){" << std::endl;
 		std::cout << "\tif(false){" << std::endl;
 		for(const auto &member : members){
 			std::cout << "\t}else if(name == \"" << member << "\"){" << std::endl;
@@ -418,7 +504,7 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::cout << "\t\tSuper::read_member(reader, name, type);" << std::endl;
 		std::cout << "\t}" << std::endl;
 		std::cout << "}" << std::endl;
-		std::cout << "void " << name << "::write_member(asgard::type::TypeWriter &writer, const std::string &name) const{" << std::endl;
+		std::cout << "void " << type.name << "::write_member(asgard::type::TypeWriter &writer, const std::string &name) const{" << std::endl;
 		std::cout << "\tif(false){" << std::endl;
 		for(const auto &member : members){
 			std::cout << "\t}else if(name == \"" << member << "\"){" << std::endl;
@@ -428,7 +514,7 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::cout << "\t\tSuper::write_member(writer, name);" << std::endl;
 		std::cout << "\t}" << std::endl;
 		std::cout << "}" << std::endl;
-		std::cout << "void " << name << "::set_member(const std::string &name, const asgard::data::Bin &value){" << std::endl;
+		std::cout << "void " << type.name << "::set_member(const std::string &name, const asgard::data::Bin &value){" << std::endl;
 		std::cout << "\tif(false){" << std::endl;
 		for(const auto &member : members){
 			std::cout << "\t}else if(name == \"" << member << "\"){" << std::endl;
@@ -438,7 +524,7 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::cout << "\t\tSuper::set_member(name, value);" << std::endl;
 		std::cout << "\t}" << std::endl;
 		std::cout << "}" << std::endl;
-		std::cout << "asgard::data::Bin " << name << "::get_member(const std::string &name) const{" << std::endl;
+		std::cout << "asgard::data::Bin " << type.name << "::get_member(const std::string &name) const{" << std::endl;
 		std::cout << "\tif(false){" << std::endl;
 		for(const auto &member : members){
 			std::cout << "\t}else if(name == \"" << member << "\"){" << std::endl;
@@ -448,10 +534,10 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::cout << "\t\treturn Super::get_member(name);" << std::endl;
 		std::cout << "\t}" << std::endl;
 		std::cout << "}" << std::endl;
-		std::cout << "static asgard::core::register_type_t<" << name << "> register_type;" << std::endl;
-	}if(is_module){
-	}else if(is_enum){
-		std::cout << "const std::map<type::enum_t, std::string> " << name << "::_enum_map = {" << std::endl;
+		std::cout << "static asgard::core::register_type_t<" << type.name << "> register_type;" << std::endl;
+	}if(type.is_module){
+	}else if(type.is_enum){
+		std::cout << "const std::map<asgard::type::enum_t, std::string> " << type.name << "::_enum_map = {" << std::endl;
 		for(auto *id : enumdef->ID()){
 			const auto text = id->getSymbol()->getText();
 			std::cout << "\t{" << text << ", \"" << text << "\"}," << std::endl;
@@ -459,9 +545,9 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::cout << "};" << std::endl;
 
 		std::cout <<
-			"type::EnumMap " << name << "::static_enum_map(){" << std::endl <<
-			"\ttype::EnumMap map;" << std::endl <<
-			"\tmap.name = \"" << ns.to_string(".", name) << "\";" << std::endl <<
+			"asgard::type::EnumMap " << type.name << "::static_enum_map(){" << std::endl <<
+			"\tasgard::type::EnumMap map;" << std::endl <<
+			"\tmap.name = \"" << ns->to_string(".", type.name) << "\";" << std::endl <<
 			"\tmap.enum_map = _enum_map;" << std::endl <<
 			"\tmap.fill_reverse();" << std::endl <<
 			"\treturn map;" << std::endl <<
@@ -469,27 +555,27 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::endl;
 
 		std::cout <<
-			name << "::" << name << "(const enum_e &v):" << std::endl <<
+			type.name << "::" << type.name << "(const enum_e &v):" << std::endl <<
 			"\tvalue(v)" << std::endl <<
 			"{" << std::endl <<
 			"}" << std::endl <<
 		std::endl;
 
 		std::cout <<
-			name << " &" << name << "::operator=(const enum_e &v){" << std::endl <<
+			type.name << " &" << type.name << "::operator=(const enum_e &v){" << std::endl <<
 			"\tvalue = v;" << std::endl <<
 			"\treturn *this;" << std::endl <<
 			"}" << std::endl <<
 		std::endl;
 
 		std::cout <<
-			"type::EnumMap " << name << "::enum_map() const{" << std::endl <<
+			"asgard::type::EnumMap " << type.name << "::enum_map() const{" << std::endl <<
 			"\treturn static_enum_map();" << std::endl <<
 			"}" << std::endl <<
 		std::endl;
 
 		std::cout <<
-			"void " << name << "::from_int(const type::enum_t &v){" << std::endl <<
+			"void " << type.name << "::from_int(const asgard::type::enum_t &v){" << std::endl <<
 			"\tconst auto find = _enum_map.find(v);" << std::endl <<
 			"\tif(find == _enum_map.end()){" << std::endl <<
 			"\t\tvalue = zero;" << std::endl <<
@@ -500,13 +586,13 @@ void parse_file(Namespace &ns, const std::string &path){
 		std::endl;
 
 		std::cout <<
-			"type::enum_t " << name << "::to_int() const{" << std::endl <<
+			"asgard::type::enum_t " << type.name << "::to_int() const{" << std::endl <<
 			"\treturn value;" << std::endl <<
 			"}" << std::endl <<
 		std::endl;
 
 		std::cout <<
-			name << "::operator enum_e() const{" << std::endl <<
+			type.name << "::operator enum_e() const{" << std::endl <<
 			"\treturn value;" << std::endl <<
 			"}" << std::endl <<
 		std::endl;
@@ -519,30 +605,116 @@ void parse_file(Namespace &ns, const std::string &path){
 
 
 
-void parse_directory(Namespace &ns, const std::string &path){
+void search_directory(std::shared_ptr<Namespace> ns, const std::string &path){
 	std::vector<std::string> files;
 	std::vector<std::string> directories;
 	util::ls(path, files, directories);
 	for(const auto &file : files){
 		const std::string full_path = path + "/" + file;
 		std::cout << "=== " << full_path << " ===" << std::endl;
-		try{
-			asgard::code::parse_file(ns, full_path);
-		}catch(const std::exception &err){
-			std::cerr << err.what() << std::endl;
+
+		const auto find_dot = file.rfind('.');
+		const std::string name = file.substr(0, find_dot);
+		std::string extension;
+		if(find_dot != std::string::npos){
+			extension = file.substr(find_dot+1);
 		}
+
+		std::shared_ptr<Generated> type;
+		if(extension == "data"){
+			type = std::make_shared<Class>();
+		}else if(extension == "module"){
+			type = std::make_shared<Module>();
+		}else if(extension == "enum"){
+			type = std::make_shared<Enum>();
+		}else{
+			continue;
+		}
+		type->name = name;
+		type->def_file = full_path;
+		ns->add(type);
 	}
 	for(const auto &dir : directories){
 		const std::string subdir = path + "/" + dir;
-		parse_directory(ns.get(dir), subdir);
+		search_directory(ns->sub(dir), subdir);
 	}
 }
 
 
 void parse_packages(const std::vector<std::string> &paths){
-	Namespace root;
+	auto root = Namespace::create();
+	{
+		auto ns = root->sub("asgard")->sub("core");
+		{
+			auto type = std::make_shared<Extern>();
+			type->name = "ID";
+			type->include_file = "ID.h";
+			ns->add(type);
+		}
+	}
+	{
+		auto ns = root->sub("asgard")->sub("data");
+		{
+			auto type = std::make_shared<Extern>();
+			type->name = "Value";
+			type->include_file = "Value.h";
+			ns->add(type);
+		}
+	}
+	{
+		auto ns = root->sub("asgard")->sub("topic");
+		{
+			auto type = std::make_shared<Extern>();
+			type->name = "TopicPtr";
+			type->include_file = "TopicPtr.h";
+			ns->add(type);
+		}
+	}
+	{
+		auto ns = root->sub("asgard")->sub("mod");
+		{
+			auto type = std::make_shared<Extern>();
+			type->name = "Module";
+			type->include_file = "Module.h";
+			ns->add(type);
+		}
+	}
+	{
+		auto ns = root->sub("asgard")->sub("time");
+		{
+			auto type = std::make_shared<Extern>();
+			type->name = "time";
+			type->include_file = "time.h";
+			ns->add(type);
+		}
+		{
+			auto type = std::make_shared<Extern>();
+			type->name = "wall_time";
+			type->include_file = "time.h";
+			ns->add(type);
+		}
+		{
+			auto type = std::make_shared<Extern>();
+			type->name = "duration";
+			type->include_file = "time.h";
+			ns->add(type);
+		}
+	}
+
 	for(const auto &path : paths){
-		parse_directory(root, path);
+		search_directory(root, path);
+	}
+
+	const auto types = root->get_all();
+	for(auto type : types){
+		if(type->is_class || type->is_module || type->is_enum){
+			auto generated_type = std::static_pointer_cast<Generated>(type);
+			try{
+				asgard::code::parse_file(*generated_type);
+			}catch(const std::exception &err){
+				std::cerr << err.what() << std::endl;
+			}
+		}
 	}
 }
 
