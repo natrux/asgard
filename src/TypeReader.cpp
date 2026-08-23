@@ -2,6 +2,7 @@
 #include <asgard/type/TypeWriter.h>
 #include <asgard/core/TypeRegistry.h>
 #include <asgard/data/Value.h>
+#include <asgard/topic/TopicPtr.h>
 #include <asgard/data/Bin.h>
 
 #include <stdexcept>
@@ -245,6 +246,9 @@ void TypeReader::read_type(time::duration &value, const Typecode &type){
 		skip(type);
 	}
 }
+
+
+
 
 
 void TypeReader::read_type(data::Value &value, const Typecode &type){

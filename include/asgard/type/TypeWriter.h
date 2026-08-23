@@ -26,6 +26,9 @@ namespace data{
 class Bin;
 class Value;
 }
+namespace topic{
+class TopicPtr;
+}
 }
 
 namespace asgard{
@@ -72,6 +75,8 @@ public:
 	void write_value(const time::duration &value);
 	void write_value(const time::time &value);
 	void write_value(const time::wall_time &value);
+	void write_value(const core::ID &value);
+	void write_value(const topic::TopicPtr &value);
 	void write_value(const data::Value &value);
 	void write_value(const data::Enum &value);
 	void write_value(const data::Bin &value);

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <asgard/type/get_typecode.h>
+
 #include <chrono>
 
 using namespace std::chrono_literals;
@@ -65,6 +67,39 @@ inline duration immediate(){
 inline duration tick(){
 	return since(now());
 }
+
+
+}
+}
+
+
+namespace asgard{
+namespace type{
+
+
+template<>
+struct get_typecode_t<time::duration>{
+	static Typecode value(){
+		static Typecode instance(Typecode::TYPE_DURATION);
+		return instance;
+	}
+};
+
+template<>
+struct get_typecode_t<time::time>{
+	static Typecode value(){
+		static Typecode instance(Typecode::TYPE_DURATION);
+		return instance;
+	}
+};
+
+template<>
+struct get_typecode_t<time::wall_time>{
+	static Typecode value(){
+		static Typecode instance(Typecode::TYPE_DURATION);
+		return instance;
+	}
+};
 
 
 }

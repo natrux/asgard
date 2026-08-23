@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include <asgard/type/Typecode.h>
 #include <asgard/topic/Topic.h>
 
 #include <string>
@@ -17,6 +17,7 @@ namespace topic{
 class TopicPtr{
 	friend class std::hash<TopicPtr>;
 public:
+	static type::Typecode typecode();
 	static std::vector<TopicPtr> get_all_topics();
 
 	TopicPtr();

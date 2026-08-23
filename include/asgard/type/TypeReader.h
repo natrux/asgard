@@ -28,6 +28,9 @@ class Value;
 namespace type{
 class TypeWriter;
 }
+namespace topic{
+class TopicPtr;
+}
 }
 
 namespace asgard{
@@ -81,6 +84,8 @@ public:
 	void read_type(time::time &value, const Typecode &type);
 	void read_type(time::wall_time &value, const Typecode &type);
 	void read_type(time::duration &value, const Typecode &type);
+	void read_type(core::ID &value, const Typecode &type);
+	void read_type(topic::TopicPtr &value, const Typecode &type);
 	void read_type(data::Value &value, const Typecode &type);
 	void read_type(data::Value &value, const Signature &signature);
 	void read_type(data::Enum &value, const Typecode &type);

@@ -189,6 +189,7 @@ public:
 	bool is_class = false;
 	bool is_module = false;
 	bool is_enum = false;
+	bool is_builtin = false;
 	bool is_extern = false;
 
 	virtual ~Type() = default;
@@ -215,6 +216,15 @@ public:
 class Enum : public Generated{
 public:
 	Enum(){ is_enum = true; }
+};
+
+class Builtin : public Type{
+public:
+	std::string include_file;
+
+	Builtin(){ is_builtin = true; }
+
+	std::string get_include_path() const override;
 };
 
 class Extern : public Type{
@@ -320,6 +330,10 @@ private:
 
 std::string Generated::get_include_path() const{
 	return ns.lock()->to_string("/", name+".hxx");
+}
+
+std::string Builtin::get_include_path() const{
+	return ns.lock()->to_string("/", include_file);
 }
 
 std::string Extern::get_include_path() const{
@@ -646,7 +660,7 @@ void parse_packages(const std::vector<std::string> &paths){
 	{
 		auto ns = root->sub("asgard")->sub("core");
 		{
-			auto type = std::make_shared<Extern>();
+			auto type = std::make_shared<Builtin>();
 			type->name = "ID";
 			type->include_file = "ID.h";
 			ns->add(type);
@@ -655,7 +669,7 @@ void parse_packages(const std::vector<std::string> &paths){
 	{
 		auto ns = root->sub("asgard")->sub("data");
 		{
-			auto type = std::make_shared<Extern>();
+			auto type = std::make_shared<Builtin>();
 			type->name = "Value";
 			type->include_file = "Value.h";
 			ns->add(type);
@@ -664,7 +678,7 @@ void parse_packages(const std::vector<std::string> &paths){
 	{
 		auto ns = root->sub("asgard")->sub("topic");
 		{
-			auto type = std::make_shared<Extern>();
+			auto type = std::make_shared<Builtin>();
 			type->name = "TopicPtr";
 			type->include_file = "TopicPtr.h";
 			ns->add(type);
@@ -673,7 +687,7 @@ void parse_packages(const std::vector<std::string> &paths){
 	{
 		auto ns = root->sub("asgard")->sub("mod");
 		{
-			auto type = std::make_shared<Extern>();
+			auto type = std::make_shared<Builtin>();
 			type->name = "Module";
 			type->include_file = "Module.h";
 			ns->add(type);
@@ -682,19 +696,19 @@ void parse_packages(const std::vector<std::string> &paths){
 	{
 		auto ns = root->sub("asgard")->sub("time");
 		{
-			auto type = std::make_shared<Extern>();
+			auto type = std::make_shared<Builtin>();
 			type->name = "time";
 			type->include_file = "time.h";
 			ns->add(type);
 		}
 		{
-			auto type = std::make_shared<Extern>();
+			auto type = std::make_shared<Builtin>();
 			type->name = "wall_time";
 			type->include_file = "time.h";
 			ns->add(type);
 		}
 		{
-			auto type = std::make_shared<Extern>();
+			auto type = std::make_shared<Builtin>();
 			type->name = "duration";
 			type->include_file = "time.h";
 			ns->add(type);

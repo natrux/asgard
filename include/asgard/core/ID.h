@@ -1,5 +1,7 @@
 #pragma once
 
+#include <asgard/type/Typecode.h>
+
 #include <string>
 #include <cstdint>
 
@@ -10,6 +12,8 @@ namespace core{
 
 class ID{
 public:
+	static type::Typecode typecode();
+
 	ID();
 	ID(const std::string &str);
 	ID(uint64_t id_value);

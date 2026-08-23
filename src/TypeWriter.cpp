@@ -1,5 +1,6 @@
 #include <asgard/type/TypeWriter.h>
 #include <asgard/data/Value.h>
+#include <asgard/topic/TopicPtr.h>
 #include <asgard/data/Bin.h>
 
 #include <stdexcept>
@@ -197,6 +198,9 @@ void TypeWriter::write_value(const time::wall_time &value){
 	const int64_t ticks = std::chrono::duration_cast<time::resolution>(since_epoch).count();
 	write_le(ticks);
 }
+
+
+
 
 
 void TypeWriter::write_value(const data::Value &value){
