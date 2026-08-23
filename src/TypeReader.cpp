@@ -248,7 +248,41 @@ void TypeReader::read_type(time::duration &value, const Typecode &type){
 }
 
 
+void TypeReader::read_type(core::ID &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_U8 || type.code == Typecode::TYPE_I8 || type.code == Typecode::TYPE_U16 || type.code == Typecode::TYPE_I16 || type.code == Typecode::TYPE_U32 || type.code == Typecode::TYPE_I32 || type.code == Typecode::TYPE_U64 || type.code == Typecode::TYPE_I64){
+		uint64_t v = 0;
+		read_number(v, type);
+		value = v;
+	}else if(type.code == Typecode::TYPE_STRING){
+		const auto str = read_string();
+		value = str;
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
+		}
+	}else{
+		skip(type);
+	}
+}
 
+
+void TypeReader::read_type(topic::TopicPtr &value, const Typecode &type){
+	if(type.code == Typecode::TYPE_STRING){
+		value = read_string();
+	}else if(type.code == Typecode::TYPE_NULL){
+		value = nullptr;
+	}else if(type.code == Typecode::TYPE_OPTIONAL || type.code == Typecode::TYPE_POINTER){
+		const bool flag = read_bool();
+		if(flag){
+			read_type(value, type.sub_types.at(0));
+		}else{
+			value = nullptr;
+		}
+	}else{
+		skip(type);
+	}
+}
 
 
 void TypeReader::read_type(data::Value &value, const Typecode &type){

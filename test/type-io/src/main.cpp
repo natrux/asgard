@@ -6,6 +6,7 @@
 #include <asgard/data/Sample.hxx>
 #include <asgard/time/time.h>
 #include <asgard/time/strtime.h>
+#include <asgard/topic/TopicPtr.h>
 
 #include <asgard/data/DataPacket.hxx>
 #include <asgard/data/log_level_e.hxx>
@@ -193,6 +194,15 @@ void test(){
 	{
 		const std::vector<std::string> letters = {"Alpha", "Beta", "Gamma", "Delta"};
 		test_by(letters);
+	}
+
+	{
+		const auto tup = std::make_tuple<asgard::core::ID, asgard::time::time, asgard::topic::TopicPtr>(
+			std::string("HELLO"),
+			asgard::time::now(),
+			"asgard.test.type_io"
+		);
+		test_by(tup);
 	}
 
 	{

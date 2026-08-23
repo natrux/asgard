@@ -200,7 +200,16 @@ void TypeWriter::write_value(const time::wall_time &value){
 }
 
 
+void TypeWriter::write_value(const core::ID &value){
+	const uint64_t v = value;
+	write_le(v);
+}
 
+
+void TypeWriter::write_value(const topic::TopicPtr &value){
+	const std::string name = value->get_name();
+	write_value(name);
+}
 
 
 void TypeWriter::write_value(const data::Value &value){

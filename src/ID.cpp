@@ -9,6 +9,11 @@ namespace asgard{
 namespace core{
 
 
+type::Typecode ID::typecode(){
+	return type::Typecode(type::Typecode::TYPE_U64);
+}
+
+
 ID::ID(){
 	set_random();
 }

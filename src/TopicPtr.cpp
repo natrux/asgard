@@ -9,6 +9,11 @@ std::mutex TopicPtr::mutex_topic_map;
 std::map<std::string, std::weak_ptr<Topic>> TopicPtr::topic_map;
 
 
+type::Typecode TopicPtr::typecode(){
+	return type::Typecode(type::Typecode::TYPE_STRING);
+}
+
+
 std::vector<TopicPtr> TopicPtr::get_all_topics(){
 	std::lock_guard<std::mutex> lock(mutex_topic_map);
 	std::vector<TopicPtr> result;
