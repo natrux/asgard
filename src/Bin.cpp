@@ -17,16 +17,34 @@ std::vector<uint8_t> Bin::get_data() const{
 
 void Bin::set_data(const std::vector<uint8_t> &data_){
 	data = data_;
+	update();
 }
 
 
 void Bin::set_data(std::vector<uint8_t> &&data_){
 	data = std::move(data_);
+	update();
 }
 
 
 type::Typecode Bin::get_type() const{
 	return type;
+}
+
+
+type::Signature Bin::get_signature() const{
+	if(is_value()){
+		return signature;
+	}
+	return {};
+}
+
+
+type::EnumMap Bin::get_enum_map() const{
+	if(is_enum()){
+		return enum_map;
+	}
+	return {};
 }
 
 
@@ -117,6 +135,8 @@ void Bin::update(){
 	type = reader.read_typecode();
 	if(type.code == type::Typecode::TYPE_VALUE){
 		signature = reader.read_signature();
+	}else if(type.code == type::Typecode::TYPE_ENUM){
+		enum_map = reader.read_enum_map();
 	}
 }
 

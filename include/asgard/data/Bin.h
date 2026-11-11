@@ -26,8 +26,7 @@ public:
 			type::TypeWriter writer(source);
 			writer.write_type(value);
 		}
-		data = source->get();
-		update();
+		set_data(source->get());
 		return *this;
 	}
 
@@ -50,6 +49,8 @@ public:
 	}
 
 	type::Typecode get_type() const;
+	type::Signature get_signature() const;
+	type::EnumMap get_enum_map() const;
 
 	bool is_empty() const;
 	bool is_bool() const;
@@ -68,6 +69,7 @@ private:
 	std::vector<uint8_t> data;
 	type::Typecode type;
 	type::Signature signature;
+	type::EnumMap enum_map;
 
 	void update();
 };
